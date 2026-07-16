@@ -19,19 +19,7 @@ const USAGE_SNIPPET = `import { Button } from "@/components/ui/button"
 export default function Home() {
   return (
     <div className="mx-auto max-w-6xl px-6">
-      <header className="flex items-center justify-between py-6">
-        <p className="font-display text-2xl text-foreground">
-          V-/Src
-          <span className="ml-3 align-middle font-mono text-xs text-muted-foreground">v0.1.0</span>
-        </p>
-        <Button variant="ghost" size="sm" asChild>
-          <a href="https://github.com/Karthick1242004" rel="noreferrer" target="_blank">
-            GitHub
-          </a>
-        </Button>
-      </header>
-
-      <section className="py-20 sm:py-28">
+      <section className="py-16 sm:py-24">
         <p className="font-mono text-xs tracking-[0.25em] text-muted-foreground uppercase">
           {"// real refraction, not blur"}
         </p>
@@ -46,6 +34,9 @@ export default function Home() {
         <div className="mt-10 flex flex-wrap items-center gap-4">
           <Button variant="primary" size="lg" asChild>
             <a href="#install">Install the button</a>
+          </Button>
+          <Button size="lg" asChild>
+            <a href="/components">Browse all 13</a>
           </Button>
           <code className="font-mono text-sm text-muted-foreground">
             npx shadcn add @vsrc/button
@@ -104,16 +95,6 @@ export default function Home() {
           <CodeBlock kicker="3 · use it" code={USAGE_SNIPPET} />
         </div>
       </section>
-
-      <footer className="border-t border-border pt-16 pb-10">
-        <p aria-hidden className="text-center font-display text-[clamp(5rem,18vw,16rem)] leading-none text-foreground">
-          V-/Src
-        </p>
-        <div className="mt-10 flex flex-wrap items-center justify-between gap-4 font-mono text-xs text-muted-foreground">
-          <span>MIT — engine and registry</span>
-          <span>© 2026 V-/Src</span>
-        </div>
-      </footer>
     </div>
   );
 }

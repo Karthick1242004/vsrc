@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "dropdown-menu",
+  "title": "Dropdown Menu",
+  "description": "A glass menu with Radix keyboard navigation.",
+  "dependencies": [
+    "vsrc",
+    "@radix-ui/react-dropdown-menu"
+  ],
+  "registryDependencies": [
+    "@vsrc/glass-surface"
+  ],
+  "files": [
+    {
+      "path": "registry/vsrc/ui/dropdown-menu.tsx",
+      "content": "\"use client\";\n\nimport * as React from \"react\";\nimport * as DropdownMenuPrimitive from \"@radix-ui/react-dropdown-menu\";\nimport type { LiquidGlassOptions } from \"vsrc/react\";\n\nimport { GlassSurface } from \"@/registry/vsrc/ui/glass-surface\";\nimport { cn } from \"@/lib/utils\";\n\nconst DropdownMenu = DropdownMenuPrimitive.Root;\nconst DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;\nconst DropdownMenuGroup = DropdownMenuPrimitive.Group;\n\nfunction DropdownMenuContent({\n  className,\n  sideOffset = 8,\n  glass,\n  ...props\n}: React.ComponentProps<typeof DropdownMenuPrimitive.Content> & { glass?: LiquidGlassOptions | false }) {\n  return (\n    <DropdownMenuPrimitive.Portal>\n      <GlassSurface asChild glass={glass}>\n        <DropdownMenuPrimitive.Content\n          data-slot=\"dropdown-menu-content\"\n          sideOffset={sideOffset}\n          className={cn(\"animate-glass-in relative z-50 min-w-44 p-1.5 text-foreground outline-none\", className)}\n          {...props}\n        />\n      </GlassSurface>\n    </DropdownMenuPrimitive.Portal>\n  );\n}\n\nfunction DropdownMenuItem({\n  className,\n  ...props\n}: React.ComponentProps<typeof DropdownMenuPrimitive.Item>) {\n  return (\n    <DropdownMenuPrimitive.Item\n      data-slot=\"dropdown-menu-item\"\n      className={cn(\n        \"flex cursor-default items-center gap-2 rounded-[calc(var(--glass-radius)-8px)] px-3 py-2 text-sm\",\n        \"outline-none select-none focus:bg-foreground/15\",\n        \"data-[disabled]:pointer-events-none data-[disabled]:opacity-50\",\n        \"[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0\",\n        className,\n      )}\n      {...props}\n    />\n  );\n}\n\nfunction DropdownMenuLabel({\n  className,\n  ...props\n}: React.ComponentProps<typeof DropdownMenuPrimitive.Label>) {\n  return (\n    <DropdownMenuPrimitive.Label\n      data-slot=\"dropdown-menu-label\"\n      className={cn(\"px-3 py-1.5 font-mono text-xs tracking-widest text-muted-foreground uppercase\", className)}\n      {...props}\n    />\n  );\n}\n\nfunction DropdownMenuSeparator({\n  className,\n  ...props\n}: React.ComponentProps<typeof DropdownMenuPrimitive.Separator>) {\n  return (\n    <DropdownMenuPrimitive.Separator\n      data-slot=\"dropdown-menu-separator\"\n      className={cn(\"mx-2 my-1 h-px bg-foreground/15\", className)}\n      {...props}\n    />\n  );\n}\n\nexport {\n  DropdownMenu,\n  DropdownMenuTrigger,\n  DropdownMenuContent,\n  DropdownMenuItem,\n  DropdownMenuLabel,\n  DropdownMenuSeparator,\n  DropdownMenuGroup,\n};\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

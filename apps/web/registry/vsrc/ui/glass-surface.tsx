@@ -15,8 +15,11 @@ import { cn } from "@/lib/utils";
  * Never nest one glass surface inside another: refraction is a per-panel
  * effect and stacked filters multiply cost without adding depth.
  */
+// No position class here: asChild consumers set their own (fixed dialogs,
+// sticky docks…) and a stray `relative` would win the cascade over `fixed`.
+// Non-div surfaces must be positioned somehow or the ::after rim mislands.
 export const glassMaterial = cn(
-  "relative isolate overflow-hidden",
+  "isolate overflow-hidden",
   "border border-(--glass-border) bg-(--glass-tint)",
   "shadow-[var(--glass-shadow),var(--glass-specular)]",
   // Frosted (WebKit / all iOS) can't refract — go CLEAR instead of dark:
@@ -48,7 +51,7 @@ function GlassSurface({ asChild, glass, className, ref, ...props }: GlassSurface
     <Comp
       ref={composedRef}
       data-slot="glass-surface"
-      className={cn(glassMaterial, "rounded-(--glass-radius)", className)}
+      className={cn(glassMaterial, !asChild && "relative", "rounded-(--glass-radius)", className)}
       {...props}
     />
   );

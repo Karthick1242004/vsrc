@@ -124,6 +124,40 @@
   }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+/* Entrance for portaled glass (tooltip, popover, menu, dialog, sheet). */
+@keyframes glass-in {
+  from {
+    opacity: 0;
+    scale: 0.97;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+.animate-glass-in {
+  animation: glass-in 0.18s ease;
+}
+
+/* Custom cursor active: hide the native one everywhere. */
+html[data-cursor] *,
+html[data-cursor] {
+  cursor: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-glass-in {
+    animation: none;
+  }
+}
+
 /* Instrument Serif ships one weight; faux-bold is a hairline text-stroke,
    hero scale only (0.85px), headings 0.4px, never at small sizes. */
 .display-stroke {

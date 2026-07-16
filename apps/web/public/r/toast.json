@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "toast",
+  "title": "Toast",
+  "description": "Glass-styled sonner. Toasts animate position constantly, so they use the CSS material only — no per-toast displacement maps.",
+  "dependencies": [
+    "sonner"
+  ],
+  "registryDependencies": [
+    "@vsrc/glass-surface"
+  ],
+  "files": [
+    {
+      "path": "registry/vsrc/ui/toast.tsx",
+      "content": "\"use client\";\n\nimport { Toaster as Sonner, toast } from \"sonner\";\n\nimport { glassMaterial } from \"@/registry/vsrc/ui/glass-surface\";\nimport { cn } from \"@/lib/utils\";\n\n/**\n * Glass-styled sonner. Toasts animate position constantly, so they get the\n * CSS material only — no per-toast displacement maps (PLAN perf guardrail).\n */\nfunction Toaster(props: React.ComponentProps<typeof Sonner>) {\n  return (\n    <Sonner\n      className=\"toaster group\"\n      toastOptions={{\n        unstyled: true,\n        classNames: {\n          toast: cn(\n            glassMaterial,\n            \"rounded-(--glass-radius) backdrop-blur-md flex w-full items-center gap-3 p-4\",\n            \"text-sm text-foreground\",\n          ),\n          title: \"font-medium\",\n          description: \"text-muted-foreground\",\n          actionButton: \"ml-auto rounded-full bg-primary px-3 py-1 text-xs text-primary-foreground\",\n        },\n      }}\n      {...props}\n    />\n  );\n}\n\nexport { Toaster, toast };\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

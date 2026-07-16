@@ -135,6 +135,105 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "card",
+      "type": "registry:ui",
+      "title": "Card",
+      "description": "A glass panel with the usual card anatomy: header, title, description, content, footer.",
+      "dependencies": ["vsrc"],
+      "registryDependencies": ["@vsrc/glass-surface"],
+      "files": [{ "path": "registry/vsrc/ui/card.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "input",
+      "type": "registry:ui",
+      "title": "Input",
+      "description": "A glass text field with gentle optics tuned for small surfaces.",
+      "dependencies": ["vsrc"],
+      "registryDependencies": ["@vsrc/glass-surface"],
+      "files": [{ "path": "registry/vsrc/ui/input.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "switch",
+      "type": "registry:ui",
+      "title": "Switch",
+      "description": "Glass track, cream thumb, red when checked. Radix behavior intact.",
+      "dependencies": ["vsrc", "@radix-ui/react-switch"],
+      "registryDependencies": ["@vsrc/glass-surface"],
+      "files": [{ "path": "registry/vsrc/ui/switch.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "tabs",
+      "type": "registry:ui",
+      "title": "Tabs",
+      "description": "A glass pill list with quiet triggers. Radix keyboard navigation intact.",
+      "dependencies": ["vsrc", "@radix-ui/react-tabs"],
+      "registryDependencies": ["@vsrc/glass-surface"],
+      "files": [{ "path": "registry/vsrc/ui/tabs.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "tooltip",
+      "type": "registry:ui",
+      "title": "Tooltip",
+      "description": "A small glass pill on hover or focus.",
+      "dependencies": ["vsrc", "@radix-ui/react-tooltip"],
+      "registryDependencies": ["@vsrc/glass-surface"],
+      "files": [{ "path": "registry/vsrc/ui/tooltip.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "popover",
+      "type": "registry:ui",
+      "title": "Popover",
+      "description": "An anchored glass panel for small forms and detail views.",
+      "dependencies": ["vsrc", "@radix-ui/react-popover"],
+      "registryDependencies": ["@vsrc/glass-surface"],
+      "files": [{ "path": "registry/vsrc/ui/popover.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "dropdown-menu",
+      "type": "registry:ui",
+      "title": "Dropdown Menu",
+      "description": "A glass menu with Radix keyboard navigation.",
+      "dependencies": ["vsrc", "@radix-ui/react-dropdown-menu"],
+      "registryDependencies": ["@vsrc/glass-surface"],
+      "files": [{ "path": "registry/vsrc/ui/dropdown-menu.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "dialog",
+      "type": "registry:ui",
+      "title": "Dialog",
+      "description": "A modal glass pane over a dimmed page. Focus trap and escape from Radix.",
+      "dependencies": ["vsrc", "@radix-ui/react-dialog"],
+      "registryDependencies": ["@vsrc/glass-surface"],
+      "files": [{ "path": "registry/vsrc/ui/dialog.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "sheet",
+      "type": "registry:ui",
+      "title": "Sheet",
+      "description": "A side panel of glass. Softer optics keep large displacement maps cheap.",
+      "dependencies": ["vsrc", "@radix-ui/react-dialog", "class-variance-authority"],
+      "registryDependencies": ["@vsrc/glass-surface"],
+      "files": [{ "path": "registry/vsrc/ui/sheet.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "toast",
+      "type": "registry:ui",
+      "title": "Toast",
+      "description": "Glass-styled sonner. Toasts animate position constantly, so they use the CSS material only — no per-toast displacement maps.",
+      "dependencies": ["sonner"],
+      "registryDependencies": ["@vsrc/glass-surface"],
+      "files": [{ "path": "registry/vsrc/ui/toast.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "dock",
+      "type": "registry:ui",
+      "title": "Dock",
+      "description": "The signature piece: a floating glass nav bar mirroring the V-/Src brand board's docked nav.",
+      "dependencies": ["vsrc"],
+      "registryDependencies": ["@vsrc/glass-surface"],
+      "files": [{ "path": "registry/vsrc/ui/dock.tsx", "type": "registry:ui" }]
     }
   ]
 }

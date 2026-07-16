@@ -60,13 +60,28 @@ Playwright WebKit + Chromium.
 **Remaining in Phase 3:** the fresh-consumer proof (scratch Next app outside the repo,
 `npx shadcn add @vsrc/button` against the locally-served registry) — not yet run.
 
-**Phase 4 — remaining components (#5–#12): NOT started.** card · input · switch · tabs ·
-tooltip · popover · dropdown-menu · dialog · sheet · toast (sonner) · dock. Follow
-`apps/web/registry/README.md` per component; owner intends to run these on a cheaper
-model — the pattern doc + button are the template.
+**Phase 4 — remaining components: DONE, verified.** All 13 shipped: card, input, switch,
+tabs, tooltip, popover, dropdown-menu, dialog, sheet, toast (sonner, CSS-material only —
+toasts animate position), dock. Pattern: portaled/asChild surfaces compose
+`<GlassSurface asChild>` around the Radix primitive. **Positioning gotcha (cost a debug
+round): `glassMaterial` deliberately has NO position class — Slot concatenation made
+`relative` beat `fixed` in the cascade and dialogs rendered in flow. asChild consumers
+must position themselves (`relative` for popover/tooltip/menu content, `fixed` dialogs/
+sheets/dock); overriding the dock's `fixed` needs `static!`.** Verified in both engines:
+19 glass elements on /components all refract (Chromium) / frost (WebKit), dialog opens
+via keyboard + Escape closes + focus trapped, tooltip on hover, toast fires.
 
-**Phases 5–6 — full docs site, E2E verification: not started** (landing exists; per-component
-doc pages don't).
+**Phase 5 — docs site: PARTIAL.** Library skeleton done: shared header (monogram tile +
+wordmark), giant-wordmark footer, floating glass Dock as site nav (dogfooding dock/
+tooltip/switch), `/components` page (sticky index + 13 demo sections + install commands),
+smooth scroll (reduced-motion aware), site-wide custom cursor (`components/site/cursor.tsx`,
+fine pointers only): default = tilting -/ monogram mark, dock LENS switch toggles a
+64px glass-orb cursor running the real engine (localStorage-persisted). Monogram = brand
+board markC in `components/site/monogram.tsx`. Not built: per-component doc pages
+(props/a11y tables), light-theme toggle.
+
+**Phase 6 — E2E verification suite: not started** (ad-hoc Playwright scripts cover the
+above; the fresh-consumer proof from Phase 3 is still the next verification task).
 
 ## Files written (everything still uncommitted; branch `main` has zero commits)
 

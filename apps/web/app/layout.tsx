@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 
+import { CursorProvider } from "@/components/site/cursor";
+import { SiteDock } from "@/components/site/site-dock";
+import { SiteFooter } from "@/components/site/site-footer";
+import { SiteHeader } from "@/components/site/site-header";
+import { Toaster } from "@/registry/vsrc/ui/toast";
+import { TooltipProvider } from "@/registry/vsrc/ui/tooltip";
+
 import "./globals.css";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
@@ -24,7 +31,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       className={`${geist.variable} ${geistMono.variable} ${instrumentSerif.variable}`}
     >
-      <body className="bg-background font-sans text-foreground antialiased">{children}</body>
+      <body className="bg-background font-sans text-foreground antialiased">
+        <CursorProvider>
+          <TooltipProvider delayDuration={200}>
+            <SiteHeader />
+            {children}
+            <SiteFooter />
+            <SiteDock />
+            <Toaster />
+          </TooltipProvider>
+        </CursorProvider>
+      </body>
     </html>
   );
 }
