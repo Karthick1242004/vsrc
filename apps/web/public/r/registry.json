@@ -10,7 +10,7 @@
       "description": "V-/Src brand tokens (warm black, cream, two reds) plus the liquid-glass material layer. Dark is the default theme; `.light` opts into cream paper.",
       "css": {
         "[data-vsrc-glass=\"frosted\"]": {
-          "background-image": "radial-gradient(120% 85% at 15% 8%, color-mix(in oklab, #fffddb 16%, transparent) 0%, color-mix(in oklab, #fffddb 5%, transparent) 40%, transparent 70%), radial-gradient(110% 80% at 85% 100%, color-mix(in oklab, #ff3831 8%, transparent) 0%, transparent 60%), linear-gradient(180deg, color-mix(in oklab, #fffddb 6%, transparent) 0%, rgb(0 0 0 / 0.14) 100%)",
+          "background-image": "radial-gradient(120% 85% at 15% 8%, color-mix(in oklab, #fffddb 8%, transparent) 0%, color-mix(in oklab, #fffddb 2%, transparent) 40%, transparent 70%), radial-gradient(110% 80% at 85% 100%, color-mix(in oklab, #ff3831 5%, transparent) 0%, transparent 60%), linear-gradient(180deg, color-mix(in oklab, #fffddb 3%, transparent) 0%, rgb(0 0 0 / 0.12) 100%)",
           "background-size": "200% 200%, 180% 180%, 100% 100%",
           "background-repeat": "no-repeat",
           "animation": "glass-drift 18s ease-in-out infinite",
@@ -63,8 +63,8 @@
           "glass-border": "color-mix(in oklab, #fffddb 24%, transparent)",
           "glass-specular": "inset 0 1px 0 0 color-mix(in oklab, #fffddb 22%, transparent), inset 0 0 12px 0 color-mix(in oklab, #fffddb 6%, transparent)",
           "glass-shadow": "0 24px 48px -20px rgb(0 0 0 / 0.55)",
-          "glass-tint-frosted": "color-mix(in oklab, #fffddb 10%, transparent)",
-          "glass-specular-frosted": "inset 0 1px 0 0 color-mix(in oklab, #fffddb 30%, transparent), inset 0 -14px 28px -12px color-mix(in oklab, #fffddb 14%, transparent), inset 1px 0 0 0 color-mix(in oklab, #fffddb 10%, transparent), inset -1px 0 0 0 color-mix(in oklab, #fffddb 8%, transparent)",
+          "glass-tint-frosted": "color-mix(in oklab, #fffddb 4%, transparent)",
+          "glass-specular-frosted": "inset 0 1px 0 0 color-mix(in oklab, #fffddb 28%, transparent), inset 0 -14px 28px -12px color-mix(in oklab, #fffddb 7%, transparent), inset 1px 0 0 0 color-mix(in oklab, #fffddb 7%, transparent), inset -1px 0 0 0 color-mix(in oklab, #fffddb 6%, transparent)",
           "glass-rim-light": "rgb(255 253 219 / 0.4)",
           "glass-rim-dark": "rgb(0 0 0 / 0.35)",
           "glass-radius": "24px"

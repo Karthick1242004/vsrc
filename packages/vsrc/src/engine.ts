@@ -57,9 +57,9 @@ const DEFAULTS: Required<LiquidGlassOptions> = {
   blur: 3,
   saturate: 1.5,
   radius: null,
-  // Frosted is a uniform frost (glasscn-liquid-style), heavier than the
-  // refract interior — the material layer adds sheen and rim on top.
-  fallbackBlur: 12,
+  // Barely-there frost (glasscn's Safari path is blur(4)): the backdrop must
+  // stay vivid through the panel. Heavier blur turns thin content to fog.
+  fallbackBlur: 5,
 };
 
 export const DATA_ATTR = "data-vsrc-glass";

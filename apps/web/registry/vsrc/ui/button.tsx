@@ -19,7 +19,7 @@ const BUTTON_OPTICS: LiquidGlassOptions = {
   mapBlur: 8,
   blur: 2,
   saturate: 1.4,
-  fallbackBlur: 8,
+  fallbackBlur: 4,
 };
 
 const buttonVariants = cva(

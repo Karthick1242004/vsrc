@@ -46,11 +46,12 @@ hairline rim (`[data-vsrc-glass=frosted]::after`, light streak top/bottom + dark
 streak sides, corner fades) in globals + the theme item's `css` field. Primary stays
 red in frosted via an explicit re-override. Frosted is a UNIFORM frost — an
 edge-band experiment read as a thick border and was removed (owner rejected it twice;
-don't reintroduce). Recipe (after glasscn's `liquid` variant, MIT): `fallbackBlur` 12
-(buttons 8), near-transparent tint, drifting layered radial sheens
-(`glass-drift` 18s, reduced-motion honored), fish-eye bottom glow + side rails in
-`--glass-specular-frosted`, 1px directional hairline rim. All frosted dressing lives in
-globals + the theme item's `css` field. Frosted VISUALS are verified by
+don't reintroduce). Recipe (after glasscn, MIT — their demo cards' Safari path is just
+blur(4)+hairline): `fallbackBlur` 5 (buttons 4), tint cream 4%, FAINT drifting radial
+sheens (`glass-drift` 18s, reduced-motion honored; peaks ≤8% — stacked cream reads as
+milk, owner rejected), subtle fish-eye + side rails in `--glass-specular-frosted`,
+1px directional hairline rim. All frosted dressing lives in globals + the theme item's
+`css` field. Frosted VISUALS are verified by
 screenshotting Chromium with a Safari user agent (engine sniffs UA → frosted, and
 Chromium paints backdrop-filter where Playwright WebKit can't). Non-refracting
 browsers also get a press-to-open **WebGL refraction demo** (`components/site/lens-demo.tsx`,
