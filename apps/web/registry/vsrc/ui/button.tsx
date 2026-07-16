@@ -19,12 +19,12 @@ const BUTTON_OPTICS: LiquidGlassOptions = {
   mapBlur: 8,
   blur: 2,
   saturate: 1.4,
-  fallbackBlur: 2,
+  fallbackBlur: 8,
 };
 
 const buttonVariants = cva(
   cn(
-    "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full [--glass-lens:5px]",
+    "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full",
     "font-medium tracking-[-0.01em] text-foreground select-none",
     "transition-[border-color,background-color,transform] duration-200 active:scale-[0.97]",
     "outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
