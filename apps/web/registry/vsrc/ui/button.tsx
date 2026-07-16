@@ -19,6 +19,7 @@ const BUTTON_OPTICS: LiquidGlassOptions = {
   mapBlur: 8,
   blur: 2,
   saturate: 1.4,
+  fallbackBlur: 2,
 };
 
 const buttonVariants = cva(
@@ -39,6 +40,8 @@ const buttonVariants = cva(
         primary: cn(
           glassMaterial,
           "border-primary/60 bg-primary/80 text-primary-foreground hover:bg-primary/90",
+          // Stays red in frosted mode — the clear tint is for neutral glass only.
+          "data-[vsrc-glass=frosted]:bg-primary/80",
         ),
         // No glass at all — low-emphasis chrome. Refraction is skipped, not hidden.
         ghost: "hover:bg-foreground/10",

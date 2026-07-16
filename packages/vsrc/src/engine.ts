@@ -57,7 +57,9 @@ const DEFAULTS: Required<LiquidGlassOptions> = {
   blur: 3,
   saturate: 1.5,
   radius: null,
-  fallbackBlur: 16,
+  // Matches the refract path's interior blur so frosted reads as the SAME
+  // clear glass (16px smeared the backdrop into mud on real Safari).
+  fallbackBlur: 3,
 };
 
 export const DATA_ATTR = "data-vsrc-glass";

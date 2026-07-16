@@ -38,8 +38,15 @@ optics preset, `glass: false` opt-out). `pnpm registry:build` in `apps/web` gree
 `public/r/{theme,utils,glass-surface,button}.json`. Docs site (`apps/web`, Next 16.2.10 +
 Tailwind v4) scaffolded with brand landing page; `next build` green (SSR-safety proven by
 prerender); live check: 7 glass elements `refract` in Chromium / `frosted` in WebKit,
-ghost button carries no glass attribute. Frosted material got a lens-rim dressing
-(`--glass-specular-frosted`, applied via `data-[vsrc-glass=frosted]`). Non-refracting
+ghost button carries no glass attribute. Frosted material is CLEAR glass benchmarked
+against glasscn (whose Safari path is also just blur — verified by reading their
+registry source; they don't refract there either): engine `fallbackBlur` 16→6,
+near-transparent `--glass-tint-frosted`, single top specular, and a 1px directional
+hairline rim (`[data-vsrc-glass=frosted]::after`, light streak top/bottom + dark
+streak sides, corner fades) in globals + the theme item's `css` field. Primary stays
+red in frosted via an explicit re-override. Frosted VISUALS are verified by
+screenshotting Chromium with a Safari user agent (engine sniffs UA → frosted, and
+Chromium paints backdrop-filter where Playwright WebKit can't). Non-refracting
 browsers also get a press-to-open **WebGL refraction demo** (`components/site/lens-demo.tsx`,
 gated on `!canRefract()`, `?lens=demo` forces it for testing) — verified painting in
 Playwright WebKit + Chromium.

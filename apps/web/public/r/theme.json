@@ -21,7 +21,10 @@
       "glass-border": "color-mix(in oklab, #181616 18%, transparent)",
       "glass-specular": "inset 0 1px 0 0 color-mix(in oklab, #ffffff 55%, transparent), inset 0 0 12px 0 color-mix(in oklab, #ffffff 12%, transparent)",
       "glass-shadow": "0 24px 48px -20px rgb(24 22 22 / 0.25)",
-      "glass-specular-frosted": "inset 0 1px 0 0 color-mix(in oklab, #ffffff 70%, transparent), inset 0 0 0 1px color-mix(in oklab, #ffffff 25%, transparent), inset 0 14px 28px -14px color-mix(in oklab, #ffffff 20%, transparent), inset 0 -14px 28px -14px rgb(24 22 22 / 0.18)",
+      "glass-tint-frosted": "color-mix(in oklab, #181616 6%, transparent)",
+      "glass-specular-frosted": "inset 0 1px 0 0 color-mix(in oklab, #ffffff 80%, transparent)",
+      "glass-rim-light": "rgb(255 255 255 / 0.75)",
+      "glass-rim-dark": "rgb(24 22 22 / 0.2)",
       "glass-radius": "24px"
     },
     "dark": {
@@ -41,8 +44,25 @@
       "glass-border": "color-mix(in oklab, #fffddb 24%, transparent)",
       "glass-specular": "inset 0 1px 0 0 color-mix(in oklab, #fffddb 22%, transparent), inset 0 0 12px 0 color-mix(in oklab, #fffddb 6%, transparent)",
       "glass-shadow": "0 24px 48px -20px rgb(0 0 0 / 0.55)",
-      "glass-specular-frosted": "inset 0 1px 0 0 color-mix(in oklab, #fffddb 38%, transparent), inset 0 0 0 1px color-mix(in oklab, #fffddb 14%, transparent), inset 0 14px 28px -14px color-mix(in oklab, #fffddb 12%, transparent), inset 0 -14px 28px -14px rgb(0 0 0 / 0.4)",
+      "glass-tint-frosted": "color-mix(in oklab, #fffddb 10%, transparent)",
+      "glass-specular-frosted": "inset 0 1px 0 0 color-mix(in oklab, #fffddb 30%, transparent)",
+      "glass-rim-light": "rgb(255 253 219 / 0.4)",
+      "glass-rim-dark": "rgb(0 0 0 / 0.35)",
       "glass-radius": "24px"
+    }
+  },
+  "css": {
+    "[data-vsrc-glass=\"frosted\"]::after": {
+      "content": "\"\"",
+      "position": "absolute",
+      "inset": "0",
+      "border-radius": "inherit",
+      "padding": "var(--glass-rim, 1px)",
+      "pointer-events": "none",
+      "background": "linear-gradient(to right, transparent, var(--glass-rim-light) 18%, var(--glass-rim-light) 82%, transparent), linear-gradient(to bottom, transparent, var(--glass-rim-dark) 18%, var(--glass-rim-dark) 82%, transparent)",
+      "-webkit-mask": "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+      "-webkit-mask-composite": "xor",
+      "mask": "linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0)"
     }
   },
   "type": "registry:style"
