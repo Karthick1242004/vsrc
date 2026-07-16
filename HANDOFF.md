@@ -44,7 +44,11 @@ registry source; they don't refract there either): engine `fallbackBlur` 16→6,
 near-transparent `--glass-tint-frosted`, single top specular, and a 1px directional
 hairline rim (`[data-vsrc-glass=frosted]::after`, light streak top/bottom + dark
 streak sides, corner fades) in globals + the theme item's `css` field. Primary stays
-red in frosted via an explicit re-override. Frosted VISUALS are verified by
+red in frosted via an explicit re-override. Frosted also carries an EDGE LENS:
+`[data-vsrc-glass=frosted]::before` masked band (`--glass-lens`, 12px panels / 5px
+buttons) with heavier backdrop blur+saturate+brightness than the clear interior, plus
+a bottom fish-eye inset glow in `--glass-specular-frosted` — both after glasscn's
+`liquid` variant recipe (their Safari path is pure CSS too). Frosted VISUALS are verified by
 screenshotting Chromium with a Safari user agent (engine sniffs UA → frosted, and
 Chromium paints backdrop-filter where Playwright WebKit can't). Non-refracting
 browsers also get a press-to-open **WebGL refraction demo** (`components/site/lens-demo.tsx`,

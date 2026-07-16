@@ -31,7 +31,12 @@
      Clear glass instead of mud: near-transparent cream tint, one bright top
      specular, and a directional hairline rim (below). */
   --glass-tint-frosted: color-mix(in oklab, #fffddb 10%, transparent);
-  --glass-specular-frosted: inset 0 1px 0 0 color-mix(in oklab, #fffddb 30%, transparent);
+  /* Top hairline + bottom fish-eye glow (lensing artifact) + thin side rails. */
+  --glass-specular-frosted:
+    inset 0 1px 0 0 color-mix(in oklab, #fffddb 30%, transparent),
+    inset 0 -14px 28px -12px color-mix(in oklab, #fffddb 14%, transparent),
+    inset 1px 0 0 0 color-mix(in oklab, #fffddb 10%, transparent),
+    inset -1px 0 0 0 color-mix(in oklab, #fffddb 8%, transparent);
   --glass-rim-light: rgb(255 253 219 / 0.4);
   --glass-rim-dark: rgb(0 0 0 / 0.35);
 }
@@ -57,7 +62,11 @@
     inset 0 0 12px 0 color-mix(in oklab, #ffffff 12%, transparent);
   --glass-shadow: 0 24px 48px -20px rgb(24 22 22 / 0.25);
   --glass-tint-frosted: color-mix(in oklab, #181616 6%, transparent);
-  --glass-specular-frosted: inset 0 1px 0 0 color-mix(in oklab, #ffffff 80%, transparent);
+  --glass-specular-frosted:
+    inset 0 1px 0 0 color-mix(in oklab, #ffffff 80%, transparent),
+    inset 0 -14px 28px -12px color-mix(in oklab, #ffffff 35%, transparent),
+    inset 1px 0 0 0 color-mix(in oklab, #ffffff 25%, transparent),
+    inset -1px 0 0 0 color-mix(in oklab, #ffffff 20%, transparent);
   --glass-rim-light: rgb(255 255 255 / 0.75);
   --glass-rim-dark: rgb(24 22 22 / 0.2);
 }
@@ -121,6 +130,25 @@
 }
 .display-stroke-sm {
   -webkit-text-stroke: 0.4px currentColor;
+}
+
+/* Frosted edge lens (WebKit — every iOS browser — and Firefox): a masked
+   band at the rim reworks the backdrop harder than the clear interior —
+   more blur, saturation, and a brightness lift — so content sliding past
+   the edge visibly smears and blooms, reading as refraction without
+   displacement. Interior stays crisp. */
+[data-vsrc-glass="frosted"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: var(--glass-lens, 12px);
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(10px) saturate(1.7) brightness(1.08);
+  backdrop-filter: blur(10px) saturate(1.7) brightness(1.08);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
 }
 
 /* Frosted hairline rim (treatment after glasscn's liquid-glass, MIT): each
