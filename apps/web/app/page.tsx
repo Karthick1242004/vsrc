@@ -1,4 +1,5 @@
 import { CodeBlock } from "@/components/site/code-block";
+import { LensDemo } from "@/components/site/lens-demo";
 import { RefractionField } from "@/components/site/refraction-field";
 import { Button } from "@/registry/vsrc/ui/button";
 import { GlassSurface } from "@/registry/vsrc/ui/glass-surface";
@@ -86,6 +87,7 @@ export default function Home() {
         <p className="mt-4 font-mono text-xs text-muted-foreground">
           {"// live — every element above carries data-vsrc-glass with its active mode"}
         </p>
+        <LensDemo />
       </section>
 
       <section id="install" className="py-24 sm:py-32">

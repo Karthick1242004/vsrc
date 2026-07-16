@@ -38,7 +38,11 @@ optics preset, `glass: false` opt-out). `pnpm registry:build` in `apps/web` gree
 `public/r/{theme,utils,glass-surface,button}.json`. Docs site (`apps/web`, Next 16.2.10 +
 Tailwind v4) scaffolded with brand landing page; `next build` green (SSR-safety proven by
 prerender); live check: 7 glass elements `refract` in Chromium / `frosted` in WebKit,
-ghost button carries no glass attribute.
+ghost button carries no glass attribute. Frosted material got a lens-rim dressing
+(`--glass-specular-frosted`, applied via `data-[vsrc-glass=frosted]`). Non-refracting
+browsers also get a press-to-open **WebGL refraction demo** (`components/site/lens-demo.tsx`,
+gated on `!canRefract()`, `?lens=demo` forces it for testing) — verified painting in
+Playwright WebKit + Chromium.
 **Remaining in Phase 3:** the fresh-consumer proof (scratch Next app outside the repo,
 `npx shadcn add @vsrc/button` against the locally-served registry) — not yet run.
 
@@ -91,6 +95,11 @@ All PLAN.md §"Decisions locked" plus, from this session:
   computed styles correct, `CSS.supports` true, zero visual blur even headed, in a
   minimal page). Frosted VISUALS must be eyeballed in real Safari; assert the attribute
   and style in tests, never the pixels, in WebKit.
+- **WebKit misplaces `feImage` x/y inside SVG filters** (probed: full-region map at 0,0
+  still renders shifted) — SVG-filter displacement is unreliable on WebKit. That's why
+  the sandbox demo (`apps/web/components/site/lens-demo.tsx`) is WebGL, which paints
+  identically in all engines (verified by screenshot). Note: reading WebGL canvas pixels
+  via drawImage returns blank without `preserveDrawingBuffer` — screenshot instead.
 - Chromium CSSOM serializes `url(#id)` as `url("#id")` — match `/url\("?#vsrc-lg-/`.
 - pnpm 11 blocks postinstall scripts (`esbuild`, then `sharp`) → `allowBuilds` in
   `pnpm-workspace.yaml`; on a blocked install pnpm APPENDS a placeholder line
