@@ -54,7 +54,7 @@ export default function Home() {
 
       <section aria-label="Live refraction demo">
         <RefractionField>
-          <div className="flex flex-col items-center gap-10">
+          <div className="flex flex-col items-center gap-5">
             <GlassSurface className="max-w-sm p-8">
               <p className="font-mono text-xs tracking-[0.25em] text-muted-foreground uppercase">
                 {"// glass-surface"}
