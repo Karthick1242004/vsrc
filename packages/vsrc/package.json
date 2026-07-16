@@ -1,0 +1,58 @@
+{
+  "name": "vsrc",
+  "version": "0.1.0",
+  "description": "V-/Src liquid glass optics engine — real refraction for the web via displacement-map backdrop filters. Framework-agnostic core with a React hook and primitive at vsrc/react.",
+  "keywords": [
+    "liquid-glass",
+    "glassmorphism",
+    "refraction",
+    "backdrop-filter",
+    "react",
+    "shadcn",
+    "ui"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "lint": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.1",
+    "@types/react": "^19.2.17",
+    "jsdom": "^26.0.0",
+    "react": "^19.2.7",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.0",
+    "vitest": "^4.1.10"
+  }
+}

@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+/* V-/Src brand tokens. Dark (warm black) is the DEFAULT theme; `.light` on
+   <html> opts into cream paper. Canonical values: vsrc-brand-board (1).html. */
+:root {
+  --background: #181616;
+  --foreground: #fffddb;
+  --card: #221f1f;
+  --card-foreground: #fffddb;
+  --muted: #2a2726;
+  --muted-foreground: #a89e8a;
+  --border: #35302f;
+  --input: #35302f;
+  --primary: #e02723;
+  --primary-foreground: #fffddb;
+  /* Display/decoration only — never behind small text. */
+  --signal: #ff3831;
+  --ring: #ff3831;
+  --radius: 8px;
+
+  /* Glass material layer ("bend the brand to glass"): panels are the one
+     place the board's flat-radius law is deliberately broken. */
+  --glass-tint: color-mix(in oklab, #221f1f 40%, transparent);
+  --glass-border: color-mix(in oklab, #fffddb 24%, transparent);
+  --glass-specular:
+    inset 0 1px 0 0 color-mix(in oklab, #fffddb 22%, transparent),
+    inset 0 0 12px 0 color-mix(in oklab, #fffddb 6%, transparent);
+  --glass-shadow: 0 24px 48px -20px rgb(0 0 0 / 0.55);
+  --glass-radius: 24px;
+}
+
+.light {
+  --background: #fbf7e4;
+  --foreground: #181616;
+  --card: #fffbea;
+  --card-foreground: #181616;
+  --muted: #f1ecd6;
+  --muted-foreground: #6b6353;
+  --border: #e3dcc2;
+  --input: #e3dcc2;
+  --primary: #e02723;
+  --primary-foreground: #fffddb;
+  --signal: #ff3831;
+  --ring: #e02723;
+
+  --glass-tint: color-mix(in oklab, #fffbea 35%, transparent);
+  --glass-border: color-mix(in oklab, #181616 18%, transparent);
+  --glass-specular:
+    inset 0 1px 0 0 color-mix(in oklab, #ffffff 55%, transparent),
+    inset 0 0 12px 0 color-mix(in oklab, #ffffff 12%, transparent);
+  --glass-shadow: 0 24px 48px -20px rgb(24 22 22 / 0.25);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-signal: var(--signal);
+  --color-ring: var(--ring);
+
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-display: var(--font-instrument-serif), ui-serif, serif;
+
+  --radius-DEFAULT: var(--radius);
+
+  --animate-marquee: marquee 48s linear infinite;
+  --animate-blob-a: blob-a 26s ease-in-out infinite alternate;
+  --animate-blob-b: blob-b 22s ease-in-out infinite alternate;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes blob-a {
+  from {
+    transform: translate(-8%, -12%) scale(1);
+  }
+  to {
+    transform: translate(10%, 14%) scale(1.25);
+  }
+}
+
+@keyframes blob-b {
+  from {
+    transform: translate(12%, 10%) scale(1.15);
+  }
+  to {
+    transform: translate(-10%, -8%) scale(0.9);
+  }
+}
+
+/* Instrument Serif ships one weight; faux-bold is a hairline text-stroke,
+   hero scale only (0.85px), headings 0.4px, never at small sizes. */
+.display-stroke {
+  -webkit-text-stroke: 0.85px currentColor;
+}
+.display-stroke-sm {
+  -webkit-text-stroke: 0.4px currentColor;
+}
+
+/* Film grain over everything (brand motif) — ~5% opacity, never interactive. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+::selection {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .animate-blob-a,
+  .animate-blob-b {
+    animation: none;
+  }
+}

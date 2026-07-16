@@ -1,0 +1,34 @@
+# dependencies
+node_modules/
+
+# builds
+dist/
+.next/
+out/
+.turbo/
+
+# tests
+coverage/
+playwright-report/
+test-results/
+blob-report/
+**/e2e/screenshots/
+
+# env & secrets
+.env
+.env.*
+!.env.example
+
+# AI tooling (local only)
+.claude/
+.agents/
+.impeccable/
+
+# design reference extractions (not part of the library)
+griflan-*
+
+# misc
+.DS_Store
+*.log
+.vercel
+*.tsbuildinfo

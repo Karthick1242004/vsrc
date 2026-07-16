@@ -1,0 +1,19 @@
+{
+  "name": "vsrc-monorepo",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "registry:build": "turbo run registry:build"
+  },
+  "devDependencies": {
+    "turbo": "^2.10.5",
+    "typescript": "^5.9.0"
+  },
+  "packageManager": "pnpm@11.10.0",
+  "engines": {
+    "node": ">=20"
+  }
+}

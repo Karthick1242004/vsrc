@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>vsrc refraction fixture</title>
+<style>
+  html, body { margin: 0; height: 100%; }
+  body {
+    display: grid;
+    place-items: center;
+    /* Busy multi-hue backdrop so displacement at the rim is visible in screenshots. */
+    background:
+      radial-gradient(40rem 40rem at 20% 20%, #ff3831 0%, transparent 60%),
+      radial-gradient(50rem 50rem at 80% 30%, #2563eb 0%, transparent 60%),
+      radial-gradient(45rem 45rem at 50% 90%, #fffddb 0%, transparent 55%),
+      repeating-linear-gradient(45deg, #181616 0 24px, #35302f 24px 48px);
+  }
+  #panel {
+    width: 340px;
+    height: 210px;
+    border-radius: 28px;
+    border: 1px solid rgba(255, 253, 219, 0.35);
+  }
+</style>
+</head>
+<body>
+<div id="panel"></div>
+<script type="module">
+  import { liquidGlass } from "../dist/index.js";
+  const instance = liquidGlass(document.getElementById("panel"));
+  window.__vsrcInstance = { mode: instance.mode, supported: instance.supported };
+</script>
+</body>
+</html>

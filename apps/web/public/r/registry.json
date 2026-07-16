@@ -1,0 +1,95 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "vsrc",
+  "homepage": "https://vsrc.vercel.app",
+  "items": [
+    {
+      "name": "theme",
+      "type": "registry:style",
+      "title": "V-/Src Theme",
+      "description": "V-/Src brand tokens (warm black, cream, two reds) plus the liquid-glass material layer. Dark is the default theme; `.light` opts into cream paper.",
+      "cssVars": {
+        "dark": {
+          "background": "#181616",
+          "foreground": "#fffddb",
+          "card": "#221f1f",
+          "card-foreground": "#fffddb",
+          "muted": "#2a2726",
+          "muted-foreground": "#a89e8a",
+          "border": "#35302f",
+          "input": "#35302f",
+          "primary": "#e02723",
+          "primary-foreground": "#fffddb",
+          "signal": "#ff3831",
+          "ring": "#ff3831",
+          "glass-tint": "color-mix(in oklab, #221f1f 40%, transparent)",
+          "glass-border": "color-mix(in oklab, #fffddb 24%, transparent)",
+          "glass-specular": "inset 0 1px 0 0 color-mix(in oklab, #fffddb 22%, transparent), inset 0 0 12px 0 color-mix(in oklab, #fffddb 6%, transparent)",
+          "glass-shadow": "0 24px 48px -20px rgb(0 0 0 / 0.55)",
+          "glass-radius": "24px"
+        },
+        "light": {
+          "background": "#fbf7e4",
+          "foreground": "#181616",
+          "card": "#fffbea",
+          "card-foreground": "#181616",
+          "muted": "#f1ecd6",
+          "muted-foreground": "#6b6353",
+          "border": "#e3dcc2",
+          "input": "#e3dcc2",
+          "primary": "#e02723",
+          "primary-foreground": "#fffddb",
+          "signal": "#ff3831",
+          "ring": "#e02723",
+          "glass-tint": "color-mix(in oklab, #fffbea 35%, transparent)",
+          "glass-border": "color-mix(in oklab, #181616 18%, transparent)",
+          "glass-specular": "inset 0 1px 0 0 color-mix(in oklab, #ffffff 55%, transparent), inset 0 0 12px 0 color-mix(in oklab, #ffffff 12%, transparent)",
+          "glass-shadow": "0 24px 48px -20px rgb(24 22 22 / 0.25)",
+          "glass-radius": "24px"
+        }
+      }
+    },
+    {
+      "name": "utils",
+      "type": "registry:lib",
+      "title": "Utils",
+      "description": "cn() — clsx merged through tailwind-merge.",
+      "dependencies": ["clsx", "tailwind-merge"],
+      "files": [
+        {
+          "path": "registry/vsrc/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "glass-surface",
+      "type": "registry:ui",
+      "title": "Glass Surface",
+      "description": "The refraction primitive every vsrc component builds on: a panel whose rim visibly bends the content behind it. Exports the shared glassMaterial classes.",
+      "dependencies": ["vsrc", "@radix-ui/react-slot"],
+      "registryDependencies": ["@vsrc/theme", "@vsrc/utils"],
+      "files": [
+        {
+          "path": "registry/vsrc/ui/glass-surface.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "button",
+      "type": "registry:ui",
+      "title": "Button",
+      "description": "Glass button with real refraction at the rim. Variants: default (clear glass), primary (red glass, one per view), ghost (no glass). asChild via Radix Slot.",
+      "dependencies": ["vsrc", "@radix-ui/react-slot", "class-variance-authority"],
+      "registryDependencies": ["@vsrc/glass-surface"],
+      "files": [
+        {
+          "path": "registry/vsrc/ui/button.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    }
+  ]
+}
