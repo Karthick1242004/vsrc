@@ -30,7 +30,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="en"
       className={`${geist.variable} ${geistMono.variable} ${instrumentSerif.variable}`}
+      // Next scrolls instantly on Link navigation unless told to honor the
+      // CSS smooth behavior (globals.css sets it, reduced-motion resets it).
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
     >
+      <head>
+        {/* Apply the stored theme before first paint — dark stays the default. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{localStorage.getItem("vsrc-theme")==="light"&&document.documentElement.classList.add("light")}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="bg-background font-sans text-foreground antialiased">
         <CursorProvider>
           <TooltipProvider delayDuration={200}>

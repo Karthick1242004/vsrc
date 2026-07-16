@@ -1,9 +1,10 @@
 # HANDOFF — vsrc (V-/Src) Liquid Glass Component Library
 
-> Last updated: 2026-07-16, after the first component (button) shipped end-to-end.
+> Last updated: 2026-07-16 (evening), after ALL 13 components + docs skeleton + glass
+> cursor shipped and pushed (`main` @ fd49b81, github.com/Karthick1242004/vsrc).
 > Read `PLAN.md` (the owner-approved plan) and `THINKING.md` (binding discipline) first.
-> **The component-authoring recipe for all remaining components is
-> `apps/web/registry/README.md` — follow it exactly, `button` is the reference.**
+> Component-authoring recipe: `apps/web/registry/README.md`; `button` is the reference
+> for simple surfaces, `dialog`/`switch` for the `<GlassSurface asChild>` Radix pattern.
 
 ## Goal
 
@@ -83,7 +84,12 @@ board markC in `components/site/monogram.tsx`. Not built: per-component doc page
 **Phase 6 — E2E verification suite: not started** (ad-hoc Playwright scripts cover the
 above; the fresh-consumer proof from Phase 3 is still the next verification task).
 
-## Files written (everything still uncommitted; branch `main` has zero commits)
+## Repo state (all committed AND pushed — github.com/Karthick1242004/vsrc)
+
+`main` @ `fd49b81`; tree clean. Owner runs every push themselves via
+`ALLOW_PUSH=1 git push` (pre-push guard blocks agents; never bypass). The site is
+deployed on Vercel (URL seen: `vsrc-weld.vercel.app`) — deploys are owner-run.
+The `griflan-*` files, `.claude/`, `.agents/` are deliberately gitignored.
 
 - Root: `package.json`, `pnpm-workspace.yaml` (allowBuilds: esbuild + sharp — required),
   `turbo.json`, `tsconfig.base.json`, `.gitignore`, `PLAN.md`, this file.
@@ -91,11 +97,17 @@ above; the fresh-consumer proof from Phase 3 is still the next verification task
   `useLiquidGlass(ref, options | false)` — `false` disables, added for ghost variants),
   `src/index.ts`, tests (`test/`), e2e proof (`e2e/` + `playwright.config.ts`,
   `@playwright/test` devDep), tsup/vitest configs, MIT LICENSE w/ upstream attribution.
-- `apps/web/` — Next 16 docs site + registry host: `app/{layout,page}.tsx`,
-  `app/globals.css` (tokens dark-default + `.light`, film grain, marquee/blob keyframes,
-  display-stroke utilities), `components/site/{refraction-field,code-block}.tsx`,
-  `registry/vsrc/{lib/utils.ts,ui/glass-surface.tsx,ui/button.tsx}`, `registry.json`,
-  `registry/README.md` (the pattern doc), `public/r/*.json` (built).
+- `apps/web/` — Next 16 docs site + registry host:
+  - `app/{layout,page.tsx}`, `app/components/page.tsx` (library page: sticky index,
+    13 demo sections, install commands), `app/globals.css` (tokens dark-default +
+    `.light`, film grain, marquee/blob/drift/glass-in keyframes, smooth scroll,
+    cursor:none rule, frosted dressing).
+  - `components/site/`: `refraction-field`, `code-block`, `lens-demo` (WebGL),
+    `monogram` (brand markC + red tile), `cursor` (provider + monogram/lens follower +
+    toggle), `site-header`, `site-footer`, `site-dock` (Dock as site nav).
+  - `registry/vsrc/lib/utils.ts` + `registry/vsrc/ui/` — all 13 components;
+    `registry.json`; `registry/README.md` (pattern doc); `public/r/*.json` (15 items,
+    committed per PLAN).
 - fable5 governance stack (THINKING/AGENTS/CLAUDE.md, `.claude/hooks/*`, git guards).
 
 ## Key decisions already made (don't re-litigate)
@@ -110,13 +122,26 @@ All PLAN.md §"Decisions locked" plus, from this session:
 - Button optics preset for small controls: scale −56, chroma 4, border 0.16, mapBlur 8.
 - Dark is the default theme (`:root`); `.light` class opts into cream paper.
 - Install-steps blocks stacked vertically (3-col clipped code at rest).
+- Frost tuned across four owner rounds — final: `fallbackBlur` 3 (buttons 2), tint
+  cream 4%, sheen peaks ≤8%, hairline rim. Owner is blur-sensitive; change only on ask.
+- Custom cursor: default = tilting monogram, LENS toggle (dock) = glass orb; the lens
+  over the footer wordmark technically distorts the mark — accepted as user-driven,
+  not layout (flagged, owner hasn't objected).
+- Toasts skip the displacement engine (they animate position); CSS material only.
 
 ## What Worked
 
 - Engine + workspace builds, registry build (`shadcn build` v4.13.0), Next 16 prerender.
 - e2e fixture (static HTML importing `dist/index.js` over `python3 -m http.server`).
 - Live-site verification script pattern (Playwright from `packages/vsrc` deps against
-  localhost:3000, asserting `data-vsrc-glass` values per browser).
+  localhost:3000, asserting `data-vsrc-glass` values per browser); the full interactive
+  sweep lives at the session scratchpad as `full-check.mjs` — recreate from HANDOFF
+  description if gone (landing modes, tooltip hover, cursor toggle, /components count,
+  dialog keyboard open/Escape, toast fire, per engine).
+- **Frosted visuals previewed via Chromium + Safari UA** (engine UA-sniffs → frosted;
+  Chromium paints backdrop-filter where Playwright WebKit can't).
+- `<GlassSurface asChild>` around Radix primitives — one hook path for all 13 components.
+- Reading a competitor's shadcn registry JSON (`/r/*.json`) for ground-truth analysis.
 
 ## What Didn't Work (do not repeat / re-debug)
 
@@ -139,16 +164,22 @@ All PLAN.md §"Decisions locked" plus, from this session:
 
 ## Next Steps (in order)
 
-1. **Owner checks the running site** (dev server: `pnpm --filter web dev`,
-   localhost:3000) — including the frosted look in real Safari.
-2. Commit proposal at this phase boundary (owner approves; hooks enforce).
-3. Fresh-consumer proof: scratch Next app outside the repo, registry served locally,
-   `npx shadcn add @vsrc/button`, `next build`, button refracts (PLAN.md §Verification 1).
-4. Components #5–#12 per `apps/web/registry/README.md` (owner plans a cheaper model).
-5. Per-component docs pages; then Phases 5–6 per PLAN.md.
+1. **Fresh-consumer proof** (PLAN.md §Verification 1, the biggest remaining gap):
+   scratch Next app OUTSIDE the repo, `components.json` registries →
+   `http://localhost:3000/r/{name}.json`, `npx shadcn add @vsrc/dialog` (pulls the
+   dependency chain), `next build` green, page refracts in Chromium. Note: registry
+   items reference npm package `vsrc` which is NOT published yet — the scratch app
+   needs a pnpm/file override to the local `packages/vsrc`, or publish first.
+2. Per-component docs pages (props tables, a11y notes) — PLAN Phase 5 completion.
+3. Light-theme toggle (`.light` class exists, tokens ready, no UI switch yet).
+4. Axe smoke + 60fps scroll sanity (PLAN §Verification 3–4).
+5. `npm publish --dry-run` for the engine package + README/CONTRIBUTING (Phase 6).
+6. Owner reminder: run `/playbook` (real code has landed; PLAYBOOK.md still absent).
 
 ## Open questions for the owner (none blocking)
 
-- npm name claiming (`vsrc`) timing — first publish does it.
-- Real domain purchase timing (registry URL swaps via `NEXT_PUBLIC_SITE_URL`).
-- GitHub repo URL for the header link (currently points at the owner's profile).
+- npm name claiming (`vsrc`) timing — first publish does it (blocks consumer-proof
+  without a local override, see Next Step 1).
+- Real domain purchase timing (registry URL swaps via `NEXT_PUBLIC_SITE_URL`; the
+  registry snippet on the landing page still says `vsrc.vercel.app` — actual deploy
+  observed at `vsrc-weld.vercel.app`).

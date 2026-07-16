@@ -1,6 +1,8 @@
 import Link from "next/link";
 
+import { MobileNav } from "@/components/site/mobile-nav";
 import { MonogramTile } from "@/components/site/monogram";
+import { ThemeToggle } from "@/components/site/theme-toggle";
 import { Button } from "@/registry/vsrc/ui/button";
 
 export function SiteHeader() {
@@ -14,14 +16,16 @@ export function SiteHeader() {
         </p>
       </Link>
       <nav className="flex items-center gap-2">
-        <Button variant="ghost" size="sm" asChild>
+        <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
           <Link href="/components">Components</Link>
         </Button>
-        <Button variant="ghost" size="sm" asChild>
+        <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
           <a href="https://github.com/Karthick1242004/vsrc" rel="noreferrer" target="_blank">
             GitHub
           </a>
         </Button>
+        <ThemeToggle />
+        <MobileNav />
       </nav>
     </header>
   );

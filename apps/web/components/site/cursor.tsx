@@ -90,8 +90,9 @@ function CursorFollower({ lens }: { lens: boolean }) {
         <GlassSurface
           // Key remounts the surface so the engine rebuilds for the circle.
           key="lens"
-          glass={{ scale: -48, chroma: 4, border: 0.22, mapBlur: 8, blur: 2, saturate: 1.5, fallbackBlur: 2 }}
-          className="size-16 rounded-full"
+          // Thin border fraction: the middle stays readable, the rim does the bending.
+          glass={{ scale: -56, chroma: 4, border: 0.14, mapBlur: 8, blur: 2, saturate: 1.5, fallbackBlur: 2 }}
+          className="size-24 rounded-full"
         />
       ) : (
         <span className="flex items-center text-foreground mix-blend-difference">
