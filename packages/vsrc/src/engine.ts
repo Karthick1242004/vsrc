@@ -59,7 +59,7 @@ const DEFAULTS: Required<LiquidGlassOptions> = {
   radius: null,
   // Barely-there frost (glasscn's Safari path is blur(4)): the backdrop must
   // stay vivid through the panel. Heavier blur turns thin content to fog.
-  fallbackBlur: 5,
+  fallbackBlur: 3,
 };
 
 export const DATA_ATTR = "data-vsrc-glass";
