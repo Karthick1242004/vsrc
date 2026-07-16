@@ -19,6 +19,8 @@ export const glassMaterial = cn(
   "relative isolate overflow-hidden",
   "border border-(--glass-border) bg-(--glass-tint)",
   "shadow-[var(--glass-shadow),var(--glass-specular)]",
+  // Frosted (WebKit / all iOS) can't refract — a stronger lens rim fakes it.
+  "data-[vsrc-glass=frosted]:shadow-[var(--glass-shadow),var(--glass-specular-frosted)]",
   "data-[vsrc-glass=reduced]:bg-card",
 );
 

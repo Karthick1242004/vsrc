@@ -26,6 +26,7 @@
           "glass-border": "color-mix(in oklab, #fffddb 24%, transparent)",
           "glass-specular": "inset 0 1px 0 0 color-mix(in oklab, #fffddb 22%, transparent), inset 0 0 12px 0 color-mix(in oklab, #fffddb 6%, transparent)",
           "glass-shadow": "0 24px 48px -20px rgb(0 0 0 / 0.55)",
+          "glass-specular-frosted": "inset 0 1px 0 0 color-mix(in oklab, #fffddb 38%, transparent), inset 0 0 0 1px color-mix(in oklab, #fffddb 14%, transparent), inset 0 14px 28px -14px color-mix(in oklab, #fffddb 12%, transparent), inset 0 -14px 28px -14px rgb(0 0 0 / 0.4)",
           "glass-radius": "24px"
         },
         "light": {
@@ -45,6 +46,7 @@
           "glass-border": "color-mix(in oklab, #181616 18%, transparent)",
           "glass-specular": "inset 0 1px 0 0 color-mix(in oklab, #ffffff 55%, transparent), inset 0 0 12px 0 color-mix(in oklab, #ffffff 12%, transparent)",
           "glass-shadow": "0 24px 48px -20px rgb(24 22 22 / 0.25)",
+          "glass-specular-frosted": "inset 0 1px 0 0 color-mix(in oklab, #ffffff 70%, transparent), inset 0 0 0 1px color-mix(in oklab, #ffffff 25%, transparent), inset 0 14px 28px -14px color-mix(in oklab, #ffffff 20%, transparent), inset 0 -14px 28px -14px rgb(24 22 22 / 0.18)",
           "glass-radius": "24px"
         }
       }
