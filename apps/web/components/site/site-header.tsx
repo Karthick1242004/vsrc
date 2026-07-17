@@ -14,11 +14,17 @@ export function SiteHeader() {
         <p className="font-display text-2xl text-foreground">
           <Wordmark />
           <span className="ml-3 align-middle font-mono text-xs text-muted-foreground">v0.1.0</span>
+          <span className="ml-2 align-middle rounded-full border border-border px-1.5 py-0.5 font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
+            beta
+          </span>
         </p>
       </Link>
       <nav className="flex items-center gap-2">
         <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
           <Link href="/components">Components</Link>
+        </Button>
+        <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
+          <Link href="/about">About</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
           <a href="https://github.com/Karthick1242004/vsrc" rel="noreferrer" target="_blank">

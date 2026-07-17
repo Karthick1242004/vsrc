@@ -23,7 +23,7 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "vsrc — liquid glass components for React",
+  title: "vsrc — liquid glass components for React (Beta)",
   description:
     "Open-source, shadcn-compatible React components with real refraction: a displacement-map optics engine bends what's behind the glass, not just blurs it.",
 };

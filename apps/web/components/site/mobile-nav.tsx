@@ -52,6 +52,11 @@ export function MobileNav() {
             </Link>
           </SheetClose>
           <SheetClose asChild>
+            <Link href="/about" className={linkClass}>
+              About &amp; beta
+            </Link>
+          </SheetClose>
+          <SheetClose asChild>
             <a
               href="https://github.com/Karthick1242004/vsrc"
               rel="noreferrer"
