@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import type { LiquidGlassOptions } from "vsrc/react";
+import type { GlassPreset, LiquidGlassOptions } from "vsrc/react";
 
 import { GlassSurface } from "@/registry/vsrc/ui/glass-surface";
 import { cn } from "@/lib/utils";
@@ -25,8 +25,13 @@ function DialogContent({
   className,
   children,
   glass,
+  showCloseButton = true,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Content> & { glass?: LiquidGlassOptions | false }) {
+}: React.ComponentProps<typeof DialogPrimitive.Content> & {
+  glass?: LiquidGlassOptions | GlassPreset | false;
+  /** The corner ✕. Off for surfaces that own their own chrome (e.g. the command palette). */
+  showCloseButton?: boolean;
+}) {
   return (
     <DialogPrimitive.Portal>
       <DialogOverlay />
@@ -41,17 +46,19 @@ function DialogContent({
           {...props}
         >
           {children}
-          <DialogPrimitive.Close
-            aria-label="Close"
-            className={cn(
-              "absolute top-4 right-4 rounded-full p-1.5 text-muted-foreground transition-colors",
-              "outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring",
-            )}
-          >
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="size-4">
-              <path d="M4 4l8 8M12 4l-8 8" />
-            </svg>
-          </DialogPrimitive.Close>
+          {showCloseButton && (
+            <DialogPrimitive.Close
+              aria-label="Close"
+              className={cn(
+                "absolute top-4 right-4 rounded-full p-1.5 text-muted-foreground transition-colors",
+                "outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring",
+              )}
+            >
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="size-4">
+                <path d="M4 4l8 8M12 4l-8 8" />
+              </svg>
+            </DialogPrimitive.Close>
+          )}
         </DialogPrimitive.Content>
       </GlassSurface>
     </DialogPrimitive.Portal>

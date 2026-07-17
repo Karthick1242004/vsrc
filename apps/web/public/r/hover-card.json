@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "hover-card",
+  "title": "Hover Card",
+  "description": "A glass panel that opens on hover or focus for a preview or profile.",
+  "dependencies": [
+    "vsrc",
+    "@radix-ui/react-hover-card"
+  ],
+  "registryDependencies": [
+    "@vsrc/glass-surface"
+  ],
+  "files": [
+    {
+      "path": "registry/vsrc/ui/hover-card.tsx",
+      "content": "\"use client\";\n\nimport * as React from \"react\";\nimport * as HoverCardPrimitive from \"@radix-ui/react-hover-card\";\nimport type { GlassPreset, LiquidGlassOptions } from \"vsrc/react\";\n\nimport { GlassSurface } from \"@/registry/vsrc/ui/glass-surface\";\nimport { cn } from \"@/lib/utils\";\n\nconst HoverCard = HoverCardPrimitive.Root;\nconst HoverCardTrigger = HoverCardPrimitive.Trigger;\n\nfunction HoverCardContent({\n  className,\n  align = \"center\",\n  sideOffset = 8,\n  glass,\n  ...props\n}: React.ComponentProps<typeof HoverCardPrimitive.Content> & { glass?: LiquidGlassOptions | GlassPreset | false }) {\n  return (\n    <HoverCardPrimitive.Portal>\n      <GlassSurface asChild glass={glass}>\n        <HoverCardPrimitive.Content\n          data-slot=\"hover-card-content\"\n          align={align}\n          sideOffset={sideOffset}\n          className={cn(\"animate-glass-in relative z-50 w-72 p-4 text-foreground outline-none\", className)}\n          {...props}\n        />\n      </GlassSurface>\n    </HoverCardPrimitive.Portal>\n  );\n}\n\nexport { HoverCard, HoverCardTrigger, HoverCardContent };\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

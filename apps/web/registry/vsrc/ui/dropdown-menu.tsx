@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
-import type { LiquidGlassOptions } from "vsrc/react";
+import type { GlassPreset, LiquidGlassOptions } from "vsrc/react";
 
 import { GlassSurface } from "@/registry/vsrc/ui/glass-surface";
 import { cn } from "@/lib/utils";
@@ -16,7 +16,7 @@ function DropdownMenuContent({
   sideOffset = 8,
   glass,
   ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Content> & { glass?: LiquidGlassOptions | false }) {
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Content> & { glass?: LiquidGlassOptions | GlassPreset | false }) {
   return (
     <DropdownMenuPrimitive.Portal>
       <GlassSurface asChild glass={glass}>

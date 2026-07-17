@@ -30,7 +30,20 @@
         "@media (prefers-reduced-motion: reduce)": {
           "[data-vsrc-glass=\"frosted\"]": {
             "animation": "none"
+          },
+          "[data-vsrc-specular]::before": {
+            "transition": "none"
           }
+        },
+        "[data-vsrc-specular]::before": {
+          "content": "\"\"",
+          "position": "absolute",
+          "inset": "0",
+          "border-radius": "inherit",
+          "pointer-events": "none",
+          "opacity": "var(--spec-o, 0)",
+          "background": "radial-gradient(140px circle at var(--spec-x, 50%) var(--spec-y, 50%), color-mix(in oklab, #fffddb 14%, transparent), transparent 70%)",
+          "transition": "opacity 0.25s ease"
         },
         "[data-vsrc-glass=\"frosted\"]::after": {
           "content": "\"\"",
@@ -155,6 +168,15 @@
       "files": [{ "path": "registry/vsrc/ui/input.tsx", "type": "registry:ui" }]
     },
     {
+      "name": "select",
+      "type": "registry:ui",
+      "title": "Select",
+      "description": "A glass trigger pill and floating glass panel. Radix keyboard navigation and typeahead intact.",
+      "dependencies": ["vsrc", "@radix-ui/react-select"],
+      "registryDependencies": ["@vsrc/glass-surface"],
+      "files": [{ "path": "registry/vsrc/ui/select.tsx", "type": "registry:ui" }]
+    },
+    {
       "name": "switch",
       "type": "registry:ui",
       "title": "Switch",
@@ -162,6 +184,15 @@
       "dependencies": ["vsrc", "@radix-ui/react-switch"],
       "registryDependencies": ["@vsrc/glass-surface"],
       "files": [{ "path": "registry/vsrc/ui/switch.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "slider",
+      "type": "registry:ui",
+      "title": "Slider",
+      "description": "A glass lens for a thumb: the rim bends a plain gradient track as it passes — the switch, inverted.",
+      "dependencies": ["vsrc", "@radix-ui/react-slider"],
+      "registryDependencies": ["@vsrc/glass-surface"],
+      "files": [{ "path": "registry/vsrc/ui/slider.tsx", "type": "registry:ui" }]
     },
     {
       "name": "tabs",
@@ -191,6 +222,15 @@
       "files": [{ "path": "registry/vsrc/ui/popover.tsx", "type": "registry:ui" }]
     },
     {
+      "name": "hover-card",
+      "type": "registry:ui",
+      "title": "Hover Card",
+      "description": "A glass panel that opens on hover or focus for a preview or profile.",
+      "dependencies": ["vsrc", "@radix-ui/react-hover-card"],
+      "registryDependencies": ["@vsrc/glass-surface"],
+      "files": [{ "path": "registry/vsrc/ui/hover-card.tsx", "type": "registry:ui" }]
+    },
+    {
       "name": "dropdown-menu",
       "type": "registry:ui",
       "title": "Dropdown Menu",
@@ -200,6 +240,15 @@
       "files": [{ "path": "registry/vsrc/ui/dropdown-menu.tsx", "type": "registry:ui" }]
     },
     {
+      "name": "context-menu",
+      "type": "registry:ui",
+      "title": "Context Menu",
+      "description": "A glass menu anchored to the pointer on right-click. Radix keyboard navigation intact.",
+      "dependencies": ["vsrc", "@radix-ui/react-context-menu"],
+      "registryDependencies": ["@vsrc/glass-surface"],
+      "files": [{ "path": "registry/vsrc/ui/context-menu.tsx", "type": "registry:ui" }]
+    },
+    {
       "name": "dialog",
       "type": "registry:ui",
       "title": "Dialog",
@@ -207,6 +256,15 @@
       "dependencies": ["vsrc", "@radix-ui/react-dialog"],
       "registryDependencies": ["@vsrc/glass-surface"],
       "files": [{ "path": "registry/vsrc/ui/dialog.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "alert-dialog",
+      "type": "registry:ui",
+      "title": "Alert Dialog",
+      "description": "A modal glass pane that forces a choice — Cancel or a single confirming action. Focus trap and escape from Radix.",
+      "dependencies": ["vsrc", "@radix-ui/react-alert-dialog"],
+      "registryDependencies": ["@vsrc/glass-surface"],
+      "files": [{ "path": "registry/vsrc/ui/alert-dialog.tsx", "type": "registry:ui" }]
     },
     {
       "name": "sheet",
@@ -225,6 +283,15 @@
       "dependencies": ["sonner"],
       "registryDependencies": ["@vsrc/glass-surface"],
       "files": [{ "path": "registry/vsrc/ui/toast.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "command",
+      "type": "registry:ui",
+      "title": "Command",
+      "description": "A cmdk command palette inside a glass Dialog. Type to filter; everything inside the pane is flat (no nested glass).",
+      "dependencies": ["vsrc", "cmdk"],
+      "registryDependencies": ["@vsrc/glass-surface", "@vsrc/dialog"],
+      "files": [{ "path": "registry/vsrc/ui/command.tsx", "type": "registry:ui" }]
     },
     {
       "name": "dock",

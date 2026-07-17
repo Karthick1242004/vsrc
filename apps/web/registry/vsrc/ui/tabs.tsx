@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
-import type { LiquidGlassOptions } from "vsrc/react";
+import { mergeGlass, type GlassPreset, type LiquidGlassOptions } from "vsrc/react";
 
 import { GlassSurface } from "@/registry/vsrc/ui/glass-surface";
 import { cn } from "@/lib/utils";
@@ -26,7 +26,7 @@ function TabsList({
   glass,
   children,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.List> & { glass?: LiquidGlassOptions | false }) {
+}: React.ComponentProps<typeof TabsPrimitive.List> & { glass?: LiquidGlassOptions | GlassPreset | false }) {
   const listRef = React.useRef<HTMLDivElement | null>(null);
   const [indicator, setIndicator] = React.useState<{ left: number; width: number } | null>(null);
 
@@ -52,7 +52,7 @@ function TabsList({
   }, []);
 
   return (
-    <GlassSurface asChild glass={glass === false ? false : { ...LIST_OPTICS, ...glass }}>
+    <GlassSurface asChild glass={mergeGlass(LIST_OPTICS, glass)}>
       <TabsPrimitive.List
         ref={listRef}
         data-slot="tabs-list"

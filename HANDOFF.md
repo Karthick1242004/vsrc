@@ -1,185 +1,177 @@
 # HANDOFF — vsrc (V-/Src) Liquid Glass Component Library
 
-> Last updated: 2026-07-16 (evening), after ALL 13 components + docs skeleton + glass
-> cursor shipped and pushed (`main` @ fd49b81, github.com/Karthick1242004/vsrc).
-> Read `PLAN.md` (the owner-approved plan) and `THINKING.md` (binding discipline) first.
+> Last updated: 2026-07-17, after the feature-batch session (fresh-consumer proof,
+> 6 new surfaces → 19 total, optics presets, node-driven glass hook, slider,
+> command palette + site-wide ⌘K, pointer-tracked specular, demo-tile word drift).
+> **Committed locally on `main` but NOT yet pushed** — run `! ALLOW_PUSH=1 git push`
+> yourself (pre-push guard blocks agents). The prior pushed commit is `7b9b207`.
+> Read `PLAN.md` (owner-approved plan) and `THINKING.md` (binding discipline) first.
 > Component-authoring recipe: `apps/web/registry/README.md`; `button` is the reference
-> for simple surfaces, `dialog`/`switch` for the `<GlassSurface asChild>` Radix pattern.
+> for simple surfaces, `dialog`/`switch`/`select` for the `<GlassSurface asChild>` pattern.
 
 ## Goal
 
 Build **vsrc**: an open-source, shadcn-registry-compatible React component library whose
 differentiator is **real refraction** (displacement-map `backdrop-filter`, not blur-only
-glassmorphism). Hybrid distribution: npm package `vsrc` = optics engine; 12 components
+glassmorphism). Hybrid distribution: npm package `vsrc` = optics engine; **19 components**
 delivered via shadcn registry namespace `@vsrc` hosted on the docs site (`vsrc.vercel.app`
-until a real domain). Full decision log + architecture + verification bar: **`PLAN.md`**.
+until a real domain; actual deploy observed at `vsrc-weld.vercel.app`). Full decision log +
+architecture + verification bar: **`PLAN.md`**.
 
 Brand: **V-/Src** — canonical source is `vsrc-brand-board (1).html` in repo root
 (warm black #181616 / cream #fffddb, two reds #e02723 fill vs #ff3831 display-only,
 Instrument Serif + Geist + Geist Mono). The `griflan-*` files are the raw extraction;
 the board wins on conflict. Owner chose **"bend the brand to glass"**: the docs site is
-built FROM the glass components. Mark/wordmark hygiene stays absolute (wordmark is never
-placed behind glass — glass distorts).
+built FROM the glass components. Mark hygiene stays absolute (mark/wordmark never placed
+behind glass — glass distorts). Wordmark `-/` is signal red (owner override, prior session).
 
-## Current Progress (phase status)
+## This session (feature batch — all verified in Chromium via Playwright)
 
-**Phase 1 — Scaffold: DONE, verified.** Root `pnpm build` (turbo) green 2026-07-16.
+Root `pnpm build` (turbo: engine + site) green; `pnpm --filter web lint` (tsc) clean;
+**17/17 vitest** (was 11 — +6 for presets). `pnpm registry:build` → **22** `public/r/*.json`
+(theme + utils + registry.json + 19 ui). Every proof below was a Playwright run against the
+local dev server asserting `data-vsrc-glass="refract"` (see What Worked).
 
-**Phase 2 — Engine: DONE, verified.** 11/11 vitest green (SSR 3/3 + DOM 8/8).
-Playwright e2e proof green in both browsers (`packages/vsrc/e2e/`,
-`cd packages/vsrc && npx playwright test`): Chromium → `data-vsrc-glass="refract"` +
-`backdrop-filter: url("#vsrc-lg-N")` with the SVG filter in the DOM; WebKit →
-`"frosted"` blur fallback. Screenshots in `packages/vsrc/e2e/screenshots/` (gitignored).
+1. **Fresh-consumer proof — DONE** (PLAN §Verification 1, the long-standing biggest gap).
+   Scratch Next app OUTSIDE the repo (in the session scratchpad, never the repo):
+   `pnpm pack` the local engine → `vsrc-0.1.0.tgz`, pin it via a pnpm **override** in the
+   scratch `pnpm-workspace.yaml` (package.json `pnpm.overrides` is IGNORED by pnpm 11 —
+   the direct `file:` dep + workspace override are what actually pin it), serve the registry
+   from `localhost:3000`, `npx shadcn add @vsrc/dialog` → pulled dialog + glass-surface +
+   utils + theme tokens + npm deps, `next build` green, Playwright `1 passed` (surface +
+   dialog both refract). See What Didn't Work for the two gotchas (base-nova style; offline
+   colors).
+2. **6 new surfaces (13 → 19).** `select`, `alert-dialog`, `context-menu`, `hover-card`
+   (clone the existing panel/modal patterns), `slider` (glass **lens thumb** over a plain
+   gradient track — the switch inverted), `command` (cmdk inside a glass Dialog). Each: a
+   `registry/vsrc/ui/<name>.tsx`, a `registry.json` item, a docs section + demo, an entry in
+   `components/site/component-index.ts`. `COMPONENT_INDEX.length` now drives every on-page
+   count (no more literal "Thirteen").
+3. **Optics presets.** `GLASS_PRESETS` (`subtle`/`regular`/`heavy`) + `mergeGlass(base, glass)`
+   live in `packages/vsrc/src/engine.ts` (re-exported from `vsrc` and `vsrc/react`). Every
+   component's `glass` prop widened to `LiquidGlassOptions | GlassPreset | false`; merging
+   components now call `mergeGlass(<NAME>_OPTICS, glass)` — **never spread `glass` directly**,
+   a preset string would scatter into indexed chars. `liquidGlass(el, "heavy")` and
+   `useLiquidGlass(node, "subtle")` both accept the string. Dogfooded: the hover-card demo
+   uses `glass="subtle"`.
+4. **Node-driven `useLiquidGlass` (bug fix).** The hook now takes the **element** (held in
+   `useState`), not a ref object, and keys its effect on the node. Fixes a real bug: Radix
+   **Select** mounts its content a commit AFTER the wrapping `GlassSurface`, so the old
+   ref-read-once effect never applied refraction (select-content came back with no
+   `data-vsrc-glass`). Swept `button`/`input`/`glass-surface` + the package primitive.
+5. **Command palette + site-wide ⌘K.** `components/site/command-menu.tsx` is mounted once in
+   `layout.tsx`; ⌘K/Ctrl+K opens the registry `command` surface listing all 19 components +
+   site links + a theme toggle. `DialogContent` gained a backward-compatible
+   `showCloseButton?: boolean` (default true) so the palette drops the corner ✕.
+   `theme-toggle.tsx` now exports a shared `toggleTheme()` (dispatches a `vsrc:themechange`
+   event so the header icon and palette stay in sync).
+6. **Pointer-tracked specular.** Opt-in `<GlassSurface specular="pointer">` (material layer,
+   NOT the engine): an rAF-throttled pointermove writes `--spec-x/-y/-o`, read by a
+   `[data-vsrc-specular]::before` cream glare. Fine pointers only, inert under reduced motion,
+   OFF by default (only the glass-surface hero demo enables it). CSS lives in BOTH
+   `globals.css` AND the `theme` registry item's `css` (kept in lockstep).
+7. **Demo-tile word drift.** The giant word behind each demo tile now animates
+   (`word-drift`, **8s** ease-in-out alternate, reduced-motion off) so the refraction reads
+   on a static tile. `DemoTile` is the one shared component (word-as-prop); not forked.
 
-**Phase 3 — Tokens + first components: IN PROGRESS, first component shipped.**
-Done and verified live: registry items `theme` (brand + glass cssVars, dark default +
-light), `utils` (cn), `glass-surface` (styled primitive, exports shared `glassMaterial`),
-`button` (variants default/primary/ghost, sizes sm/default/lg/icon, asChild, per-size
-optics preset, `glass: false` opt-out). `pnpm registry:build` in `apps/web` green →
-`public/r/{theme,utils,glass-surface,button}.json`. Docs site (`apps/web`, Next 16.2.10 +
-Tailwind v4) scaffolded with brand landing page; `next build` green (SSR-safety proven by
-prerender); live check: 7 glass elements `refract` in Chromium / `frosted` in WebKit,
-ghost button carries no glass attribute. Frosted material is CLEAR glass benchmarked
-against glasscn (whose Safari path is also just blur — verified by reading their
-registry source; they don't refract there either): engine `fallbackBlur` 16→6,
-near-transparent `--glass-tint-frosted`, single top specular, and a 1px directional
-hairline rim (`[data-vsrc-glass=frosted]::after`, light streak top/bottom + dark
-streak sides, corner fades) in globals + the theme item's `css` field. Primary stays
-red in frosted via an explicit re-override. Frosted is a UNIFORM frost — an
-edge-band experiment read as a thick border and was removed (owner rejected it twice;
-don't reintroduce). Recipe (after glasscn, MIT — their demo cards' Safari path is just
-blur(4)+hairline): `fallbackBlur` 5 (buttons 4), tint cream 4%, FAINT drifting radial
-sheens (`glass-drift` 18s, reduced-motion honored; peaks ≤8% — stacked cream reads as
-milk, owner rejected), subtle fish-eye + side rails in `--glass-specular-frosted`,
-1px directional hairline rim. All frosted dressing lives in globals + the theme item's
-`css` field. Frosted VISUALS are verified by
-screenshotting Chromium with a Safari user agent (engine sniffs UA → frosted, and
-Chromium paints backdrop-filter where Playwright WebKit can't). Non-refracting
-browsers also get a press-to-open **WebGL refraction demo** (`components/site/lens-demo.tsx`,
-gated on `!canRefract()`, `?lens=demo` forces it for testing) — verified painting in
-Playwright WebKit + Chromium.
-**Remaining in Phase 3:** the fresh-consumer proof (scratch Next app outside the repo,
-`npx shadcn add @vsrc/button` against the locally-served registry) — not yet run.
+**Still NOT built:** per-component doc pages (props/a11y tables) — the remaining Phase 5 gap.
+README/CONTRIBUTING + `npm publish --dry-run` unwritten (Phase 6). Axe smoke + 60fps perf
+sanity not run.
 
-**Phase 4 — remaining components: DONE, verified.** All 13 shipped: card, input, switch,
-tabs, tooltip, popover, dropdown-menu, dialog, sheet, toast (sonner, CSS-material only —
-toasts animate position), dock. Pattern: portaled/asChild surfaces compose
-`<GlassSurface asChild>` around the Radix primitive. **Positioning gotcha (cost a debug
-round): `glassMaterial` deliberately has NO position class — Slot concatenation made
-`relative` beat `fixed` in the cascade and dialogs rendered in flow. asChild consumers
-must position themselves (`relative` for popover/tooltip/menu content, `fixed` dialogs/
-sheets/dock); overriding the dock's `fixed` needs `static!`.** Verified in both engines:
-19 glass elements on /components all refract (Chromium) / frost (WebKit), dialog opens
-via keyboard + Escape closes + focus trapped, tooltip on hover, toast fires.
+## Repo state (committed locally on `main`, NOT pushed)
 
-**Phase 5 — docs site: PARTIAL.** Library skeleton done: shared header (monogram tile +
-wordmark), giant-wordmark footer, floating glass Dock as site nav (dogfooding dock/
-tooltip/switch), `/components` page (sticky index + 13 demo sections + install commands),
-smooth scroll (reduced-motion aware), site-wide custom cursor (`components/site/cursor.tsx`,
-fine pointers only): default = tilting -/ monogram mark, dock LENS switch toggles a
-64px glass-orb cursor running the real engine (localStorage-persisted). Monogram = brand
-board markC in `components/site/monogram.tsx`. Not built: per-component doc pages
-(props/a11y tables), light-theme toggle.
+Owner runs every push via `! ALLOW_PUSH=1 git push` (pre-push guard blocks agents; never
+bypass, never set ALLOW_PUSH yourself). Deploys are owner-run on Vercel. `griflan-*`,
+`.claude/`, `.agents/` are gitignored. **`apps/web/next-env.d.ts` gets rewritten by
+`pnpm dev`** — never stage it (it stayed clean this session).
 
-**Phase 6 — E2E verification suite: not started** (ad-hoc Playwright scripts cover the
-above; the fresh-consumer proof from Phase 3 is still the next verification task).
+New this session:
+- Files: `registry/vsrc/ui/{select,alert-dialog,context-menu,hover-card,slider,command}.tsx`,
+  `components/site/command-menu.tsx`.
+- Deps (`apps/web`): `@radix-ui/react-{select,alert-dialog,context-menu,hover-card,slider}`,
+  `cmdk`.
+- Engine (`packages/vsrc`): `GLASS_PRESETS`, `mergeGlass`, `GlassPreset` added; hook + primitive
+  made node-driven; +6 vitest cases.
 
-## Repo state (all committed AND pushed — github.com/Karthick1242004/vsrc)
-
-`main` @ `fd49b81`; tree clean. Owner runs every push themselves via
-`ALLOW_PUSH=1 git push` (pre-push guard blocks agents; never bypass). The site is
-deployed on Vercel (URL seen: `vsrc-weld.vercel.app`) — deploys are owner-run.
-The `griflan-*` files, `.claude/`, `.agents/` are deliberately gitignored.
-
-- Root: `package.json`, `pnpm-workspace.yaml` (allowBuilds: esbuild + sharp — required),
-  `turbo.json`, `tsconfig.base.json`, `.gitignore`, `PLAN.md`, this file.
-- `packages/vsrc/` — engine (`src/engine.ts`), react layer (`src/react.tsx`:
-  `useLiquidGlass(ref, options | false)` — `false` disables, added for ghost variants),
-  `src/index.ts`, tests (`test/`), e2e proof (`e2e/` + `playwright.config.ts`,
-  `@playwright/test` devDep), tsup/vitest configs, MIT LICENSE w/ upstream attribution.
-- `apps/web/` — Next 16 docs site + registry host:
-  - `app/{layout,page.tsx}`, `app/components/page.tsx` (library page: sticky index,
-    13 demo sections, install commands), `app/globals.css` (tokens dark-default +
-    `.light`, film grain, marquee/blob/drift/glass-in keyframes, smooth scroll,
-    cursor:none rule, frosted dressing).
-  - `components/site/`: `refraction-field`, `code-block`, `lens-demo` (WebGL),
-    `monogram` (brand markC + red tile), `cursor` (provider + monogram/lens follower +
-    toggle), `site-header`, `site-footer`, `site-dock` (Dock as site nav).
-  - `registry/vsrc/lib/utils.ts` + `registry/vsrc/ui/` — all 13 components;
-    `registry.json`; `registry/README.md` (pattern doc); `public/r/*.json` (15 items,
-    committed per PLAN).
-- fable5 governance stack (THINKING/AGENTS/CLAUDE.md, `.claude/hooks/*`, git guards).
+Layout: `packages/vsrc/` = engine (`src/{engine,react,index}.ts`, tests, MIT LICENSE).
+`apps/web/` = Next 16 docs site + registry host: `app/{layout,page}.tsx`,
+`app/components/page.tsx`, `app/globals.css`; `components/site/*`; `registry/vsrc/lib/utils.ts`
++ `registry/vsrc/ui/*` (19); `registry.json`; `registry/README.md`; `public/r/*.json`.
 
 ## Key decisions already made (don't re-litigate)
 
-All PLAN.md §"Decisions locked" plus, from this session:
-- Brand tokens written as **hex** (not oklch) — board values are hex; no hand-conversion.
-- Glass tokens shipped: `--glass-tint/-border/-specular/-shadow/-radius`. PLAN's
-  `--glass-tint-opacity/-blur/-saturate` NOT created — the engine sets blur/saturate
-  inline; dead tokens omitted deliberately.
-- Registry ui imports use `@/registry/vsrc/...` form (shadcn CLI rewrites on add);
-  app tsconfig maps `@/lib/utils` → `registry/vsrc/lib/utils`.
-- Button optics preset for small controls: scale −56, chroma 4, border 0.16, mapBlur 8.
-- Dark is the default theme (`:root`); `.light` class opts into cream paper.
-- Install-steps blocks stacked vertically (3-col clipped code at rest).
-- Frost tuned across four owner rounds — final: `fallbackBlur` 3 (buttons 2), tint
-  cream 4%, sheen peaks ≤8%, hairline rim. Owner is blur-sensitive; change only on ask.
-- Custom cursor: default = tilting monogram, LENS toggle (dock) = glass orb; the lens
-  over the footer wordmark technically distorts the mark — accepted as user-driven,
-  not layout (flagged, owner hasn't objected).
-- Toasts skip the displacement engine (they animate position); CSS material only.
+Prior sessions: hex tokens; glass tokens `--glass-*`; button optics scale −56/chroma 4/
+border 0.16/mapBlur 8; dark default; toasts CSS-only; frost tuned (fallbackBlur 3 / buttons 2,
+tint cream 4%, sheen ≤8%, owner blur-sensitive — change only on ask; edge-band frost REJECTED
+twice); wordmark `-/` signal red; hero = two CTAs; installation on /components; Lenis wheel-only.
+This session:
+- **Preset values** (`subtle`/`regular`/`heavy`) tuned from existing per-component optics;
+  `regular` = engine DEFAULTS. A **string preset REPLACES** a component's optics; an **object
+  merges over** them; `false` disables.
+- **Specular is a registry material-layer feature** (`specular="pointer"`), NOT an engine API —
+  the engine owns optics only. Default OFF everywhere (adds a pointermove listener).
+- **Slider** v1 maps N thumbs (multi-value ready); `blur:0` lens (bend, don't fog).
+- **`DialogContent` gained `showCloseButton`** (upstream-shadcn pattern) for the palette.
+- On-page component counts render from `COMPONENT_INDEX.length`, not literals.
+- Demo-tile word drift is 8s (owner asked to speed it up from the initial 12s).
 
 ## What Worked
 
-- Engine + workspace builds, registry build (`shadcn build` v4.13.0), Next 16 prerender.
-- e2e fixture (static HTML importing `dist/index.js` over `python3 -m http.server`).
-- Live-site verification script pattern (Playwright from `packages/vsrc` deps against
-  localhost:3000, asserting `data-vsrc-glass` values per browser); the full interactive
-  sweep lives at the session scratchpad as `full-check.mjs` — recreate from HANDOFF
-  description if gone (landing modes, tooltip hover, cursor toggle, /components count,
-  dialog keyboard open/Escape, toast fire, per engine).
-- **Frosted visuals previewed via Chromium + Safari UA** (engine UA-sniffs → frosted;
-  Chromium paints backdrop-filter where Playwright WebKit can't).
-- `<GlassSurface asChild>` around Radix primitives — one hook path for all 13 components.
-- Reading a competitor's shadcn registry JSON (`/r/*.json`) for ground-truth analysis.
+- **Live-site verification via Playwright** run from the scratch consumer app's deps
+  (`@playwright/test`) against `localhost:3000`. Assert `data-vsrc-glass` per surface. For
+  portaled Radix content, open it (click/hover/right-click) then read the attribute on
+  `[data-slot="<name>-content"]`. For pointer effects use `locator.hover()` (its actionable
+  pointer path) — raw `page.mouse.move` to computed coords sometimes misses under Lenis.
+- Detached dev server via Bash `run_in_background: true`; poll `curl` in an until-loop.
+- `<GlassSurface asChild>` around a Radix pane — one path for all portaled surfaces.
+- The lens-cursor pattern proves moving glass is cheap: Radix moves a thumb via a wrapper's
+  `left`, the thumb's box never changes, so the engine's ResizeObserver never regenerates the
+  displacement map mid-drag (verified: slider map href unchanged across a position change).
 
 ## What Didn't Work (do not repeat / re-debug)
 
-- **Playwright's WebKit computes but does NOT PAINT backdrop-filter** (verified: inline +
-  computed styles correct, `CSS.supports` true, zero visual blur even headed, in a
-  minimal page). Frosted VISUALS must be eyeballed in real Safari; assert the attribute
-  and style in tests, never the pixels, in WebKit.
-- **WebKit misplaces `feImage` x/y inside SVG filters** (probed: full-region map at 0,0
-  still renders shifted) — SVG-filter displacement is unreliable on WebKit. That's why
-  the sandbox demo (`apps/web/components/site/lens-demo.tsx`) is WebGL, which paints
-  identically in all engines (verified by screenshot). Note: reading WebGL canvas pixels
-  via drawImage returns blank without `preserveDrawingBuffer` — screenshot instead.
-- Chromium CSSOM serializes `url(#id)` as `url("#id")` — match `/url\("?#vsrc-lg-/`.
-- pnpm 11 blocks postinstall scripts (`esbuild`, then `sharp`) → `allowBuilds` in
-  `pnpm-workspace.yaml`; on a blocked install pnpm APPENDS a placeholder line
-  (`sharp: set this to true or false`) into the yaml — remove/replace it, don't just add.
-- jsdom quirks (no `CSS` global; `style.backdropFilter` reads back undefined;
-  border-radius shorthand not expanded) — engine guard + test conventions handle these.
+- **shadcn's default `base-nova` (Base UI) style BREAKS the install.** Its `asChild`→`render`
+  codemod rewrites `<GlassSurface>` callers but leaves `GlassSurface` implementing Radix
+  `asChild` → `next build` type-fails on a `render` prop. Install with a **Radix style
+  (`new-york`)** — that's what the fresh-consumer proof used. Fix later: a compat note or a
+  `render`-accepting shim.
+- **This machine can't reach `ui.shadcn.com`** (npm registry is allowlisted, ui.shadcn.com is
+  not; `curl` → 000). `shadcn add`/`init` fetch `.../colors/neutral.json` for base colors and
+  hang. Workaround: serve a minimal synthetic `neutral.json`
+  (`{inlineColors:{light:{},dark:{}}, cssVars:{...}, cssVarsV4:{...}, inlineColorsTemplate:"",
+  cssVarsTemplate:""}`) on a local port and set `REGISTRY_URL=http://localhost:PORT/r`
+  (`@vsrc` still resolves via components.json). A real online user never hits this.
+- **pnpm 11 ignores `pnpm.overrides` in package.json** — the new home is `pnpm-workspace.yaml`
+  `overrides:`. Also blocks postinstall scripts (`sharp` in a fresh Next app) — set
+  `allowBuilds: { sharp: true }` in the scratch `pnpm-workspace.yaml`; pnpm APPENDS a
+  placeholder line on a blocked install, replace it.
+- **Radix Select mounts content a commit after the wrapping surface** → a ref-read-once glass
+  hook misses it. This is why `useLiquidGlass` is now node-driven (element in state). Any
+  future deferred-mount surface is covered by this.
+- **Turbopack dev cache serves STALE CSS** after editing `globals.css` — `rm -rf apps/web/.next`
+  and restart dev to pick up new rules.
+- **Playwright's WebKit computes but does NOT PAINT backdrop-filter** — assert the attribute /
+  computed style, never pixels. Chromium CSSOM serializes `url(#id)` as `url("#id")`; computed
+  colors come back `oklab(...)`.
 - The user's HOME is itself a git repo — always operate with cwd inside the project.
 
 ## Next Steps (in order)
 
-1. **Fresh-consumer proof** (PLAN.md §Verification 1, the biggest remaining gap):
-   scratch Next app OUTSIDE the repo, `components.json` registries →
-   `http://localhost:3000/r/{name}.json`, `npx shadcn add @vsrc/dialog` (pulls the
-   dependency chain), `next build` green, page refracts in Chromium. Note: registry
-   items reference npm package `vsrc` which is NOT published yet — the scratch app
-   needs a pnpm/file override to the local `packages/vsrc`, or publish first.
-2. Per-component docs pages (props tables, a11y notes) — PLAN Phase 5 completion.
-3. Light-theme toggle (`.light` class exists, tokens ready, no UI switch yet).
-4. Axe smoke + 60fps scroll sanity (PLAN §Verification 3–4).
-5. `npm publish --dry-run` for the engine package + README/CONTRIBUTING (Phase 6).
-6. Owner reminder: run `/playbook` (real code has landed; PLAYBOOK.md still absent).
+1. **Push** this session's local commit: `! ALLOW_PUSH=1 git push`.
+2. **Per-component docs pages** (props tables, a11y notes) — the remaining Phase 5 gap.
+3. **Axe smoke + 60fps perf sanity** (PLAN §Verification 3–4) — now with loader, Lenis,
+   reveals, drift, and the ⌘K listener all live.
+4. **Publish prep** (Phase 6): `npm publish --dry-run` for the engine + README/CONTRIBUTING.
+   Publishing claims the `vsrc` npm name and unblocks a consumer proof without the local
+   tarball override. NOTE: the Phase-0 tarball predates the preset/node-hook changes — re-pack
+   before a fresh proof.
+5. Optional: re-prove a NEW surface (e.g. `select`) in a consumer to exercise the deferred-mount
+   fix end-to-end through `shadcn add`.
+6. Run `/playbook` (PLAYBOOK.md still absent).
 
 ## Open questions for the owner (none blocking)
 
-- npm name claiming (`vsrc`) timing — first publish does it (blocks consumer-proof
-  without a local override, see Next Step 1).
-- Real domain purchase timing (registry URL swaps via `NEXT_PUBLIC_SITE_URL`; the
-  registry snippet on the landing page still says `vsrc.vercel.app` — actual deploy
-  observed at `vsrc-weld.vercel.app`).
+- **base-nova compatibility**: document "use a Radix style", or ship a `render`-accepting shim?
+- Hero CTA copy still shipped as **"Get started"** (vs literal "Getting Started").
+- npm name claiming (`vsrc`) timing; real domain timing (`NEXT_PUBLIC_SITE_URL`; snippet still
+  says `vsrc.vercel.app`, deploy at `vsrc-weld.vercel.app`).

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 
+import { CommandMenu } from "@/components/site/command-menu";
 import { CursorProvider } from "@/components/site/cursor";
 import { SiteLoader } from "@/components/site/loader";
 import { SmoothScroll } from "@/components/site/smooth-scroll";
@@ -55,6 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <SiteFooter />
             <SiteDock />
             <Toaster />
+            <CommandMenu />
           </TooltipProvider>
         </CursorProvider>
       </body>

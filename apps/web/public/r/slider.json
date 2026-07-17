@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "slider",
+  "title": "Slider",
+  "description": "A glass lens for a thumb: the rim bends a plain gradient track as it passes — the switch, inverted.",
+  "dependencies": [
+    "vsrc",
+    "@radix-ui/react-slider"
+  ],
+  "registryDependencies": [
+    "@vsrc/glass-surface"
+  ],
+  "files": [
+    {
+      "path": "registry/vsrc/ui/slider.tsx",
+      "content": "\"use client\";\n\nimport * as React from \"react\";\nimport * as SliderPrimitive from \"@radix-ui/react-slider\";\nimport { mergeGlass, type GlassPreset, type LiquidGlassOptions } from \"vsrc/react\";\n\nimport { GlassSurface } from \"@/registry/vsrc/ui/glass-surface\";\nimport { cn } from \"@/lib/utils\";\n\n// A small, strong lens: the switch inverted. The track carries the colour and\n// the thumb is the glass, so blur is 0 — the lens must bend the track crisply,\n// not fog it. Dragging only moves the thumb's position (Radix sets `left` on a\n// wrapper), never its box, so the engine's ResizeObserver never regenerates the\n// displacement map mid-drag — the same reason the site's lens cursor is cheap.\nconst THUMB_OPTICS: LiquidGlassOptions = {\n  scale: -72,\n  chroma: 5,\n  border: 0.18,\n  mapBlur: 5,\n  blur: 0,\n  saturate: 1.5,\n  fallbackBlur: 1,\n};\n\nfunction Slider({\n  className,\n  glass,\n  defaultValue,\n  value,\n  ...props\n}: React.ComponentProps<typeof SliderPrimitive.Root> & {\n  glass?: LiquidGlassOptions | GlassPreset | false;\n}) {\n  const thumbCount = React.useMemo(() => {\n    if (Array.isArray(value)) return value.length;\n    if (Array.isArray(defaultValue)) return defaultValue.length;\n    return 1;\n  }, [value, defaultValue]);\n\n  return (\n    <SliderPrimitive.Root\n      data-slot=\"slider\"\n      defaultValue={defaultValue}\n      value={value}\n      className={cn(\n        \"relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50\",\n        className,\n      )}\n      {...props}\n    >\n      {/* A coloured, ticked track so the lens has something to bend — signal red\n          is decoration here (no text sits on it). */}\n      <SliderPrimitive.Track\n        data-slot=\"slider-track\"\n        className=\"relative h-2 w-full grow overflow-hidden rounded-full\"\n        style={{\n          background:\n            \"linear-gradient(90deg, color-mix(in oklab, var(--primary) 70%, transparent), color-mix(in oklab, var(--signal) 55%, transparent) 55%, color-mix(in oklab, var(--foreground) 28%, transparent)), repeating-linear-gradient(90deg, transparent 0 13px, color-mix(in oklab, var(--foreground) 30%, transparent) 13px 14px)\",\n        }}\n      >\n        <SliderPrimitive.Range data-slot=\"slider-range\" className=\"absolute h-full bg-foreground/15\" />\n      </SliderPrimitive.Track>\n      {Array.from({ length: thumbCount }, (_, i) => (\n        <GlassSurface asChild glass={mergeGlass(THUMB_OPTICS, glass)} key={i}>\n          <SliderPrimitive.Thumb\n            data-slot=\"slider-thumb\"\n            className={cn(\n              \"relative block size-7 rounded-full outline-none\",\n              \"transition-[border-color] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background\",\n              \"disabled:pointer-events-none\",\n            )}\n          />\n        </GlassSurface>\n      ))}\n    </SliderPrimitive.Root>\n  );\n}\n\nexport { Slider };\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

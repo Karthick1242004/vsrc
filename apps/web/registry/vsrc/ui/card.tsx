@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import type { LiquidGlassOptions } from "vsrc/react";
+import type { GlassPreset, LiquidGlassOptions } from "vsrc/react";
 
 import { GlassSurface } from "@/registry/vsrc/ui/glass-surface";
 import { cn } from "@/lib/utils";
@@ -10,7 +10,7 @@ function Card({
   className,
   glass,
   ...props
-}: React.ComponentProps<"div"> & { glass?: LiquidGlassOptions | false }) {
+}: React.ComponentProps<"div"> & { glass?: LiquidGlassOptions | GlassPreset | false }) {
   return (
     <GlassSurface
       data-slot="card"

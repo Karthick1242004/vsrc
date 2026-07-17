@@ -1,16 +1,22 @@
-/** The 13 registry surfaces, in docs order — shared by the components page and the mobile nav. */
+/** The registry surfaces, in docs order — shared by the components page and the mobile nav. */
 export const COMPONENT_INDEX = [
   "glass-surface",
   "button",
   "card",
   "input",
+  "select",
   "switch",
+  "slider",
   "tabs",
   "tooltip",
   "popover",
+  "hover-card",
   "dropdown-menu",
+  "context-menu",
   "dialog",
+  "alert-dialog",
   "sheet",
+  "command",
   "toast",
   "dock",
 ];

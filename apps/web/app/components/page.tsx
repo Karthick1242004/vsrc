@@ -7,6 +7,17 @@ import { COMPONENT_INDEX } from "@/components/site/component-index";
 import { Monogram } from "@/components/site/monogram";
 import { RefractionField } from "@/components/site/refraction-field";
 import { Reveal } from "@/components/site/reveal";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/registry/vsrc/ui/alert-dialog";
 import { Button } from "@/registry/vsrc/ui/button";
 import {
   Card,
@@ -16,6 +27,22 @@ import {
   CardHeader,
   CardTitle,
 } from "@/registry/vsrc/ui/card";
+import {
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/registry/vsrc/ui/command";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/registry/vsrc/ui/context-menu";
 import {
   Dialog,
   DialogClose,
@@ -36,8 +63,22 @@ import {
   DropdownMenuTrigger,
 } from "@/registry/vsrc/ui/dropdown-menu";
 import { GlassSurface } from "@/registry/vsrc/ui/glass-surface";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/registry/vsrc/ui/hover-card";
 import { Input } from "@/registry/vsrc/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/registry/vsrc/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/registry/vsrc/ui/select";
 import {
   Sheet,
   SheetContent,
@@ -46,6 +87,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/registry/vsrc/ui/sheet";
+import { Slider } from "@/registry/vsrc/ui/slider";
 import { Switch } from "@/registry/vsrc/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/registry/vsrc/ui/tabs";
 import { toast } from "@/registry/vsrc/ui/toast";
@@ -69,23 +111,52 @@ const SECTIONS: { id: string; title: string; word: string; blurb: string }[] = [
   { id: "button", title: "Button", word: "press", blurb: "Clear glass by default, one red primary per view, ghost for quiet chrome." },
   { id: "card", title: "Card", word: "panel", blurb: "A glass panel with the usual card anatomy." },
   { id: "input", title: "Input", word: "type here", blurb: "A glass field. The backdrop stays legible behind your text." },
+  { id: "select", title: "Select", word: "pick one", blurb: "A glass trigger and a floating glass panel, Radix typeahead intact." },
   { id: "switch", title: "Switch", word: "on / off", blurb: "Glass track, cream thumb, red when checked." },
+  { id: "slider", title: "Slider", word: "0 — 100", blurb: "A glass lens for a thumb; the rim bends the track as it slides. The switch, inverted." },
   { id: "tabs", title: "Tabs", word: "sections", blurb: "A glass pill list with quiet triggers." },
   { id: "tooltip", title: "Tooltip", word: "hover", blurb: "A small glass pill on hover or focus." },
   { id: "popover", title: "Popover", word: "anchored", blurb: "Anchored glass panel for small forms and detail." },
+  { id: "hover-card", title: "Hover Card", word: "peek", blurb: "A glass preview that opens on hover or focus." },
   { id: "dropdown-menu", title: "Dropdown Menu", word: "choose", blurb: "Glass menu with Radix keyboard navigation." },
+  { id: "context-menu", title: "Context Menu", word: "right-click", blurb: "A glass menu anchored to the pointer on right-click." },
   { id: "dialog", title: "Dialog", word: "modal", blurb: "A modal glass pane over a dimmed page." },
+  { id: "alert-dialog", title: "Alert Dialog", word: "confirm", blurb: "A modal that forces a choice: cancel, or one confirming action." },
   { id: "sheet", title: "Sheet", word: "slide", blurb: "A side panel of glass; softer optics keep big maps cheap." },
+  { id: "command", title: "Command", word: "⌘K", blurb: "cmdk in a glass panel. Press ⌘K anywhere on this site — the palette below is the same registry component." },
   { id: "toast", title: "Toast", word: "notify", blurb: "Glass-styled sonner. Toasts move constantly, so they skip the displacement engine by design." },
   { id: "dock", title: "Dock", word: "navigate", blurb: "The signature piece — the brand board's docked nav, in glass." },
 ];
+
+/* The command palette needs open state, so it's a component rather than inline
+   JSX. The site-wide ⌘K palette is separately live from layout.tsx. */
+function CommandDemo() {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Open command palette</Button>
+      <CommandDialog open={open} onOpenChange={setOpen}>
+        <CommandInput placeholder="Search components…" />
+        <CommandList>
+          <CommandEmpty>No results.</CommandEmpty>
+          <CommandGroup heading="// components">
+            <CommandItem value="glass-surface">glass-surface</CommandItem>
+            <CommandItem value="dialog">dialog</CommandItem>
+            <CommandItem value="slider">slider</CommandItem>
+            <CommandItem value="dock">dock</CommandItem>
+          </CommandGroup>
+        </CommandList>
+      </CommandDialog>
+    </>
+  );
+}
 
 /* One demo per component, shared by the sections below and the playground —
    a surface must be roomy enough to hold clear content in the middle while
    the rim does the bending. */
 const DEMOS: Record<string, React.ReactNode> = {
   "glass-surface": (
-    <GlassSurface className="w-[24rem] max-w-full p-8">
+    <GlassSurface specular="pointer" className="w-[24rem] max-w-full p-8">
       <p className="font-mono text-xs tracking-[0.25em] text-muted-foreground uppercase">
         {"// glass-surface"}
       </p>
@@ -120,11 +191,27 @@ const DEMOS: Record<string, React.ReactNode> = {
     </Card>
   ),
   input: <Input placeholder="hello@vsrc.dev" className="w-64" aria-label="Email" />,
+  select: (
+    <Select defaultValue="regular">
+      <SelectTrigger className="w-56" aria-label="Optics preset">
+        <SelectValue placeholder="Choose optics" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel>{"// optics"}</SelectLabel>
+          <SelectItem value="subtle">Subtle</SelectItem>
+          <SelectItem value="regular">Regular</SelectItem>
+          <SelectItem value="heavy">Heavy</SelectItem>
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  ),
   switch: (
     <div className="flex items-center gap-3">
       <Switch defaultChecked aria-label="Demo switch" />
     </div>
   ),
+  slider: <Slider defaultValue={[40]} className="w-72" aria-label="Demo slider" />,
   tabs: (
     <Tabs defaultValue="optics" className="items-center">
       <TabsList>
@@ -163,6 +250,19 @@ const DEMOS: Record<string, React.ReactNode> = {
       </PopoverContent>
     </Popover>
   ),
+  "hover-card": (
+    <HoverCard openDelay={80}>
+      <HoverCardTrigger className="cursor-default font-display text-2xl underline decoration-signal/60 underline-offset-4">
+        @vsrc
+      </HoverCardTrigger>
+      <HoverCardContent glass="subtle">
+        <p className="font-display text-lg">V-/Src</p>
+        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+          Real refraction for the web — displacement maps, not blur stacks.
+        </p>
+      </HoverCardContent>
+    </HoverCard>
+  ),
   "dropdown-menu": (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -176,6 +276,20 @@ const DEMOS: Record<string, React.ReactNode> = {
         <DropdownMenuItem className="text-signal">Delete</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  ),
+  "context-menu": (
+    <ContextMenu>
+      <ContextMenuTrigger className="flex h-28 w-64 items-center justify-center rounded-[24px] border border-dashed border-border text-sm text-muted-foreground">
+        Right-click here
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuLabel>{"// layer"}</ContextMenuLabel>
+        <ContextMenuItem>Bring forward</ContextMenuItem>
+        <ContextMenuItem>Send back</ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem className="text-signal">Delete</ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   ),
   dialog: (
     <Dialog>
@@ -200,6 +314,29 @@ const DEMOS: Record<string, React.ReactNode> = {
       </DialogContent>
     </Dialog>
   ),
+  "alert-dialog": (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="primary">Delete project</Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete this project?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This removes the registry and every deploy. It cannot be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel asChild>
+            <Button variant="ghost">Cancel</Button>
+          </AlertDialogCancel>
+          <AlertDialogAction asChild>
+            <Button variant="primary">Delete</Button>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  ),
   sheet: (
     <Sheet>
       <SheetTrigger asChild>
@@ -218,6 +355,7 @@ const DEMOS: Record<string, React.ReactNode> = {
       </SheetContent>
     </Sheet>
   ),
+  command: <CommandDemo />,
   toast: (
     <Button onClick={() => toast("Copied install command", { description: "npx shadcn add @vsrc/toast" })}>
       Fire a toast
@@ -259,7 +397,7 @@ function DemoTile({ word, children }: { word: string; children: React.ReactNode 
       <div aria-hidden className="absolute inset-0">
         <div className="absolute -top-1/3 -left-1/4 size-80 rounded-full bg-signal/40 blur-3xl" />
         <div className="absolute -right-1/4 -bottom-1/3 size-72 rounded-full bg-primary/35 blur-3xl" />
-        <p className="absolute top-1/2 left-1/2 -translate-1/2 font-display text-[6rem] leading-none whitespace-nowrap text-foreground/80 italic">
+        <p className="animate-word-drift absolute top-1/2 left-1/2 -translate-1/2 font-display text-[6rem] leading-none whitespace-nowrap text-foreground/80 italic">
           {word}
         </p>
       </div>
@@ -367,8 +505,9 @@ export default function ComponentsPage() {
       <Reveal>
         <h1 className="display-stroke mt-6 font-display text-5xl sm:text-6xl">Components</h1>
         <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">
-          Thirteen surfaces, one optic. Install the registry once, then add any surface with the
-          shadcn CLI — each refracts for real in Chromium; Safari and Firefox get clear frost.
+          {`${COMPONENT_INDEX.length} surfaces, one optic.`} Install the registry once, then add any
+          surface with the shadcn CLI — each refracts for real in Chromium; Safari and Firefox get
+          clear frost.
         </p>
       </Reveal>
 

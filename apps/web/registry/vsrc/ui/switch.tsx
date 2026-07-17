@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import * as SwitchPrimitive from "@radix-ui/react-switch";
-import type { LiquidGlassOptions } from "vsrc/react";
+import { mergeGlass, type GlassPreset, type LiquidGlassOptions } from "vsrc/react";
 
 import { GlassSurface } from "@/registry/vsrc/ui/glass-surface";
 import { cn } from "@/lib/utils";
@@ -21,9 +21,9 @@ function Switch({
   className,
   glass,
   ...props
-}: React.ComponentProps<typeof SwitchPrimitive.Root> & { glass?: LiquidGlassOptions | false }) {
+}: React.ComponentProps<typeof SwitchPrimitive.Root> & { glass?: LiquidGlassOptions | GlassPreset | false }) {
   return (
-    <GlassSurface asChild glass={glass === false ? false : { ...TRACK_OPTICS, ...glass }}>
+    <GlassSurface asChild glass={mergeGlass(TRACK_OPTICS, glass)}>
       <SwitchPrimitive.Root
         data-slot="switch"
         className={cn(

@@ -3,7 +3,7 @@
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cva, type VariantProps } from "class-variance-authority";
-import type { LiquidGlassOptions } from "vsrc/react";
+import { mergeGlass, type GlassPreset, type LiquidGlassOptions } from "vsrc/react";
 
 import { GlassSurface } from "@/registry/vsrc/ui/glass-surface";
 import { cn } from "@/lib/utils";
@@ -37,11 +37,11 @@ function SheetContent({
   glass,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> &
-  VariantProps<typeof sheetVariants> & { glass?: LiquidGlassOptions | false }) {
+  VariantProps<typeof sheetVariants> & { glass?: LiquidGlassOptions | GlassPreset | false }) {
   return (
     <DialogPrimitive.Portal>
       <DialogPrimitive.Overlay className="animate-glass-in fixed inset-0 z-50 bg-background/70" />
-      <GlassSurface asChild glass={glass === false ? false : { ...SHEET_OPTICS, ...glass }}>
+      <GlassSurface asChild glass={mergeGlass(SHEET_OPTICS, glass)}>
         <DialogPrimitive.Content
           data-slot="sheet-content"
           className={cn(sheetVariants({ side }), className)}

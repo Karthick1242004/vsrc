@@ -21,11 +21,18 @@ patterns. Read `ui/glass-surface.tsx` and `ui/button.tsx` before writing anythin
   mapBlur: 8, blur: 2, saturate: 1.4 }`; large panels (dialog, sheet, card) can take
   stronger scale (−80…−112) and default border/mapBlur. Big surfaces: keep maps cheap —
   no refraction on elements that animate position (see PLAN.md perf guardrails).
-- Public prop `glass?: LiquidGlassOptions | false` merged as
-  `{ ...PRESET, ...glass }`; `false` (and non-glass variants) must pass `false` to the
-  hook so no filter is built.
-- Ref pattern: local ref + composed callback ref, exactly as in `button.tsx`
-  (React 19 style — `ref` comes through props, no `forwardRef`).
+- Public prop `glass?: LiquidGlassOptions | GlassPreset | false`, resolved with
+  `mergeGlass(<NAME>_OPTICS, glass)` from `vsrc/react` — never spread `glass` directly,
+  a preset string (`"subtle" | "regular" | "heavy"`) would scatter into indexed chars.
+  `false` (and non-glass variants like a ghost button) disables the effect. Pass-through
+  surfaces that carry no preset of their own just forward `glass` to `<GlassSurface>`.
+- Node pattern: hold the element in state (`useState`), set it from a composed
+  callback ref, and pass it to `useLiquidGlass(node, optics)` — exactly as in
+  `button.tsx` (React 19 style — `ref` comes through props, no `forwardRef`).
+  The hook takes the element by value, not a ref, so refraction re-applies when a
+  Radix portal (e.g. Select) mounts its content a commit after the surface.
+  Most components never touch the hook directly — they wrap a Radix pane in
+  `<GlassSurface asChild glass={...}>`, which handles all of this.
 - Styling: cva variants where variants exist; tokens only (`--glass-*`, theme colors);
   `data-slot="<name>"`; visible `focus-visible` ring; `rounded-(--glass-radius)` for
   panels, `rounded-full` for pills.

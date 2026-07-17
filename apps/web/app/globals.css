@@ -95,6 +95,7 @@
   --animate-marquee: marquee 48s linear infinite;
   --animate-blob-a: blob-a 26s ease-in-out infinite alternate;
   --animate-blob-b: blob-b 22s ease-in-out infinite alternate;
+  --animate-word-drift: word-drift 8s ease-in-out infinite alternate;
 }
 
 @keyframes marquee {
@@ -103,6 +104,19 @@
   }
   to {
     transform: translateX(-50%);
+  }
+}
+
+/* The still demo word behind each tile drifts slowly so the glass rim has
+   something moving to bend — the whole point of the tiles. The word is
+   centered with the `translate` property, so animating `transform` here
+   composes with the centering instead of fighting it. */
+@keyframes word-drift {
+  from {
+    transform: translateX(-4%);
+  }
+  to {
+    transform: translateX(4%);
   }
 }
 
@@ -258,6 +272,24 @@ html[data-cursor] {
   mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
 }
 
+/* Cursor-tracked specular (opt-in via <GlassSurface specular="pointer">). The JS
+   writes --spec-x/-y/-o; this soft cream glare follows. Clipped by the surface's
+   overflow-hidden; a low opacity keeps content legible under the sheen. */
+[data-vsrc-specular]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: var(--spec-o, 0);
+  background: radial-gradient(
+    140px circle at var(--spec-x, 50%) var(--spec-y, 50%),
+    color-mix(in oklab, #fffddb 14%, transparent),
+    transparent 70%
+  );
+  transition: opacity 0.25s ease;
+}
+
 /* Film grain over everything (brand motif) — ~5% opacity, never interactive. */
 body::after {
   content: "";
@@ -278,8 +310,13 @@ body::after {
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee,
   .animate-blob-a,
-  .animate-blob-b {
+  .animate-blob-b,
+  .animate-word-drift {
     animation: none;
+  }
+  /* The JS never arms specular under reduced motion; kill the transition too. */
+  [data-vsrc-specular]::before {
+    transition: none;
   }
 }
 

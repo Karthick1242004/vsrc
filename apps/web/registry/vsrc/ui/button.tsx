@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-import { useLiquidGlass, type LiquidGlassOptions } from "vsrc/react";
+import { useLiquidGlass, mergeGlass, type GlassPreset, type LiquidGlassOptions } from "vsrc/react";
 
 import { glassMaterial } from "@/registry/vsrc/ui/glass-surface";
 import { cn } from "@/lib/utils";
@@ -65,19 +65,19 @@ export interface ButtonProps
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   /** Engine optics overrides; `false` disables refraction for this button. */
-  glass?: LiquidGlassOptions | false;
+  glass?: LiquidGlassOptions | GlassPreset | false;
 }
 
 function Button({ className, variant, size, asChild, glass, ref, ...props }: ButtonProps) {
-  const localRef = React.useRef<HTMLButtonElement | null>(null);
+  const [node, setNode] = React.useState<HTMLButtonElement | null>(null);
   const optics =
-    variant === "ghost" || glass === false ? false : { ...BUTTON_OPTICS, ...glass };
-  useLiquidGlass(localRef, optics);
+    variant === "ghost" ? false : mergeGlass(BUTTON_OPTICS, glass);
+  useLiquidGlass(node, optics);
   const composedRef = React.useCallback(
-    (node: HTMLButtonElement | null) => {
-      localRef.current = node;
-      if (typeof ref === "function") ref(node);
-      else if (ref) ref.current = node;
+    (element: HTMLButtonElement | null) => {
+      setNode(element);
+      if (typeof ref === "function") ref(element);
+      else if (ref) ref.current = element;
     },
     [ref],
   );

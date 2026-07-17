@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
-import type { LiquidGlassOptions } from "vsrc/react";
+import { mergeGlass, type GlassPreset, type LiquidGlassOptions } from "vsrc/react";
 
 import { GlassSurface } from "@/registry/vsrc/ui/glass-surface";
 import { cn } from "@/lib/utils";
@@ -26,10 +26,10 @@ function TooltipContent({
   sideOffset = 6,
   glass,
   ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Content> & { glass?: LiquidGlassOptions | false }) {
+}: React.ComponentProps<typeof TooltipPrimitive.Content> & { glass?: LiquidGlassOptions | GlassPreset | false }) {
   return (
     <TooltipPrimitive.Portal>
-      <GlassSurface asChild glass={glass === false ? false : { ...TIP_OPTICS, ...glass }}>
+      <GlassSurface asChild glass={mergeGlass(TIP_OPTICS, glass)}>
         <TooltipPrimitive.Content
           data-slot="tooltip-content"
           sideOffset={sideOffset}

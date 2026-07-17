@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useLiquidGlass, type LiquidGlassOptions } from "vsrc/react";
+import { useLiquidGlass, mergeGlass, type GlassPreset, type LiquidGlassOptions } from "vsrc/react";
 
 import { glassMaterial } from "@/registry/vsrc/ui/glass-surface";
 import { cn } from "@/lib/utils";
@@ -21,14 +21,14 @@ function Input({
   glass,
   ref,
   ...props
-}: React.ComponentProps<"input"> & { glass?: LiquidGlassOptions | false }) {
-  const localRef = React.useRef<HTMLInputElement | null>(null);
-  useLiquidGlass(localRef, glass === false ? false : { ...INPUT_OPTICS, ...glass });
+}: React.ComponentProps<"input"> & { glass?: LiquidGlassOptions | GlassPreset | false }) {
+  const [node, setNode] = React.useState<HTMLInputElement | null>(null);
+  useLiquidGlass(node, mergeGlass(INPUT_OPTICS, glass));
   const composedRef = React.useCallback(
-    (node: HTMLInputElement | null) => {
-      localRef.current = node;
-      if (typeof ref === "function") ref(node);
-      else if (ref) ref.current = node;
+    (element: HTMLInputElement | null) => {
+      setNode(element);
+      if (typeof ref === "function") ref(element);
+      else if (ref) ref.current = element;
     },
     [ref],
   );

@@ -38,7 +38,7 @@ export function MobileNav() {
           <SheetTitle>
             <Wordmark />
           </SheetTitle>
-          <SheetDescription>Thirteen surfaces, one optic.</SheetDescription>
+          <SheetDescription>{`${COMPONENT_INDEX.length} surfaces, one optic.`}</SheetDescription>
         </SheetHeader>
         <nav aria-label="Site" className="grid gap-1 text-sm">
           <SheetClose asChild>

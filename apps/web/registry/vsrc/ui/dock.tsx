@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import type { LiquidGlassOptions } from "vsrc/react";
+import { mergeGlass, type GlassPreset, type LiquidGlassOptions } from "vsrc/react";
 
 import { GlassSurface } from "@/registry/vsrc/ui/glass-surface";
 import { cn } from "@/lib/utils";
@@ -25,9 +25,9 @@ function Dock({
   className,
   glass,
   ...props
-}: React.ComponentProps<"nav"> & { glass?: LiquidGlassOptions | false }) {
+}: React.ComponentProps<"nav"> & { glass?: LiquidGlassOptions | GlassPreset | false }) {
   return (
-    <GlassSurface asChild glass={glass === false ? false : { ...DOCK_OPTICS, ...glass }}>
+    <GlassSurface asChild glass={mergeGlass(DOCK_OPTICS, glass)}>
       <nav
         data-slot="dock"
         className={cn(

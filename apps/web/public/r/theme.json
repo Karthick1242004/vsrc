@@ -73,7 +73,20 @@
     "@media (prefers-reduced-motion: reduce)": {
       "[data-vsrc-glass=\"frosted\"]": {
         "animation": "none"
+      },
+      "[data-vsrc-specular]::before": {
+        "transition": "none"
       }
+    },
+    "[data-vsrc-specular]::before": {
+      "content": "\"\"",
+      "position": "absolute",
+      "inset": "0",
+      "border-radius": "inherit",
+      "pointer-events": "none",
+      "opacity": "var(--spec-o, 0)",
+      "background": "radial-gradient(140px circle at var(--spec-x, 50%) var(--spec-y, 50%), color-mix(in oklab, #fffddb 14%, transparent), transparent 70%)",
+      "transition": "opacity 0.25s ease"
     },
     "[data-vsrc-glass=\"frosted\"]::after": {
       "content": "\"\"",

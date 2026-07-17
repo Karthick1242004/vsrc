@@ -62,6 +62,31 @@ const DEFAULTS: Required<LiquidGlassOptions> = {
   fallbackBlur: 3,
 };
 
+/** Named optics bundles so callers can say `glass="subtle"` instead of tuning numbers. */
+export type GlassPreset = "subtle" | "regular" | "heavy";
+
+/** `regular` is the engine DEFAULTS; `subtle`/`heavy` step the whole bundle together. */
+export const GLASS_PRESETS: Record<GlassPreset, LiquidGlassOptions> = {
+  subtle: { scale: -56, chroma: 3, border: 0.14, mapBlur: 8, blur: 2, saturate: 1.35, fallbackBlur: 2 },
+  regular: { scale: -112, chroma: 6, border: 0.07, mapBlur: 12, blur: 3, saturate: 1.5, fallbackBlur: 3 },
+  heavy: { scale: -170, chroma: 10, border: 0.05, mapBlur: 16, blur: 4, saturate: 1.6, fallbackBlur: 5 },
+};
+
+/**
+ * Resolve a component's tuned optics against the public `glass` prop.
+ * A string preset REPLACES the base (it defines every knob); an object merges
+ * over it; `false` disables refraction. Spreading a string directly would scatter
+ * it into indexed characters — always route preset strings through here.
+ */
+export function mergeGlass(
+  base: LiquidGlassOptions,
+  glass?: LiquidGlassOptions | GlassPreset | false,
+): LiquidGlassOptions | false {
+  if (glass === false) return false;
+  if (typeof glass === "string") return { ...base, ...GLASS_PRESETS[glass] };
+  return { ...base, ...glass };
+}
+
 export const DATA_ATTR = "data-vsrc-glass";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -237,10 +262,13 @@ const INERT: LiquidGlassInstance = {
   destroy() {},
 };
 
-/** Apply liquid glass to an element. */
-export function liquidGlass(el: HTMLElement | null, opts?: LiquidGlassOptions): LiquidGlassInstance {
+/** Apply liquid glass to an element. `opts` may be a named preset or an options object. */
+export function liquidGlass(
+  el: HTMLElement | null,
+  opts?: LiquidGlassOptions | GlassPreset,
+): LiquidGlassInstance {
   if (!el || typeof window === "undefined") return INERT;
-  const o = { ...DEFAULTS, ...opts };
+  const o = { ...DEFAULTS, ...(typeof opts === "string" ? GLASS_PRESETS[opts] : opts) };
 
   if (prefersReducedTransparency()) {
     // No backdrop effect at all — the material layer styles this opaquely

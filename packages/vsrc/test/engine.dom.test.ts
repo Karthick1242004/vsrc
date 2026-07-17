@@ -2,7 +2,7 @@
 // jsdom cannot do SVG-filtered backdrops (and its canvas readback throws),
 // which makes it a faithful stand-in for the unsupported-browser path.
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { DATA_ATTR, canRefract, liquidGlass, resolveRadius } from "../src/engine";
+import { DATA_ATTR, GLASS_PRESETS, canRefract, liquidGlass, resolveRadius } from "../src/engine";
 
 afterEach(() => {
   document.body.innerHTML = "";
@@ -34,6 +34,20 @@ describe("frosted fallback path", () => {
     expect(el.getAttribute(DATA_ATTR)).toBeNull();
     expect(el.classList.contains("lg-fallback")).toBe(false);
     expect(el.style.backdropFilter).toBeFalsy();
+  });
+
+  it("applies a named preset's fallback blur/saturate", () => {
+    const el = document.createElement("div");
+    document.body.appendChild(el);
+    liquidGlass(el, "heavy");
+    const { fallbackBlur, saturate } = GLASS_PRESETS.heavy;
+    expect(el.style.backdropFilter).toBe(`blur(${fallbackBlur}px) saturate(${saturate})`);
+
+    const el2 = document.createElement("div");
+    document.body.appendChild(el2);
+    liquidGlass(el2, "subtle");
+    const subtle = GLASS_PRESETS.subtle;
+    expect(el2.style.backdropFilter).toBe(`blur(${subtle.fallbackBlur}px) saturate(${subtle.saturate})`);
   });
 });
 
