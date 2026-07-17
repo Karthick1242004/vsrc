@@ -6,11 +6,13 @@ import { canRefract } from "vsrc";
 import { Button } from "@/registry/vsrc/ui/button";
 
 /**
- * Sandboxed refraction demo for browsers whose backdrop can't bend (WebKit —
- * every iOS browser — and Firefox). The engine's displacement idea is re-run
- * as a WebGL fragment shader over a scene we control, so visitors still see
- * the real optic. WebGL, not SVG filters: WebKit misplaces feImage inputs,
- * so filter-based displacement is unreliable there.
+ * Sandboxed refraction demo, shown everywhere (not just non-refracting
+ * browsers): the engine's displacement idea re-run as a WebGL fragment
+ * shader over a scene we control, draggable, at a scale and framing the
+ * live backdrop-filter panels above don't offer. WebGL, not SVG filters:
+ * WebKit misplaces feImage inputs, so filter-based displacement is
+ * unreliable there — this is also the only way non-refracting browsers see
+ * the real optic at all.
  */
 
 const WORDS = "refraction · dispersion · specular · caustics · chroma · rim-light · ";
@@ -222,14 +224,15 @@ function LensCanvas() {
 }
 
 export function LensDemo() {
-  const [available, setAvailable] = React.useState(false);
+  // Copy adapts to whether this browser already refracts live above; the
+  // button itself always shows (SSR default matches: canRefract() is false
+  // with no window, so the non-refracting copy paints first either way).
+  const [refracts, setRefracts] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const closeRef = React.useRef<HTMLButtonElement | null>(null);
 
   React.useEffect(() => {
-    // Refracting browsers already show the real thing live; ?lens=demo forces
-    // the button for testing.
-    setAvailable(!canRefract() || window.location.search.includes("lens=demo"));
+    setRefracts(canRefract());
   }, []);
 
   React.useEffect(() => {
@@ -244,13 +247,16 @@ export function LensDemo() {
     };
   }, [open]);
 
-  if (!available) return null;
   return (
     <>
       <div className="mt-6 flex flex-wrap items-center gap-4">
-        <Button onClick={() => setOpen(true)}>See real refraction</Button>
+        <Button onClick={() => setOpen(true)}>
+          {refracts ? "Play with the shader" : "See real refraction"}
+        </Button>
         <p className="font-mono text-xs text-muted-foreground">
-          {"// this browser can't bend live backdrops — opens a WebGL re-creation"}
+          {refracts
+            ? "// same displacement optics, standalone — drag the lens"
+            : "// this browser can't bend live backdrops — opens a WebGL re-creation"}
         </p>
       </div>
       {open && (
