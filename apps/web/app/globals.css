@@ -282,3 +282,126 @@ body::after {
     animation: none;
   }
 }
+
+/* Boot/scroll reveals (components/site/reveal.tsx): hidden until revealed.
+   Opacity + translate ONLY — a filter here would give children a new
+   backdrop root and sever the glass refraction inside from the page. */
+[data-reveal] {
+  opacity: 0;
+  translate: 0 28px;
+  transition:
+    opacity 0.8s ease,
+    translate 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+[data-reveal].is-revealed {
+  opacity: 1;
+  translate: 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    translate: none;
+    transition: none;
+  }
+}
+
+/* Lenis inertial scroll (components/site/smooth-scroll.tsx). While Lenis
+   drives (html.lenis — v1.3 never adds the docs' `lenis-smooth` class),
+   scroll-behavior MUST be auto: Lenis writes scrollTop every frame, and a
+   native smooth behavior turns each write into its own competing animation
+   that strands the scroll short of target (verified). The base html rule
+   above still covers reduced-motion/no-JS, where Lenis never mounts. */
+html.lenis,
+html.lenis body {
+  height: auto;
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Boot loader (components/site/loader.tsx): the monogram strokes draw in,
+   then V / Src resolve around them. Hidden initial states live HERE, so the
+   reduced-motion block below must reset every one of them or the lockup
+   would never become visible. Grain (body::after, z-60) stays above. */
+.site-loader {
+  transition: opacity 0.55s ease 0.05s;
+}
+.site-loader[data-exiting] {
+  opacity: 0;
+  pointer-events: none;
+}
+.site-loader-lockup {
+  animation: loader-settle 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.site-loader[data-exiting] .site-loader-lockup {
+  scale: 0.98;
+  transition: scale 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* dasharray = path length: dash 33px, slash ≈ 63px (√(34² + 52²)). */
+.site-loader-dash {
+  stroke-dasharray: 33;
+  stroke-dashoffset: 33;
+  animation: loader-draw 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+}
+.site-loader-slash {
+  stroke-dasharray: 63;
+  stroke-dashoffset: 63;
+  animation: loader-draw 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.26s forwards;
+}
+.site-loader-v,
+.site-loader-src {
+  opacity: 0;
+  filter: blur(6px);
+  animation: loader-resolve 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.55s forwards;
+}
+.site-loader-v {
+  translate: -0.35em 0;
+}
+.site-loader-src {
+  translate: 0.35em 0;
+}
+
+@keyframes loader-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes loader-resolve {
+  to {
+    opacity: 1;
+    filter: blur(0);
+    translate: 0 0;
+  }
+}
+@keyframes loader-settle {
+  from {
+    scale: 1.04;
+  }
+  to {
+    scale: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-loader,
+  .site-loader-lockup,
+  .site-loader-dash,
+  .site-loader-slash,
+  .site-loader-v,
+  .site-loader-src {
+    animation: none;
+    transition: none;
+  }
+  .site-loader-dash,
+  .site-loader-slash {
+    stroke-dashoffset: 0;
+  }
+  .site-loader-v,
+  .site-loader-src {
+    opacity: 1;
+    filter: none;
+    translate: 0 0;
+  }
+}

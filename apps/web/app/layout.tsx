@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 
 import { CursorProvider } from "@/components/site/cursor";
+import { SiteLoader } from "@/components/site/loader";
+import { SmoothScroll } from "@/components/site/smooth-scroll";
 import { SiteDock } from "@/components/site/site-dock";
 import { SiteFooter } from "@/components/site/site-footer";
 import { SiteHeader } from "@/components/site/site-header";
@@ -44,6 +46,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="bg-background font-sans text-foreground antialiased">
+        <SiteLoader />
+        <SmoothScroll />
         <CursorProvider>
           <TooltipProvider delayDuration={200}>
             <SiteHeader />

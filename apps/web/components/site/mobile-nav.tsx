@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { COMPONENT_INDEX } from "@/components/site/component-index";
+import { Wordmark } from "@/components/site/wordmark";
 import { Button } from "@/registry/vsrc/ui/button";
 import {
   Sheet,
@@ -19,6 +21,9 @@ const linkClass =
 
 /** Small-screen nav: the registry Sheet as a left side panel (dogfooding). */
 export function MobileNav() {
+  // On /components itself, pure-hash anchors let Lenis smooth the jump;
+  // Next Link hash navigation scrolls instantly and bypasses it.
+  const onComponents = usePathname() === "/components";
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -30,7 +35,9 @@ export function MobileNav() {
       </SheetTrigger>
       <SheetContent side="left" className="overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>V-/Src</SheetTitle>
+          <SheetTitle>
+            <Wordmark />
+          </SheetTitle>
           <SheetDescription>Thirteen surfaces, one optic.</SheetDescription>
         </SheetHeader>
         <nav aria-label="Site" className="grid gap-1 text-sm">
@@ -61,9 +68,15 @@ export function MobileNav() {
         <nav aria-label="Component index" className="grid gap-1 font-mono text-xs">
           {COMPONENT_INDEX.map((name) => (
             <SheetClose asChild key={name}>
-              <Link href={`/components#${name}`} className={linkClass}>
-                {name}
-              </Link>
+              {onComponents ? (
+                <a href={`#${name}`} className={linkClass}>
+                  {name}
+                </a>
+              ) : (
+                <Link href={`/components#${name}`} className={linkClass}>
+                  {name}
+                </Link>
+              )}
             </SheetClose>
           ))}
         </nav>

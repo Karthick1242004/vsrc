@@ -6,6 +6,7 @@ import { CodeBlock } from "@/components/site/code-block";
 import { COMPONENT_INDEX } from "@/components/site/component-index";
 import { Monogram } from "@/components/site/monogram";
 import { RefractionField } from "@/components/site/refraction-field";
+import { Reveal } from "@/components/site/reveal";
 import { Button } from "@/registry/vsrc/ui/button";
 import {
   Card,
@@ -270,13 +271,15 @@ function Section({
 }) {
   return (
     <section id={id} className="scroll-mt-24">
-      <p className="font-mono text-xs tracking-[0.25em] text-muted-foreground uppercase">{`// ${id}`}</p>
-      <h2 className="display-stroke-sm mt-2 font-display text-3xl sm:text-4xl">{title}</h2>
-      <p className="mt-3 max-w-xl leading-relaxed text-muted-foreground">{blurb}</p>
-      <div className="mt-6 grid gap-4">
-        <DemoTile word={word}>{children}</DemoTile>
-        <CodeBlock kicker="install" code={`npx shadcn add @vsrc/${id}`} />
-      </div>
+      <Reveal>
+        <p className="font-mono text-xs tracking-[0.25em] text-muted-foreground uppercase">{`// ${id}`}</p>
+        <h2 className="display-stroke-sm mt-2 font-display text-3xl sm:text-4xl">{title}</h2>
+        <p className="mt-3 max-w-xl leading-relaxed text-muted-foreground">{blurb}</p>
+        <div className="mt-6 grid gap-4">
+          <DemoTile word={word}>{children}</DemoTile>
+          <CodeBlock kicker="install" code={`npx shadcn add @vsrc/${id}`} />
+        </div>
+      </Reveal>
     </section>
   );
 }
@@ -287,34 +290,36 @@ function Playground() {
   const [pick, setPick] = React.useState("glass-surface");
   return (
     <section id="playground" className="mt-12 scroll-mt-24">
-      <p className="font-mono text-xs tracking-[0.25em] text-muted-foreground uppercase">{"// playground"}</p>
-      <h2 className="display-stroke-sm mt-2 font-display text-3xl sm:text-4xl">Playground</h2>
-      <p className="mt-3 max-w-xl leading-relaxed text-muted-foreground">
-        Pick a surface and drop it over moving type. The middle stays still; the rim bends
-        whatever drifts past.
-      </p>
-      <div className="mt-6 flex flex-wrap gap-1.5" role="group" aria-label="Choose a component">
-        {COMPONENT_INDEX.map((name) => (
-          <button
-            key={name}
-            type="button"
-            onClick={() => setPick(name)}
-            aria-pressed={pick === name}
-            className={cn(
-              "rounded-full px-3 py-1.5 font-mono text-xs transition-colors outline-none",
-              "focus-visible:ring-2 focus-visible:ring-ring",
-              pick === name
-                ? "bg-foreground/15 text-foreground"
-                : "text-muted-foreground hover:bg-foreground/10 hover:text-foreground",
-            )}
-          >
-            {name}
-          </button>
-        ))}
-      </div>
-      <div className="mt-4">
-        <RefractionField key={pick}>{DEMOS[pick]}</RefractionField>
-      </div>
+      <Reveal delay={0.18}>
+        <p className="font-mono text-xs tracking-[0.25em] text-muted-foreground uppercase">{"// playground"}</p>
+        <h2 className="display-stroke-sm mt-2 font-display text-3xl sm:text-4xl">Playground</h2>
+        <p className="mt-3 max-w-xl leading-relaxed text-muted-foreground">
+          Pick a surface and drop it over moving type. The middle stays still; the rim bends
+          whatever drifts past.
+        </p>
+        <div className="mt-6 flex flex-wrap gap-1.5" role="group" aria-label="Choose a component">
+          {COMPONENT_INDEX.map((name) => (
+            <button
+              key={name}
+              type="button"
+              onClick={() => setPick(name)}
+              aria-pressed={pick === name}
+              className={cn(
+                "rounded-full px-3 py-1.5 font-mono text-xs transition-colors outline-none",
+                "focus-visible:ring-2 focus-visible:ring-ring",
+                pick === name
+                  ? "bg-foreground/15 text-foreground"
+                  : "text-muted-foreground hover:bg-foreground/10 hover:text-foreground",
+              )}
+            >
+              {name}
+            </button>
+          ))}
+        </div>
+        <div className="mt-4">
+          <RefractionField key={pick}>{DEMOS[pick]}</RefractionField>
+        </div>
+      </Reveal>
     </section>
   );
 }
@@ -322,11 +327,13 @@ function Playground() {
 export default function ComponentsPage() {
   return (
     <div className="mx-auto max-w-6xl px-6 pb-24">
-      <h1 className="display-stroke mt-6 font-display text-5xl sm:text-6xl">Components</h1>
-      <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">
-        Thirteen surfaces, one optic. Each is copied into your project via the shadcn CLI and
-        refracts for real in Chromium; Safari and Firefox get clear frost.
-      </p>
+      <Reveal>
+        <h1 className="display-stroke mt-6 font-display text-5xl sm:text-6xl">Components</h1>
+        <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">
+          Thirteen surfaces, one optic. Each is copied into your project via the shadcn CLI and
+          refracts for real in Chromium; Safari and Firefox get clear frost.
+        </p>
+      </Reveal>
 
       <Playground />
 
