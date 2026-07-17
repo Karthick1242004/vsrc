@@ -52,6 +52,18 @@ import { toast } from "@/registry/vsrc/ui/toast";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/registry/vsrc/ui/tooltip";
 import { cn } from "@/lib/utils";
 
+const REGISTRY_SNIPPET = `{
+  "registries": {
+    "@vsrc": "https://vsrc.vercel.app/r/{name}.json"
+  }
+}`;
+
+const USAGE_SNIPPET = `import { Button } from "@/components/ui/button"
+
+<Button variant="primary">Ship it</Button>
+<Button>Clear glass</Button>
+<Button variant="ghost">Quiet</Button>`;
+
 const SECTIONS: { id: string; title: string; word: string; blurb: string }[] = [
   { id: "glass-surface", title: "Glass Surface", word: "primitive", blurb: "The refraction primitive every other component builds on." },
   { id: "button", title: "Button", word: "press", blurb: "Clear glass by default, one red primary per view, ghost for quiet chrome." },
@@ -324,16 +336,43 @@ function Playground() {
   );
 }
 
+/* Setup, first thing on the page: register the @vsrc namespace, add a
+   component, use it. Per-component install commands live in each section
+   below; this is the one-time registry wiring every consumer does once. */
+function Installation() {
+  return (
+    <section id="installation" className="mt-14 scroll-mt-24">
+      <Reveal>
+        <p className="font-mono text-xs tracking-[0.25em] text-muted-foreground uppercase">
+          {"// installation"}
+        </p>
+        <h2 className="display-stroke-sm mt-2 font-display text-3xl sm:text-4xl">Installation</h2>
+        <p className="mt-3 max-w-xl leading-relaxed text-muted-foreground">
+          Components are copied into your project through the shadcn CLI. The only npm package is{" "}
+          <code className="font-mono text-sm text-foreground">vsrc</code> — the optics engine.
+        </p>
+        <div className="mt-6 grid max-w-3xl gap-6">
+          <CodeBlock kicker="1 · components.json" code={REGISTRY_SNIPPET} />
+          <CodeBlock kicker="2 · add a component" code={"npx shadcn add @vsrc/button"} />
+          <CodeBlock kicker="3 · use it" code={USAGE_SNIPPET} />
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+
 export default function ComponentsPage() {
   return (
     <div className="mx-auto max-w-6xl px-6 pb-24">
       <Reveal>
         <h1 className="display-stroke mt-6 font-display text-5xl sm:text-6xl">Components</h1>
         <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">
-          Thirteen surfaces, one optic. Each is copied into your project via the shadcn CLI and
-          refracts for real in Chromium; Safari and Firefox get clear frost.
+          Thirteen surfaces, one optic. Install the registry once, then add any surface with the
+          shadcn CLI — each refracts for real in Chromium; Safari and Firefox get clear frost.
         </p>
       </Reveal>
+
+      <Installation />
 
       <Playground />
 

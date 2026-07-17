@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { canRefract } from "vsrc";
 
 import { Button } from "@/registry/vsrc/ui/button";
@@ -223,10 +224,10 @@ function LensCanvas() {
   return <canvas ref={canvasRef} className="h-full w-full touch-none" aria-label="Liquid glass refraction demo" />;
 }
 
-export function LensDemo() {
-  // Copy adapts to whether this browser already refracts live above; the
-  // button itself always shows (SSR default matches: canRefract() is false
-  // with no window, so the non-refracting copy paints first either way).
+export function LensDemo({ size = "lg" }: { size?: "default" | "lg" }) {
+  // Copy adapts to whether this browser already refracts live elsewhere on the
+  // page; the button itself always shows (SSR default matches: canRefract() is
+  // false with no window, so the non-refracting copy paints first either way).
   const [refracts, setRefracts] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const closeRef = React.useRef<HTMLButtonElement | null>(null);
@@ -249,34 +250,32 @@ export function LensDemo() {
 
   return (
     <>
-      <div className="mt-6 flex flex-wrap items-center gap-4">
-        <Button onClick={() => setOpen(true)}>
-          {refracts ? "Play with the shader" : "See real refraction"}
-        </Button>
-        <p className="font-mono text-xs text-muted-foreground">
-          {refracts
-            ? "// same displacement optics, standalone — drag the lens"
-            : "// this browser can't bend live backdrops — opens a WebGL re-creation"}
-        </p>
-      </div>
-      {open && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Refraction demo"
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 bg-background/95 p-6"
-        >
-          <div className="h-[60vh] w-full max-w-4xl overflow-hidden rounded-[32px] border border-border">
-            <LensCanvas />
-          </div>
-          <p className="max-w-xl text-center font-mono text-xs leading-relaxed text-muted-foreground">
-            {"// webgl re-creation of the chromium render — same displacement optics. drag the lens."}
-          </p>
-          <Button ref={closeRef} variant="ghost" onClick={() => setOpen(false)}>
-            Close
-          </Button>
-        </div>
-      )}
+      <Button size={size} onClick={() => setOpen(true)}>
+        {refracts ? "Play with the shader" : "See real refraction"}
+      </Button>
+      {/* Portal to <body>: the trigger lives inside a Reveal wrapper whose
+          `translate` establishes a containing block, which would otherwise trap
+          this fixed overlay to the button row instead of the viewport. */}
+      {open &&
+        createPortal(
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Refraction demo"
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 bg-background/95 p-6"
+          >
+            <div className="h-[60vh] w-full max-w-4xl overflow-hidden rounded-[32px] border border-border">
+              <LensCanvas />
+            </div>
+            <p className="max-w-xl text-center font-mono text-xs leading-relaxed text-muted-foreground">
+              {"// webgl re-creation of the chromium render — same displacement optics. drag the lens."}
+            </p>
+            <Button ref={closeRef} variant="ghost" onClick={() => setOpen(false)}>
+              Close
+            </Button>
+          </div>,
+          document.body,
+        )}
     </>
   );
 }
