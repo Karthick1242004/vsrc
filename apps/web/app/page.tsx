@@ -1,8 +1,16 @@
+import type { Metadata } from "next";
+
 import { LensDemo } from "@/components/site/lens-demo";
 import { RefractionField } from "@/components/site/refraction-field";
 import { Reveal } from "@/components/site/reveal";
 import { Button } from "@/registry/vsrc/ui/button";
 import { GlassSurface } from "@/registry/vsrc/ui/glass-surface";
+
+// Self-referencing canonical; the root layout no longer sets a global one (that
+// pointed every route at "/"). Each page that can export metadata owns its own.
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 export default function Home() {
   return (

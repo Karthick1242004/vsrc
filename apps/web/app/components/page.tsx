@@ -93,10 +93,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/registry/vsrc/ui/tab
 import { toast } from "@/registry/vsrc/ui/toast";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/registry/vsrc/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { SITE_URL } from "@/lib/site";
 
 const REGISTRY_SNIPPET = `{
   "registries": {
-    "@vsrc": "https://vsrc.vercel.app/r/{name}.json"
+    "@vsrc": "${SITE_URL}/r/{name}.json"
   }
 }`;
 
@@ -494,6 +495,14 @@ function Installation() {
           <CodeBlock kicker="2 · add a component" code={"npx shadcn add @vsrc/button"} />
           <CodeBlock kicker="3 · use it" code={USAGE_SNIPPET} />
         </div>
+        <p className="mt-4 max-w-3xl text-sm leading-relaxed text-muted-foreground">
+          Your <code className="font-mono text-foreground">components.json</code> must use a
+          Radix-based style such as{" "}
+          <code className="font-mono text-foreground">new-york</code>. The Base UI{" "}
+          <code className="font-mono text-foreground">base-nova</code> style rewrites{" "}
+          <code className="font-mono text-foreground">asChild</code> composition during install
+          and breaks these components.
+        </p>
       </Reveal>
     </section>
   );

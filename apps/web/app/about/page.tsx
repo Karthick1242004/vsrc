@@ -6,9 +6,10 @@ import { Button } from "@/registry/vsrc/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/registry/vsrc/ui/card";
 
 export const metadata: Metadata = {
-  title: "About & beta — vsrc",
+  title: "About & beta",
   description:
     "vsrc is in public beta: what works, which browsers refract, how your data is handled, and how to reach the developer.",
+  alternates: { canonical: "/about" },
 };
 
 /* Support is engine-accurate: canRefract() in packages/vsrc/src/engine.ts gates

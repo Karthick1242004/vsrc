@@ -12,6 +12,13 @@
     "ui"
   ],
   "license": "MIT",
+  "homepage": "https://vsrc-weld.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Karthick1242004/vsrc.git",
+    "directory": "packages/vsrc"
+  },
+  "bugs": "https://github.com/Karthick1242004/vsrc/issues",
   "type": "module",
   "sideEffects": false,
   "exports": {
@@ -33,6 +40,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "prepublishOnly": "tsup",
     "dev": "tsup --watch",
     "test": "vitest run",
     "test:e2e": "playwright test",

@@ -3,8 +3,8 @@
 > Last updated: 2026-07-17, after the feature-batch session (fresh-consumer proof,
 > 6 new surfaces → 19 total, optics presets, node-driven glass hook, slider,
 > command palette + site-wide ⌘K, pointer-tracked specular, demo-tile word drift).
-> **Committed locally on `main` but NOT yet pushed** — run `! ALLOW_PUSH=1 git push`
-> yourself (pre-push guard blocks agents). The prior pushed commit is `7b9b207`.
+> **Committed AND pushed: `main` @ `2a249df`, in sync with origin, tree clean.**
+> (Owner pushes via `! ALLOW_PUSH=1 git push` — pre-push guard blocks agents.)
 > Read `PLAN.md` (owner-approved plan) and `THINKING.md` (binding discipline) first.
 > Component-authoring recipe: `apps/web/registry/README.md`; `button` is the reference
 > for simple surfaces, `dialog`/`switch`/`select` for the `<GlassSurface asChild>` pattern.
@@ -78,10 +78,11 @@ local dev server asserting `data-vsrc-glass="refract"` (see What Worked).
 README/CONTRIBUTING + `npm publish --dry-run` unwritten (Phase 6). Axe smoke + 60fps perf
 sanity not run.
 
-## Repo state (committed locally on `main`, NOT pushed)
+## Repo state (committed AND pushed — `main` @ `2a249df`)
 
-Owner runs every push via `! ALLOW_PUSH=1 git push` (pre-push guard blocks agents; never
-bypass, never set ALLOW_PUSH yourself). Deploys are owner-run on Vercel. `griflan-*`,
+Tree clean, in sync with origin. Owner runs every push via `! ALLOW_PUSH=1 git push`
+(pre-push guard blocks agents; never bypass, never set ALLOW_PUSH yourself). Deploys are
+owner-run on Vercel. `griflan-*`,
 `.claude/`, `.agents/` are gitignored. **`apps/web/next-env.d.ts` gets rewritten by
 `pnpm dev`** — never stage it (it stayed clean this session).
 
@@ -157,17 +158,16 @@ This session:
 
 ## Next Steps (in order)
 
-1. **Push** this session's local commit: `! ALLOW_PUSH=1 git push`.
-2. **Per-component docs pages** (props tables, a11y notes) — the remaining Phase 5 gap.
-3. **Axe smoke + 60fps perf sanity** (PLAN §Verification 3–4) — now with loader, Lenis,
+1. **Per-component docs pages** (props tables, a11y notes) — the remaining Phase 5 gap.
+2. **Axe smoke + 60fps perf sanity** (PLAN §Verification 3–4) — now with loader, Lenis,
    reveals, drift, and the ⌘K listener all live.
-4. **Publish prep** (Phase 6): `npm publish --dry-run` for the engine + README/CONTRIBUTING.
+3. **Publish prep** (Phase 6): `npm publish --dry-run` for the engine + README/CONTRIBUTING.
    Publishing claims the `vsrc` npm name and unblocks a consumer proof without the local
-   tarball override. NOTE: the Phase-0 tarball predates the preset/node-hook changes — re-pack
-   before a fresh proof.
-5. Optional: re-prove a NEW surface (e.g. `select`) in a consumer to exercise the deferred-mount
+   tarball override. NOTE: the pushed engine now carries the preset/node-hook changes, but the
+   Phase-0 scratch tarball predates them — re-pack before a fresh proof.
+4. Optional: re-prove a NEW surface (e.g. `select`) in a consumer to exercise the deferred-mount
    fix end-to-end through `shadcn add`.
-6. Run `/playbook` (PLAYBOOK.md still absent).
+5. Run `/playbook` (PLAYBOOK.md still absent).
 
 ## Open questions for the owner (none blocking)
 
