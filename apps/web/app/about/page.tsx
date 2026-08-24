@@ -95,18 +95,23 @@ export default function AboutPage() {
             surface to see exactly what it did.
           </p>
           <dl className="mt-8 grid gap-px overflow-hidden rounded-[24px] border border-border bg-border">
+            {/* dt/dd must sit directly inside the dl's div rows — extra nesting
+                fails axe's definition-list contract. The mode badge is a second
+                dd: it IS a value of the browser term. */}
             {BROWSERS.map((b) => (
               <div
                 key={b.name}
-                className="grid gap-2 bg-background p-5 sm:grid-cols-[1fr_auto] sm:items-start sm:gap-6"
+                className="grid gap-x-6 gap-y-1 bg-background p-5 sm:grid-cols-[1fr_auto]"
               >
-                <div>
-                  <dt className="font-display text-xl">{b.name}</dt>
-                  <dd className="mt-1 text-sm leading-relaxed text-muted-foreground">{b.note}</dd>
-                </div>
-                <span className="justify-self-start rounded-full border border-border px-2.5 py-1 font-mono text-[11px] tracking-[0.15em] text-muted-foreground uppercase sm:justify-self-end">
-                  {b.mode}
-                </span>
+                <dt className="font-display text-xl">{b.name}</dt>
+                <dd className="justify-self-start sm:col-start-2 sm:row-start-1 sm:row-span-2 sm:justify-self-end">
+                  <span className="rounded-full border border-border px-2.5 py-1 font-mono text-[11px] tracking-[0.15em] text-muted-foreground uppercase">
+                    {b.mode}
+                  </span>
+                </dd>
+                <dd className="text-sm leading-relaxed text-muted-foreground sm:col-start-1">
+                  {b.note}
+                </dd>
               </div>
             ))}
           </dl>

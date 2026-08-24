@@ -442,3 +442,16 @@ html.lenis body {
     translate: 0 0;
   }
 }
+
+/* Shiki source view (docs only). Dual theme: dark tokens are inline (the site
+   default); .light swaps every span to its --shiki-light var. The panel's card
+   provides the background — shiki's own theme background is discarded. */
+.code-panel pre {
+  padding: 1rem;
+}
+.code-panel .shiki {
+  background: transparent !important;
+}
+.light .code-panel .shiki span {
+  color: var(--shiki-light) !important;
+}

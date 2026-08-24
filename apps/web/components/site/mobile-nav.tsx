@@ -78,7 +78,7 @@ export function MobileNav() {
                   {name}
                 </a>
               ) : (
-                <Link href={`/components#${name}`} className={linkClass}>
+                <Link href={`/components/${name}`} className={linkClass}>
                   {name}
                 </Link>
               )}

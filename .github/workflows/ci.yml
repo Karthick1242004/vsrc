@@ -37,3 +37,8 @@ jobs:
 
       - name: Theme lockstep check
         run: node scripts/check-theme-sync.mjs
+
+      - name: Site e2e — refraction + axe (Chromium)
+        run: |
+          pnpm -C apps/web exec playwright install --with-deps chromium
+          pnpm -C apps/web test:e2e

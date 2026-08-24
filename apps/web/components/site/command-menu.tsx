@@ -46,7 +46,7 @@ export function CommandMenu() {
         document.getElementById(name)?.scrollIntoView({ behavior: "smooth", block: "start" });
         history.pushState(null, "", `#${name}`);
       } else {
-        router.push(`/components#${name}`);
+        router.push(`/components/${name}`);
       }
     },
     [pathname, router],

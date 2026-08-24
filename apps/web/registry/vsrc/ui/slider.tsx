@@ -27,9 +27,15 @@ function Slider({
   glass,
   defaultValue,
   value,
+  thumbLabels,
+  "aria-label": ariaLabel,
   ...props
 }: React.ComponentProps<typeof SliderPrimitive.Root> & {
   glass?: LiquidGlassOptions | GlassPreset | false;
+  /** Accessible names for the thumbs — role=slider lives on the THUMB, not the
+   *  root, so an aria-label on the root never names the control. A bare
+   *  aria-label covers the single-thumb case; multi-thumb sliders name each. */
+  thumbLabels?: string[];
 }) {
   const thumbCount = React.useMemo(() => {
     if (Array.isArray(value)) return value.length;
@@ -63,6 +69,7 @@ function Slider({
       {Array.from({ length: thumbCount }, (_, i) => (
         <GlassSurface asChild glass={mergeGlass(THUMB_OPTICS, glass)} key={i}>
           <SliderPrimitive.Thumb
+            aria-label={thumbLabels?.[i] ?? ariaLabel}
             data-slot="slider-thumb"
             className={cn(
               "relative block size-7 rounded-full outline-none",
