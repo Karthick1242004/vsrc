@@ -18,7 +18,7 @@ React is an optional peer dependency — the core engine runs without it.
 import { liquidGlass } from "vsrc";
 
 const glass = liquidGlass(document.querySelector(".panel"), {
-  scale: -112,   // displacement strength; negative = magnifying bulge
+  scale: -112,   // rim displacement; negative reads outward past the edge
   chroma: 6,     // per-channel scale stagger → prism fringe at the rim
   blur: 3,       // backdrop blur inside the pane
   saturate: 1.5,
@@ -66,10 +66,11 @@ The engine degrades honestly — every mode is surfaced as `data-vsrc-glass` for
 
 | Option | Default | What it does |
 |---|---|---|
-| `scale` | `-112` | Displacement strength; negative = magnifying bulge |
+| `scale` | `-112` | Rim displacement strength; negative reads outward, gathering what is just past the edge |
 | `chroma` | `6` | Channel stagger for the prism fringe; `0` disables |
-| `border` | `0.07` | Edge-band width as a fraction of the short side |
-| `mapBlur` | `12` | Curvature of the bulge: small = hard rim, large = dome |
+| `border` | `0.07` | Rim band width as a fraction of the short side (added to `2 × mapBlur`) |
+| `mapBlur` | `12` | Rim softness: widens the band, so small = hard rim, large = dome |
+| `magnify` | `1.05` | Centre magnification of the backdrop; `1` disables |
 | `blur` | `3` | Backdrop blur inside the pane |
 | `saturate` | `1.5` | Backdrop saturation boost |
 | `radius` | `null` | Corner radius override (auto-read from computed style) |

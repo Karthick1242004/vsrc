@@ -12,14 +12,16 @@
  */
 
 export interface LiquidGlassOptions {
-  /** Displacement strength; negative = magnifying bulge. −60 subtle … −180 dramatic. */
+  /** Rim displacement strength; negative reads outward, gathering what is just past the edge. −60 subtle … −180 dramatic. */
   scale?: number;
   /** Per-channel scale stagger (prism fringe at the rim); 0 disables. */
   chroma?: number;
-  /** Neutral interior inset as a fraction of the smaller side — confines refraction to an edge band. */
+  /** Rim band width as a fraction of the smaller side (added to 2 × mapBlur). */
   border?: number;
-  /** Curvature of the bulge (px): small = hard rim, large = dome. */
+  /** Rim softness (px): widens the band, so small = hard rim, large = dome. */
   mapBlur?: number;
+  /** Centre magnification of the backdrop (1 = none). */
+  magnify?: number;
   /** Backdrop blur (px) inside the glass; raise for busy backgrounds. */
   blur?: number;
   /** Backdrop saturation boost. */
@@ -54,6 +56,7 @@ const DEFAULTS: Required<LiquidGlassOptions> = {
   chroma: 6,
   border: 0.07,
   mapBlur: 12,
+  magnify: 1.05,
   blur: 3,
   saturate: 1.5,
   radius: null,
@@ -67,9 +70,9 @@ export type GlassPreset = "subtle" | "regular" | "heavy";
 
 /** `regular` is the engine DEFAULTS; `subtle`/`heavy` step the whole bundle together. */
 export const GLASS_PRESETS: Record<GlassPreset, LiquidGlassOptions> = {
-  subtle: { scale: -56, chroma: 3, border: 0.14, mapBlur: 8, blur: 2, saturate: 1.35, fallbackBlur: 2 },
-  regular: { scale: -112, chroma: 6, border: 0.07, mapBlur: 12, blur: 3, saturate: 1.5, fallbackBlur: 3 },
-  heavy: { scale: -170, chroma: 10, border: 0.05, mapBlur: 16, blur: 4, saturate: 1.6, fallbackBlur: 5 },
+  subtle: { scale: -56, chroma: 3, border: 0.14, mapBlur: 8, magnify: 1.03, blur: 2, saturate: 1.35, fallbackBlur: 2 },
+  regular: { scale: -112, chroma: 6, border: 0.07, mapBlur: 12, magnify: 1.05, blur: 3, saturate: 1.5, fallbackBlur: 3 },
+  heavy: { scale: -170, chroma: 10, border: 0.05, mapBlur: 16, magnify: 1.08, blur: 4, saturate: 1.6, fallbackBlur: 5 },
 };
 
 /**
@@ -146,40 +149,91 @@ function ensureDefs(): SVGDefsElement {
   return svgDefs;
 }
 
+/** Rim falloff exponent: the bend stays hard at the edge and dies quickly inward. */
+const RIM_FALLOFF = 2.4;
+
 /**
- * Displacement map, gradient-difference method: a red left→right ramp encodes
- * X displacement, a blue top→bottom ramp encodes Y ("difference" keeps both
- * since the channels are disjoint). A blurred, inset 50%-gray rounded rect
- * neutralizes the interior, confining the refraction bulge to an edge band
- * whose curvature is set by the blur radius.
+ * Displacement map from the pane's signed distance field. Each pixel is
+ * displaced along the edge normal by `(1 − t)^2.4` of the peak, where t runs
+ * 0 → 1 across the rim band, so the bend follows the rounded corners exactly
+ * and keeps a hard rim. The interior adds a uniform magnification. R encodes X
+ * and B encodes Y as `0.5 + offset / scale`; neutral is 128.
+ *
+ * Normals come from the same box with its corner radius raised to the band
+ * width: with the true (smaller) radius the normal would flip 90° along each
+ * corner's diagonal and draw a mitre seam through the band.
+ *
+ * Pure (writes into `data`) so it can be tested without a canvas.
  */
-function makeMap(w: number, h: number, radius: number, border: number, mapBlur: number): string {
+export function fillDisplacementMap(
+  data: Uint8ClampedArray,
+  w: number,
+  h: number,
+  radius: number,
+  border: number,
+  mapBlur: number,
+  magnify: number,
+  scale: number,
+): void {
+  const hx = w / 2;
+  const hy = h / 2;
+  const r = Math.min(Math.max(radius, 0), hx, hy);
+  const band = Math.max(1, Math.min(hx, hy, border * Math.min(w, h) + 2 * mapBlur));
+  const rn = Math.max(r, band);
+  // Peak rim offset is scale/2 (the map's full range); the sign of `scale`
+  // decides outward vs inward, so map values are scale-independent here.
+  const mag = scale === 0 || magnify <= 0 ? 0 : (1 - 1 / magnify) / scale;
+  for (let y = 0; y < h; y++) {
+    const py = y + 0.5 - hy;
+    const ay = Math.abs(py);
+    for (let x = 0; x < w; x++) {
+      const px = x + 0.5 - hx;
+      const ax = Math.abs(px);
+      const qx = ax - hx + r;
+      const qy = ay - hy + r;
+      const d =
+        Math.hypot(Math.max(qx, 0), Math.max(qy, 0)) + Math.min(Math.max(qx, qy), 0) - r;
+      const t = Math.min(Math.max(-d / band, 0), 1);
+      const e = t >= 1 ? 0 : Math.pow(1 - t, RIM_FALLOFF);
+      let nx = 0;
+      let ny = 0;
+      if (e > 0) {
+        const cx = ax - hx + rn;
+        const cy = ay - hy + rn;
+        if (cx > 0 && cy > 0) {
+          const l = Math.hypot(cx, cy);
+          nx = cx / l;
+          ny = cy / l;
+        } else if (cx > cy) nx = 1;
+        else ny = 1;
+        if (px < 0) nx = -nx;
+        if (py < 0) ny = -ny;
+      }
+      const i = (y * w + x) * 4;
+      data[i] = (0.5 - (nx * e) / 2 - px * mag) * 255;
+      data[i + 1] = 0;
+      data[i + 2] = (0.5 - (ny * e) / 2 - py * mag) * 255;
+      data[i + 3] = 255;
+    }
+  }
+}
+
+function makeMap(
+  w: number,
+  h: number,
+  radius: number,
+  border: number,
+  mapBlur: number,
+  magnify: number,
+  scale: number,
+): string {
   const canvas = document.createElement("canvas");
   canvas.width = w;
   canvas.height = h;
   const ctx = canvas.getContext("2d")!;
-
-  const gx = ctx.createLinearGradient(0, 0, w, 0);
-  gx.addColorStop(0, "rgb(0,0,0)");
-  gx.addColorStop(1, "rgb(255,0,0)");
-  ctx.fillStyle = gx;
-  ctx.fillRect(0, 0, w, h);
-
-  const gy = ctx.createLinearGradient(0, 0, 0, h);
-  gy.addColorStop(0, "rgb(0,0,0)");
-  gy.addColorStop(1, "rgb(0,0,255)");
-  ctx.globalCompositeOperation = "difference";
-  ctx.fillStyle = gy;
-  ctx.fillRect(0, 0, w, h);
-
-  ctx.globalCompositeOperation = "source-over";
-  const inset = border * Math.min(w, h);
-  ctx.filter = `blur(${mapBlur}px)`;
-  ctx.fillStyle = "rgba(128,128,128,0.93)";
-  ctx.beginPath();
-  ctx.roundRect(inset, inset, w - inset * 2, h - inset * 2, Math.max(radius - inset, 2));
-  ctx.fill();
-  ctx.filter = "none";
+  const img = ctx.createImageData(w, h);
+  fillDisplacementMap(img.data, w, h, radius, border, mapBlur, magnify, scale);
+  ctx.putImageData(img, 0, 0);
   return canvas.toDataURL();
 }
 
@@ -313,7 +367,7 @@ export function liquidGlass(
     const h = el!.offsetHeight;
     if (!w || !h) return;
     const radius = resolveRadius(el!, w, h, o.radius);
-    parts.feImage.setAttribute("href", makeMap(w, h, radius, o.border, o.mapBlur));
+    parts.feImage.setAttribute("href", makeMap(w, h, radius, o.border, o.mapBlur, o.magnify, o.scale));
     parts.feImage.setAttribute("width", String(w));
     parts.feImage.setAttribute("height", String(h));
   }

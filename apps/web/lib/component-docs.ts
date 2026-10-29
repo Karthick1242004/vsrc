@@ -84,7 +84,7 @@ export const COMPONENT_DOCS: ComponentDoc[] = [
       "The pointer specular never activates when prefers-reduced-motion is set.",
     ],
     optics:
-      "Engine defaults (the `regular` preset): scale −112, chroma 6, border 0.07, mapBlur 12, blur 3, saturate 1.5. Every other component tunes these down for its surface size — this primitive is the raw material.",
+      "Engine defaults (the `regular` preset): scale −112, chroma 6, border 0.07, mapBlur 12, magnify 1.05, blur 3, saturate 1.5. Every other component tunes these down for its surface size — this primitive is the raw material.",
     e2e: { surface: '[data-slot="glass-surface"]' },
   },
   {

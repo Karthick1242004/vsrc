@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* Commented-out lab code; its class names must not reach the stylesheet. */
+@source not "../lab-archive";
 
 /* V-/Src brand tokens. Dark (warm black) is the DEFAULT theme; `.light` on
    <html> opts into cream paper. Canonical values: vsrc-brand-board (1).html. */
@@ -40,6 +42,10 @@
     inset -1px 0 0 0 color-mix(in oklab, #fffddb 6%, transparent);
   --glass-rim-light: rgb(255 253 219 / 0.4);
   --glass-rim-dark: rgb(0 0 0 / 0.35);
+  /* Refract mode's lit rim: the edge facing the light, and the weaker catch
+     opposite it where light has passed through and out again. */
+  --glass-rim-lit: rgb(255 253 219 / 0.5);
+  --glass-rim-catch: rgb(255 253 219 / 0.16);
 }
 
 .light {
@@ -70,6 +76,8 @@
     inset -1px 0 0 0 color-mix(in oklab, #ffffff 20%, transparent);
   --glass-rim-light: rgb(255 255 255 / 0.75);
   --glass-rim-dark: rgb(24 22 22 / 0.2);
+  --glass-rim-lit: rgb(255 255 255 / 0.85);
+  --glass-rim-catch: rgb(255 255 255 / 0.35);
 }
 
 @theme inline {
@@ -267,6 +275,28 @@ html[data-cursor] {
       var(--glass-rim-dark) 82%,
       transparent
     );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+
+/* Refract-mode lit rim: a thin band just inside the edge, brightest where the
+   edge faces the light (top-left), a faint catch on the far side, dark between.
+   Same 1.5px ring mask as the frosted rim. */
+[data-vsrc-glass="refract"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: var(--glass-rim-refract, 1.5px);
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    var(--glass-rim-lit) 0%,
+    transparent 34%,
+    transparent 66%,
+    var(--glass-rim-catch) 100%
+  );
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);

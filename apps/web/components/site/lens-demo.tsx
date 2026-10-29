@@ -34,6 +34,7 @@ uniform vec2 u_half;
 uniform float u_rad;
 uniform float u_band;
 uniform float u_bend;
+uniform float u_mag;
 
 float sdRoundRect(vec2 p, vec2 b, float r) {
   vec2 q = abs(p) - b + vec2(r);
@@ -45,26 +46,33 @@ void main() {
   vec2 p = vec2(v_uv.x, 1.0 - v_uv.y) * u_res;
   vec2 q = p - u_lens;
   float d = sdRoundRect(q, u_half, u_rad);
+  vec2 g = normalize(vec2(
+    sdRoundRect(q + vec2(1.0, 0.0), u_half, u_rad) - sdRoundRect(q - vec2(1.0, 0.0), u_half, u_rad),
+    sdRoundRect(q + vec2(0.0, 1.0), u_half, u_rad) - sdRoundRect(q - vec2(0.0, 1.0), u_half, u_rad)
+  ) + vec2(1e-5));
   vec3 col;
   if (d > 0.0) {
     col = scene(p).rgb;
   } else {
-    float t = smoothstep(-u_band, 0.0, d);
-    vec2 g = normalize(vec2(
-      sdRoundRect(q + vec2(1.0, 0.0), u_half, u_rad) - sdRoundRect(q - vec2(1.0, 0.0), u_half, u_rad),
-      sdRoundRect(q + vec2(0.0, 1.0), u_half, u_rad) - sdRoundRect(q - vec2(0.0, 1.0), u_half, u_rad)
-    ) + vec2(1e-5));
-    float s = u_bend * t * t;
+    // Same profile as the engine's map: hard at the rim, (1 - t)^2.4 inward,
+    // reading outward along the normal, over a magnified interior.
+    float t = clamp(-d / u_band, 0.0, 1.0);
+    float s = u_bend * pow(1.0 - t, 2.4);
+    vec2 m = u_lens + q / u_mag;
     // Three staggered samples = the engine's chromatic fringe.
     col = vec3(
-      scene(p + g * s * 1.10).r,
-      scene(p + g * s).g,
-      scene(p + g * s * 0.90).b
+      scene(m + g * s * 1.10).r,
+      scene(m + g * s).g,
+      scene(m + g * s * 0.90).b
     );
     col = mix(col, vec3(1.0, 0.99, 0.86), 0.05 + 0.10 * t);
   }
+  // Lit rim, as the material CSS draws it: bright where the edge faces the
+  // top-left light, a faint catch opposite, dark between.
+  vec2 L = normalize(vec2(-1.0, -1.0));
   float ring = 1.0 - smoothstep(0.0, 1.6, abs(d));
-  col = mix(col, vec3(1.0, 0.99, 0.86), ring * 0.45);
+  float lit = 0.1 + 0.5 * max(dot(g, L), 0.0) + 0.16 * max(dot(g, -L), 0.0);
+  col = mix(col, vec3(1.0, 0.99, 0.86), ring * lit);
   gl_FragColor = vec4(col, 1.0);
 }
 `;
@@ -138,6 +146,7 @@ function LensCanvas() {
     gl.uniform1f(u("u_rad"), 30 * dpr);
     gl.uniform1f(u("u_band"), 42 * dpr);
     gl.uniform1f(u("u_bend"), 36 * dpr);
+    gl.uniform1f(u("u_mag"), 1.05);
     const lensLoc = u("u_lens");
 
     let raf = 0;
