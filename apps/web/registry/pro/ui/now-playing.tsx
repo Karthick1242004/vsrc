@@ -11,7 +11,7 @@ const CARD_OPTICS: LiquidGlassOptions = {
   chroma: 3,
   border: 0.08,
   mapBlur: 12,
-  blur: 3,
+  blur: 1,
   saturate: 1.25,
   fallbackBlur: 4,
 };
@@ -93,10 +93,16 @@ function NowPlaying({
     if (!playing || scrubbing || duration <= 0) return;
     let raf = 0;
     let last = performance.now();
+    let pending = 0;
     const tick = (now: number) => {
-      const dt = Math.min(now - last, 250) / 1000;
+      pending += Math.min(now - last, 250) / 1000;
       last = now;
-      setTime((t) => Math.min(duration, t + dt));
+      // ~10 renders a second instead of 60: a step of 0.1s is invisible on a track minutes long.
+      if (pending >= 0.1) {
+        const dt = pending;
+        pending = 0;
+        setTime((t) => Math.min(duration, t + dt));
+      }
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);

@@ -11,7 +11,7 @@ const RADIAL_OPTICS: LiquidGlassOptions = {
   chroma: 4,
   border: 0.18,
   mapBlur: 6,
-  blur: 2,
+  blur: 0.5,
   saturate: 1.4,
   fallbackBlur: 2,
 };

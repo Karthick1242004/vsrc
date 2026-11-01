@@ -33,6 +33,6 @@ export const doc: DocBody = {
     "The chart SVG is role=\"img\" with a generated summary and is described by a visually hidden data table.",
     "A role=\"slider\" scrubber over the chart takes focus: Arrow keys move one point, Home and End jump to the ends, and the current point is announced as aria-valuetext.",
   ],
-  optics: "CARD_OPTICS (scale −80, chroma 3, border 0.07, mapBlur 12, blur 2, saturate 1.3): the large-panel recipe, so each wide card bends the backdrop gently without smearing the numbers. The sparkline and chart are plain SVG inside their card, never a second glass surface.",
+  optics: "CARD_OPTICS (scale −80, chroma 3, border 0.07, mapBlur 12, blur 0.5, saturate 1.3): the large-panel recipe, so each wide card bends the backdrop gently without smearing the numbers. The sparkline and chart are plain SVG inside their card, never a second glass surface.",
   e2e: { surface: '[data-slot="stat-card"]' },
 };

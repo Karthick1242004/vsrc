@@ -45,7 +45,7 @@ export default async function ComponentPage({
 
   // The code tab renders the exact file consumers install — read from the
   // registry source at build time so it can never drift from what ships. Pro
-  // source is not published yet, so those pages never read it.
+  // source is only served to key holders, so those pages never read it.
   const isPro = doc.tier === "pro";
   const source = isPro
     ? ""
@@ -76,6 +76,20 @@ export default async function ComponentPage({
           <TierBadge tier={doc.tier} className="text-xs" />
         </h1>
         <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">{doc.blurb}</p>
+        {(doc.builtOn ?? doc.extendsRadix) && (
+          <p className="mt-2 text-sm text-muted-foreground">
+            Built on{" "}
+            <a
+              href={(doc.builtOn ?? doc.extendsRadix)!.href}
+              target="_blank"
+              rel="noreferrer"
+              className="text-foreground underline decoration-signal/60 underline-offset-4 transition-colors hover:decoration-signal"
+            >
+              {(doc.builtOn ?? doc.extendsRadix)!.label}
+            </a>
+            , with the glass layered on top.
+          </p>
+        )}
 
         <div className="mt-8 grid gap-4" data-demo={doc.slug}>
           {Demo ? (
@@ -83,7 +97,8 @@ export default async function ComponentPage({
               <Demo />
             </DemoTile>
           ) : null}
-          {isPro ? <ProNotice /> : <CodeBlock kicker="install" code={`npx shadcn add @vsrc/${doc.slug}`} copy />}
+          <CodeBlock kicker="install" code={`npx shadcn add @${isPro ? "vsrc-pro" : "vsrc"}/${doc.slug}`} copy />
+          {isPro ? <ProNotice /> : null}
         </div>
       </Reveal>
 
@@ -112,11 +127,18 @@ export default async function ComponentPage({
           </p>
           <div className="mt-6 grid gap-8">
             {doc.props.map((group) => (
-              <div key={group.component}>
+              // min-w-0: a grid item otherwise grows to its table's width and scrolls the whole page on phones.
+              <div key={group.component} className="min-w-0">
                 <p className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
                   {`// ${group.component}`}
                 </p>
-                <div className="mt-3 overflow-x-auto rounded-lg border border-border">
+                {/* Focusable so keyboard users can scroll a table wider than the page. */}
+                <div
+                  tabIndex={0}
+                  role="region"
+                  aria-label={`${group.component} props`}
+                  className="mt-3 overflow-x-auto rounded-lg border border-border outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
                   <table className="w-full text-left text-sm">
                     <thead>
                       <tr className="border-b border-border font-mono text-xs text-muted-foreground">

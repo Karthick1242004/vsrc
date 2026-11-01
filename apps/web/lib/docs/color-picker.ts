@@ -30,7 +30,7 @@ export const doc: DocBody = {
     "Radix handles Escape, focus entering the panel and returning to the trigger; thumb scaling is dropped under reduced motion.",
   ],
   optics:
-    "PANEL_OPTICS: scale −88, border 0.07, mapBlur 14, blur 6, saturate 1.2 — a large calm panel, so the bend stays shallow and the saturation square is never fighting the lens. Only the portaled panel is glass; the trigger is the free Button and the controls inside the panel are plain.",
+    "PANEL_OPTICS: scale −88, border 0.07, mapBlur 14, blur 3, saturate 1.2 — a large calm panel, so the bend stays shallow and the saturation square is never fighting the lens. Only the portaled panel is glass; the trigger is the free Button and the controls inside the panel are plain.",
   e2e: {
     surface: '[data-slot="color-picker-panel"]',
     open: { action: "click", target: '[data-demo="color-picker"] [data-slot="button"]' },

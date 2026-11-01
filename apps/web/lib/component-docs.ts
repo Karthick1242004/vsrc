@@ -50,7 +50,7 @@ const SHIPPED_DOCS: DocBody[] = [
       "The pointer specular never activates when prefers-reduced-motion is set.",
     ],
     optics:
-      "Engine defaults (the `regular` preset): scale −112, chroma 6, border 0.07, mapBlur 12, magnify 1.05, blur 3, saturate 1.5. Every other component tunes these down for its surface size — this primitive is the raw material.",
+      "Engine defaults (the `regular` preset): scale −112, chroma 6, border 0.07, mapBlur 12, magnify 1 (no magnification; loupes and lenses raise it), blur 0.5, saturate 1.3. Every other component tunes these down for its surface size — this primitive is the raw material.",
     e2e: { surface: '[data-slot="glass-surface"]' },
   },
   {
@@ -92,7 +92,7 @@ const SHIPPED_DOCS: DocBody[] = [
       "The ghost variant carries no glass, so nothing refracts behind quiet chrome.",
     ],
     optics:
-      "BUTTON_OPTICS: scale −56, chroma 4, border 0.16, mapBlur 8, blur 2 — small-control tuning; a button-sized pane can't take panel-strength displacement without smearing its label. Ghost resolves to `false`.",
+      "BUTTON_OPTICS: scale −56, chroma 4, border 0.16, mapBlur 8, blur 0.5 — small-control tuning; a button-sized pane can't take panel-strength displacement without smearing its label. Ghost resolves to `false`.",
     e2e: { surface: '[data-slot="button"]' },
   },
   {
@@ -133,7 +133,7 @@ const SHIPPED_DOCS: DocBody[] = [
       "Visible focus-visible ring.",
     ],
     optics:
-      "INPUT_OPTICS: scale −40, chroma 3, border 0.18, mapBlur 6, blur 2 — gentler than button; a text field's content is denser than a label, so the interior must stay stiller.",
+      "INPUT_OPTICS: scale −40, chroma 3, border 0.18, mapBlur 6, blur 0.5 — gentler than button; a text field's content is denser than a label, so the interior must stay stiller.",
     e2e: { surface: '[data-slot="input"]' },
   },
   {
@@ -154,7 +154,7 @@ const SHIPPED_DOCS: DocBody[] = [
       "The floating panel mounts in a portal a commit after the trigger — the node-driven hook re-applies optics the moment it attaches.",
     ],
     optics:
-      "TRIGGER_OPTICS: scale −40, chroma 3, border 0.18, mapBlur 6, blur 2 on both trigger and panel. The panel is the deferred-mount case that forced the engine's node-in-state hook design.",
+      "TRIGGER_OPTICS: scale −40, chroma 3, border 0.18, mapBlur 6, blur 0.5 on both trigger and panel. The panel is the deferred-mount case that forced the engine's node-in-state hook design.",
     e2e: {
       surface: '[data-slot="select-content"]',
       open: { action: "click", target: '[data-slot="select-trigger"]' },
@@ -177,7 +177,7 @@ const SHIPPED_DOCS: DocBody[] = [
       "Checked state is signalled by the red fill as well as aria-checked — never color alone for assistive tech.",
     ],
     optics:
-      "TRACK_OPTICS: scale −32, chroma 2, border 0.22, mapBlur 5, blur 2 — the smallest glass surface in the registry; at 44×24 the edge band is most of the pane, so displacement stays faint.",
+      "TRACK_OPTICS: scale −32, chroma 2, border 0.22, mapBlur 5, blur 0.5 — the smallest glass surface in the registry; at 44×24 the edge band is most of the pane, so displacement stays faint.",
     e2e: { surface: '[data-slot="switch"]' },
   },
   {
@@ -228,7 +228,7 @@ const SHIPPED_DOCS: DocBody[] = [
       "One glass pane for the whole list — triggers inside are flat; glass never nests.",
     ],
     optics:
-      "LIST_OPTICS: scale −40, chroma 3, border 0.18, mapBlur 6, blur 2, saturate 1.3. The gliding active indicator animates position inside the pane, so the pane itself is the only refracting surface.",
+      "LIST_OPTICS: scale −40, chroma 3, border 0.18, mapBlur 6, blur 0.5, saturate 1.3. The gliding active indicator animates position inside the pane, so the pane itself is the only refracting surface.",
     e2e: { surface: '[data-slot="tabs-list"]' },
   },
   {
@@ -248,7 +248,7 @@ const SHIPPED_DOCS: DocBody[] = [
       "Radix wires aria-describedby to the trigger automatically.",
     ],
     optics:
-      "TIP_OPTICS: scale −32, chroma 2, border 0.2, mapBlur 5, blur 2, saturate 1.3 — switch-class tuning for the second-smallest pane in the registry.",
+      "TIP_OPTICS: scale −32, chroma 2, border 0.2, mapBlur 5, blur 0.5, saturate 1.3 — switch-class tuning for the second-smallest pane in the registry.",
     e2e: {
       surface: '[data-slot="tooltip-content"]',
       open: { action: "hover", target: '[data-demo="tooltip"] [data-slot="button"]' },
@@ -506,7 +506,7 @@ const SHIPPED_DOCS: DocBody[] = [
       "Fixed positioning keeps it reachable; it never overlaps focus order.",
     ],
     optics:
-      "DOCK_OPTICS: scale −64, chroma 5, border 0.14, mapBlur 10, blur 3 — mid-strength; the bar floats over arbitrary page content, so it needs presence without smearing what scrolls beneath.",
+      "DOCK_OPTICS: scale −64, chroma 5, border 0.14, mapBlur 10, blur 1 — mid-strength; the bar floats over arbitrary page content, so it needs presence without smearing what scrolls beneath.",
     e2e: { surface: '[data-slot="dock"]' },
   },
 ];

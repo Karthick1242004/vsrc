@@ -12,7 +12,7 @@ const RADIO_OPTICS: LiquidGlassOptions = {
   chroma: 2,
   border: 0.3,
   mapBlur: 4,
-  blur: 1,
+  blur: 0.5,
   saturate: 1.3,
   fallbackBlur: 1,
 };

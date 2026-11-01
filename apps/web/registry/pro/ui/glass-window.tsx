@@ -11,7 +11,7 @@ const WINDOW_OPTICS: LiquidGlassOptions = {
   chroma: 3,
   border: 0.08,
   mapBlur: 12,
-  blur: 3,
+  blur: 1,
   saturate: 1.25,
   fallbackBlur: 4,
 };
@@ -81,6 +81,7 @@ export interface GlassWindowProps extends Omit<React.ComponentProps<"div">, "tit
   title: string;
   position?: Point;
   defaultPosition?: Point;
+  /** Fires when a drag ends (and when the window is pushed back inside a shrinking frame). */
   onPositionChange?: (position: Point) => void;
   size?: { width: number; height: number };
   /** Called by the red button. The window does not remove itself: unmount it from the parent. */
@@ -143,10 +144,12 @@ function GlassWindow({
     };
   }, []);
 
-  // Keep the window inside its frame when the frame shrinks (phone widths, resizes).
+  // Keep the window inside its frame when the frame shrinks (phone widths, resizes)
+  // and when a minimized window grows back. Skipped while maximized, which would
+  // otherwise pin the restore position to the corner.
   React.useEffect(() => {
     const frame = node.current?.parentElement;
-    if (!frame) return;
+    if (!frame || maximized) return;
     const fit = () => {
       const next = clamp(posRef.current);
       if (next.x !== posRef.current.x || next.y !== posRef.current.y) setPos(next);
@@ -155,7 +158,7 @@ function GlassWindow({
     const ro = new ResizeObserver(fit);
     ro.observe(frame);
     return () => ro.disconnect();
-  }, [clamp, setPos]);
+  }, [clamp, setPos, minimized, maximized]);
 
   const activate = () => {
     desktop?.raise(id);
@@ -164,14 +167,24 @@ function GlassWindow({
 
   const z = zIndex ?? desktop?.zOf(id) ?? 1;
   const toggleMax = () => setMaximized(!maximized);
+  const setNode = React.useCallback(
+    (el: HTMLDivElement | null) => {
+      node.current = el;
+      if (typeof ref === "function") ref(el);
+      else if (ref) ref.current = el;
+    },
+    [ref],
+  );
+  const endDrag = () => {
+    if (!grab.current) return;
+    grab.current = null;
+    setDragging(false);
+    setPos(posRef.current);
+  };
 
   return (
     <GlassSurface
-      ref={(el) => {
-        node.current = el;
-        if (typeof ref === "function") ref(el);
-        else if (ref) ref.current = el;
-      }}
+      ref={setNode}
       data-slot="glass-window"
       role="group"
       aria-labelledby={`${id}-title`}
@@ -180,7 +193,8 @@ function GlassWindow({
       onFocusCapture={activate}
       className={cn(
         "absolute top-0 left-0 flex flex-col rounded-2xl text-foreground",
-        "transition-[transform,width,height] duration-300 ease-out motion-reduce:transition-none",
+        // Size snaps: animating width/height would stretch the displacement map every frame.
+        "transition-[transform] duration-300 ease-out motion-reduce:transition-none",
         dragging && "transition-none",
         className,
       )}
@@ -211,16 +225,14 @@ function GlassWindow({
         }}
         onPointerMove={(e) => {
           const g = grab.current;
-          if (g) setPos(clamp({ x: e.clientX - g.x, y: e.clientY - g.y }));
+          if (!g || !node.current) return;
+          // Written straight to the element; state is committed once, on release.
+          const p = clamp({ x: e.clientX - g.x, y: e.clientY - g.y });
+          posRef.current = p;
+          node.current.style.transform = `translate3d(${p.x}px,${p.y}px,0)`;
         }}
-        onPointerUp={() => {
-          grab.current = null;
-          setDragging(false);
-        }}
-        onPointerCancel={() => {
-          grab.current = null;
-          setDragging(false);
-        }}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
       >
         <div className="group/lights flex items-center gap-2">
           <Light label="Close window" tone="bg-red-500" d="M2 2l4 4M6 2L2 6" onClick={() => onClose?.()} />

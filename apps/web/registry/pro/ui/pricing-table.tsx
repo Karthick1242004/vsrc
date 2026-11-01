@@ -12,7 +12,7 @@ const PLAN_OPTICS: LiquidGlassOptions = {
   chroma: 3,
   border: 0.07,
   mapBlur: 12,
-  blur: 2,
+  blur: 0.5,
   saturate: 1.3,
   fallbackBlur: 2,
 };
@@ -23,7 +23,7 @@ const FEATURED_OPTICS: LiquidGlassOptions = {
   chroma: 4,
   border: 0.14,
   mapBlur: 14,
-  blur: 2,
+  blur: 0.5,
   saturate: 1.4,
   fallbackBlur: 3,
 };

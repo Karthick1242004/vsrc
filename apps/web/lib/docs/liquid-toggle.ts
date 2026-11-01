@@ -5,7 +5,7 @@ export const doc: DocBody = {
   title: "Liquid Toggle",
   word: "liquid",
   blurb: "A glass switch whose thumb stretches as it travels and squishes as it lands, like a drop of liquid.",
-  extendsRadix: null,
+  extendsRadix: { label: "Radix Switch", href: "https://www.radix-ui.com/primitives/docs/components/switch" },
   props: [
     {
       component: "LiquidToggle",

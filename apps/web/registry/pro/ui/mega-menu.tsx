@@ -12,7 +12,7 @@ const BAR_OPTICS: LiquidGlassOptions = {
   chroma: 4,
   border: 0.16,
   mapBlur: 8,
-  blur: 2,
+  blur: 0.5,
   saturate: 1.4,
   fallbackBlur: 3,
 };
@@ -22,7 +22,7 @@ const PANEL_OPTICS: LiquidGlassOptions = {
   chroma: 4,
   border: 0.07,
   mapBlur: 14,
-  blur: 4,
+  blur: 2,
   saturate: 1.4,
   fallbackBlur: 4,
 };
@@ -126,7 +126,7 @@ function MegaMenu({ sections, contentClassName, glass, className, ref, ...props 
         >
           {sections.map((section) => {
             const triggerClass = cn(
-              "group inline-flex h-9 items-center gap-1 rounded-full px-3.5 text-sm font-medium text-foreground transition-colors",
+              "group inline-flex h-9 items-center gap-1 rounded-full px-2.5 text-sm font-medium text-foreground transition-colors sm:px-3.5",
               "hover:bg-foreground/10 data-[state=open]:bg-foreground/15",
               ring,
             );

@@ -20,6 +20,9 @@ export function SiteFooter() {
         <Link href="/components" className={linkClass}>
           Components
         </Link>
+        <Link href="/pro" className={linkClass}>
+          Pro
+        </Link>
         <Link href="/about" className={linkClass}>
           About &amp; beta
         </Link>

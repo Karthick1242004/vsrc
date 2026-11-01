@@ -23,6 +23,6 @@ export const doc: DocBody = {
     "Badges add visually hidden text (\"3 new\") so the count is announced with the tab name.",
     "The lens slide and press scale are removed under prefers-reduced-motion; the active state is still shown by colour and the lens.",
   ],
-  optics: "BAR_OPTICS: scale -48, chroma 3, border 0.16, mapBlur 7, blur 2, saturate 1.35, fallbackBlur 3. Small-control range so the scrolling content behind bends visibly without smearing labels. The lens is a plain highlight that slides on transform, so the glass map is never regenerated while it moves.",
+  optics: "BAR_OPTICS: scale -48, chroma 3, border 0.16, mapBlur 7, blur 0.5, saturate 1.35, fallbackBlur 3. Small-control range so the scrolling content behind bends visibly without smearing labels. The lens is a plain highlight that slides on transform, so the glass map is never regenerated while it moves.",
   e2e: { surface: '[data-slot="mobile-tab-bar"]' },
 };

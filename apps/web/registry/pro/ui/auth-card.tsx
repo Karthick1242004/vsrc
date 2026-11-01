@@ -11,7 +11,7 @@ const CARD_OPTICS: LiquidGlassOptions = {
   chroma: 3,
   border: 0.08,
   mapBlur: 14,
-  blur: 2,
+  blur: 0.5,
   saturate: 1.3,
   fallbackBlur: 3,
 };
@@ -181,7 +181,8 @@ function AuthCard({
       const result = onSubmit?.({ email: values.email.trim(), password: values.password }, mode);
       if (result && typeof (result as Promise<unknown>).then === "function") {
         setPending(true);
-        await result;
+        // A rejected submit (wrong password) is the consumer's to report; the card only waits for it to settle.
+        await (result as Promise<unknown>).catch(() => {});
       }
     } finally {
       if (mounted.current) setPending(false);

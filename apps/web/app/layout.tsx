@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 
 import { CommandMenu } from "@/components/site/command-menu";
 import { CursorProvider } from "@/components/site/cursor";
+import { GlassTunerProvider } from "@/components/site/glass-tuner";
 import { SiteLoader } from "@/components/site/loader";
 import { SmoothScroll } from "@/components/site/smooth-scroll";
 import { SiteDock } from "@/components/site/site-dock";
@@ -124,6 +125,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <SiteLoader />
         <SmoothScroll />
+        <GlassTunerProvider>
         <CursorProvider>
           <TooltipProvider delayDuration={200}>
             <SiteHeader />
@@ -134,6 +136,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <CommandMenu />
           </TooltipProvider>
         </CursorProvider>
+        </GlassTunerProvider>
       </body>
     </html>
   );

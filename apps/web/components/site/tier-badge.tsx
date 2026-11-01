@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { cn } from "@/lib/utils";
 import type { Tier } from "@/lib/docs/types";
 
@@ -18,8 +20,7 @@ export function TierBadge({ tier, className }: { tier: Tier; className?: string 
   );
 }
 
-/** Stands in for the install command and the source on Pro components, whose
- *  source is not published yet. The live demo above it is the real component. */
+/** The call to buy on Pro components. The live demo above it is the real component. */
 export function ProNotice({ compact = false }: { compact?: boolean }) {
   return (
     <div
@@ -30,11 +31,16 @@ export function ProNotice({ compact = false }: { compact?: boolean }) {
         <p className="font-mono text-xs tracking-[0.2em] text-muted-foreground uppercase">{"// pro"}</p>
         <p className="mt-1 text-sm leading-relaxed text-foreground">
           {compact
-            ? "Included with Pro. Licensing opens soon."
-            : "Included with Pro. The source and the install command unlock when licensing opens — until then, this page shows the live component."}
+            ? "Included with Pro: $49 a year or $99 once."
+            : "Included with Pro: $49 a year or $99 once. Buy, create your install key, and the command above works in your project."}
         </p>
       </div>
-      <TierBadge tier="pro" />
+      <Link
+        href="/pro"
+        className="rounded-full border border-primary/70 px-4 py-1.5 font-mono text-xs tracking-[0.15em] text-foreground uppercase transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+      >
+        Get Pro
+      </Link>
     </div>
   );
 }

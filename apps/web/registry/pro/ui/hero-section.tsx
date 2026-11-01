@@ -12,7 +12,7 @@ const LENS_OPTICS: LiquidGlassOptions = {
   chroma: 5,
   border: 0.07,
   mapBlur: 14,
-  blur: 1,
+  blur: 0.5,
   saturate: 1.35,
   fallbackBlur: 3,
 };

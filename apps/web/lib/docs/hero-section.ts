@@ -24,6 +24,6 @@ export const doc: DocBody = {
     "The entrance rise and the marquee are CSS animations declared inside a prefers-reduced-motion: no-preference query, so reduced-motion users get the finished layout with no movement.",
     "The calls to action are real buttons (or whatever element you pass) with the free Button's visible focus ring.",
   ],
-  optics: "LENS_OPTICS (scale −104, chroma 5, border 0.07, mapBlur 14, blur 1, saturate 1.35): the large-panel recipe pushed to the strong end, because the point of this pane is to visibly bend big type. Only the pane is glass; the call-to-action buttons sit above the copy as siblings, never inside it.",
+  optics: "LENS_OPTICS (scale −104, chroma 5, border 0.07, mapBlur 14, blur 0.5, saturate 1.35): the large-panel recipe pushed to the strong end, because the point of this pane is to visibly bend big type. Only the pane is glass; the call-to-action buttons sit above the copy as siblings, never inside it.",
   e2e: { surface: '[data-slot="hero-section-lens"]' },
 };

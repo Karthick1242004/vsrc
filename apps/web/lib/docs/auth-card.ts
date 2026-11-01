@@ -27,6 +27,6 @@ export const doc: DocBody = {
     "The show-password button is named \"Show password\" and exposes aria-pressed; the submit button uses aria-disabled while loading so it keeps focus, and a status region announces the pending state.",
     "The loading spinner rotation runs only under prefers-reduced-motion: no-preference; the mode indicator slide and panel fade are also dropped.",
   ],
-  optics: "CARD_OPTICS (scale −88, chroma 3, border 0.08, mapBlur 14, blur 2): the large-panel recipe, soft enough to keep form text crisp. The card is the only glass surface; inputs and buttons are plain tinted native elements so no glass is nested.",
+  optics: "CARD_OPTICS (scale −88, chroma 3, border 0.08, mapBlur 14, blur 0.5): the large-panel recipe, soft enough to keep form text crisp. The card is the only glass surface; inputs and buttons are plain tinted native elements so no glass is nested.",
   e2e: { surface: '[data-slot="auth-card"]' },
 };

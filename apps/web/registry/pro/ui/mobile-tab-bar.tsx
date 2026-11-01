@@ -11,7 +11,7 @@ const BAR_OPTICS: LiquidGlassOptions = {
   chroma: 3,
   border: 0.16,
   mapBlur: 7,
-  blur: 2,
+  blur: 0.5,
   saturate: 1.35,
   fallbackBlur: 3,
 };
@@ -63,7 +63,7 @@ function MobileTabBar({
         ref={ref}
         data-slot="mobile-tab-bar"
         aria-label={ariaLabel}
-        className={cn("relative w-full rounded-[28px] p-1.5", className)}
+        className={cn("relative w-full rounded-[28px] bg-background/45 p-1.5", className)}
         {...props}
       >
         {/* The lens is one element that slides on transform; every tab is 1/count wide, so no measuring. */}

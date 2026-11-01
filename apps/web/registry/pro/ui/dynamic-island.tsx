@@ -14,7 +14,7 @@ const ISLAND_OPTICS: LiquidGlassOptions = {
   chroma: 3,
   border: 0.2,
   mapBlur: 7,
-  blur: 3,
+  blur: 1,
   saturate: 1.3,
   fallbackBlur: 3,
 };

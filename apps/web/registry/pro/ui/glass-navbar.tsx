@@ -11,7 +11,7 @@ const NAV_OPTICS: LiquidGlassOptions = {
   chroma: 4,
   border: 0.12,
   mapBlur: 10,
-  blur: 3,
+  blur: 1,
   saturate: 1.5,
   fallbackBlur: 3,
 };
@@ -21,7 +21,7 @@ const PANEL_OPTICS: LiquidGlassOptions = {
   chroma: 4,
   border: 0.08,
   mapBlur: 14,
-  blur: 4,
+  blur: 2,
   saturate: 1.4,
   fallbackBlur: 4,
 };
@@ -159,7 +159,8 @@ function GlassNavbar({
             aria-label={navLabel}
             data-slot="glass-navbar"
             className={cn(
-              "pointer-events-auto flex items-center justify-between gap-3 px-3 text-foreground",
+              // Denser tint than a panel: a bar sits over whatever the page scrolls under it, bright photos included.
+              "pointer-events-auto flex items-center justify-between gap-3 bg-background/45 px-3 text-foreground",
               "transition-[padding,border-radius] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
               scrolled ? "rounded-2xl py-1.5" : "rounded-[28px] py-2.5",
             )}

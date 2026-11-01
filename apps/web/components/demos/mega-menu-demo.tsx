@@ -61,7 +61,7 @@ export function MegaMenuDemo() {
   return (
     <div
       data-demo="mega-menu"
-      className="relative flex h-[360px] w-full max-w-3xl justify-center overflow-hidden rounded-3xl border border-border bg-background/40 p-4"
+      className="relative flex h-[480px] w-full max-w-3xl items-start justify-center overflow-hidden rounded-3xl border border-border bg-background/40 p-2 sm:h-[360px] sm:p-4"
     >
       <MegaMenu aria-label="Product site" sections={SECTIONS} />
     </div>

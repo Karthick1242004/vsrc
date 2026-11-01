@@ -8,10 +8,10 @@ import { Switch } from "@/registry/vsrc/ui/switch";
 
 /**
  * Site-wide custom cursor, fine pointers only. Two modes:
- * - mark (default): the -/ monogram glides behind the pointer, tilting with
- *   horizontal velocity — the brand as a cursor.
- * - lens (toggle on): a round glass surface running the real engine, so the
+ * - lens (default): a round glass surface running the real engine, so the
  *   page visibly bends inside the cursor (frosted on WebKit, like any glass).
+ * - mark (toggle off): the -/ monogram glides behind the pointer, tilting with
+ *   horizontal velocity — the brand as a cursor.
  */
 const CursorContext = React.createContext<{
   lens: boolean;
@@ -26,12 +26,19 @@ export function CursorProvider({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     if (!window.matchMedia("(pointer: fine)").matches) return;
     setActive(true);
-    setLensState(localStorage.getItem("vsrc-cursor-lens") === "1");
+    // Lens unless the visitor switched it off; storage can throw in private modes.
+    let stored: string | null = null;
+    try {
+      stored = localStorage.getItem("vsrc-cursor-lens");
+    } catch {}
+    setLensState(stored !== "0");
   }, []);
 
   const setLens = React.useCallback((v: boolean) => {
     setLensState(v);
-    localStorage.setItem("vsrc-cursor-lens", v ? "1" : "0");
+    try {
+      localStorage.setItem("vsrc-cursor-lens", v ? "1" : "0");
+    } catch {}
   }, []);
 
   React.useEffect(() => {

@@ -30,7 +30,7 @@ export const doc: DocBody = {
     "Panel and content animations are removed under reduced motion.",
   ],
   optics:
-    "BAR_OPTICS: scale −48, chroma 4, border 0.16, mapBlur 8. PANEL_OPTICS: scale −96, chroma 4, border 0.07, mapBlur 14, blur 4 for the large pane. The viewport is positioned absolutely inside the menu root (not the page), and its width and height transition to the open content, so the displacement map settles just after each resize.",
+    "BAR_OPTICS: scale −48, chroma 4, border 0.16, mapBlur 8. PANEL_OPTICS: scale −96, chroma 4, border 0.07, mapBlur 14, blur 2 for the large pane. The viewport is positioned absolutely inside the menu root (not the page), and its width and height transition to the open content, so the displacement map settles just after each resize.",
   e2e: {
     open: { action: "click", target: '[data-demo="mega-menu"] [data-slot="mega-menu-trigger"]' },
     surface: '[data-slot="mega-menu-viewport"]',

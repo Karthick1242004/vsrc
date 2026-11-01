@@ -11,7 +11,7 @@ const ZONE_OPTICS: LiquidGlassOptions = {
   chroma: 3,
   border: 0.1,
   mapBlur: 12,
-  blur: 3,
+  blur: 1,
   saturate: 1.3,
   fallbackBlur: 6,
 };

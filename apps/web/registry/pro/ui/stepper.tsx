@@ -15,15 +15,17 @@ const LENS_OPTICS: LiquidGlassOptions = {
   chroma: 4,
   border: 0.18,
   mapBlur: 6,
-  blur: 1,
+  blur: 0.5,
   saturate: 1.4,
   fallbackBlur: 2,
 };
 
 export interface StepperStep {
   id: string;
-  title: string;
-  description?: string;
+  /** MUI StepLabel text. */
+  label: string;
+  /** MUI StepLabel `optional`: the secondary line under the label. */
+  optional?: string;
   content: React.ReactNode;
   /** `false` disables Next on this step until the user has what it needs. */
   canProceed?: boolean;
@@ -34,9 +36,10 @@ export interface StepperStep {
 export interface StepperProps {
   steps: StepperStep[];
   /** Zero-based index of the current step. */
-  value?: number;
-  defaultValue?: number;
-  onValueChange?: (index: number) => void;
+  /** Zero-based current step, as MUI Stepper `activeStep`. */
+  activeStep?: number;
+  defaultActiveStep?: number;
+  onActiveStepChange?: (index: number) => void;
   /** Fires when Next is pressed on the last step. */
   onComplete?: () => void;
   backLabel?: string;
@@ -57,9 +60,9 @@ function Check() {
 
 function Stepper({
   steps,
-  value,
-  defaultValue = 0,
-  onValueChange,
+  activeStep,
+  defaultActiveStep = 0,
+  onActiveStepChange,
   onComplete,
   backLabel = "Back",
   nextLabel = "Next",
@@ -68,9 +71,9 @@ function Stepper({
   className,
   ref,
 }: StepperProps) {
-  const [inner, setInner] = React.useState(defaultValue);
+  const [inner, setInner] = React.useState(defaultActiveStep);
   const count = steps.length;
-  const current = Math.min(Math.max(value ?? inner, 0), Math.max(count - 1, 0));
+  const current = Math.min(Math.max(activeStep ?? inner, 0), Math.max(count - 1, 0));
   const step = steps[current];
   const panelRef = React.useRef<HTMLDivElement>(null);
   const last = React.useRef(current);
@@ -84,8 +87,8 @@ function Stepper({
   const go = (index: number) => {
     const next = Math.min(Math.max(index, 0), count - 1);
     if (next === current) return;
-    if (value === undefined) setInner(next);
-    onValueChange?.(next);
+    if (activeStep === undefined) setInner(next);
+    onActiveStepChange?.(next);
   };
 
   // Slide the new panel in from the direction of travel, and move focus to it:
@@ -152,10 +155,10 @@ function Stepper({
                   {state === "complete" ? <Check /> : i + 1}
                 </span>
                 <span className={cn("mt-2 max-w-full truncate px-1 text-xs font-medium", state === "upcoming" ? "text-muted-foreground" : "text-foreground")}>
-                  {s.title}
+                  {s.label}
                 </span>
-                {s.description && (
-                  <span className="hidden max-w-full truncate px-1 text-xs text-muted-foreground sm:block">{s.description}</span>
+                {s.optional && (
+                  <span className="hidden max-w-full truncate px-1 text-xs text-muted-foreground sm:block">{s.optional}</span>
                 )}
                 <span className="sr-only">{state === "complete" ? ", completed" : state === "upcoming" ? ", upcoming" : ""}</span>
               </>
@@ -186,7 +189,7 @@ function Stepper({
       </div>
 
       <p role="status" aria-live="polite" className="sr-only">
-        {`Step ${current + 1} of ${count}: ${step.title}`}
+        {`Step ${current + 1} of ${count}: ${step.label}`}
       </p>
 
       <div
@@ -194,7 +197,7 @@ function Stepper({
         id={`${id}-panel`}
         tabIndex={-1}
         role="group"
-        aria-label={`Step ${current + 1}: ${step.title}`}
+        aria-label={`Step ${current + 1}: ${step.label}`}
         data-slot="stepper-panel"
         className="rounded-2xl border border-border bg-card/80 p-5 outline-none"
       >

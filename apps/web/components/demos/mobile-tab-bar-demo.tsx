@@ -2,6 +2,8 @@
 
 import * as React from "react";
 
+import { IPhoneFrame } from "@/components/demos/iphone-frame";
+import { Photo } from "@/components/demos/photo";
 import { MobileTabBar, type MobileTabBarItem } from "@/registry/pro/ui/mobile-tab-bar";
 
 const icon = (d: string) => (
@@ -20,11 +22,11 @@ const ITEMS: MobileTabBarItem[] = [
 const TITLES: Record<string, string> = { home: "Good evening, Ines", explore: "Explore", inbox: "Inbox", profile: "Profile" };
 
 const POSTS = [
-  { who: "Lena Voss", what: "Golden hour over the Alfama", tone: "from-amber-300 via-orange-400 to-rose-500" },
-  { who: "Kofi Mensah", what: "Tide pools, Big Sur", tone: "from-sky-300 via-cyan-400 to-emerald-500" },
-  { who: "Aiko Tanaka", what: "Night market, Taipei", tone: "from-fuchsia-400 via-purple-500 to-indigo-600" },
-  { who: "Mateo Ruiz", what: "Salt flats at dawn", tone: "from-rose-200 via-sky-300 to-violet-400" },
-  { who: "Sana Qureshi", what: "First snow in Hunza", tone: "from-slate-200 via-sky-300 to-blue-500" },
+  { who: "Aiko Tanaka", what: "Night market, Taipei", photo: "taipei-night-market" },
+  { who: "Mateo Ruiz", what: "Salt flats at dawn", photo: "uyuni" },
+  { who: "Lena Voss", what: "Twin lakes, São Miguel", photo: "sete-cidades" },
+  { who: "Kofi Mensah", what: "Long tail boats, Koh Lanta", photo: "koh-lanta" },
+  { who: "Sana Qureshi", what: "Cave rooms, Cappadocia", photo: "cappadocia" },
 ];
 
 function Feed() {
@@ -32,8 +34,8 @@ function Feed() {
     <div className="flex flex-col gap-4 px-4 pb-4">
       {POSTS.map((p) => (
         <div key={p.who} className="overflow-hidden rounded-3xl border border-border bg-card">
-          <div className={`h-40 bg-gradient-to-br ${p.tone}`}>
-            <div className="size-full bg-[radial-gradient(circle_at_30%_20%,rgb(255_255_255/0.55),transparent_45%)]" />
+          <div className="h-40">
+            <Photo name={p.photo} alt="" sizes="280px" />
           </div>
           <div className="p-3">
             <p className="text-sm font-semibold text-foreground">{p.what}</p>
@@ -61,14 +63,12 @@ export function MobileTabBarDemo() {
   }, []);
 
   return (
-    <div
-      data-slot="phone-frame"
-      className="relative h-[540px] w-full max-w-[320px] overflow-hidden rounded-[44px] border-[6px] border-foreground/80 bg-background shadow-xl"
-    >
-      <div className="absolute inset-x-0 top-0 z-10 px-5 pt-7 pb-3">
+    <IPhoneFrame>
+      {/* A scrim, like iOS large titles: the feed scrolls under the heading without fighting it. */}
+      <div className="absolute inset-x-0 top-0 z-10 bg-gradient-to-b from-background via-background/90 to-transparent px-5 pt-14 pb-8">
         <h3 className="font-display text-3xl text-foreground">{TITLES[tab]}</h3>
       </div>
-      <div className="absolute inset-0 overflow-hidden pt-20" aria-hidden>
+      <div className="absolute inset-0 overflow-hidden pt-28" aria-hidden>
         <div ref={scrollRef} className="will-change-transform">
           <Feed />
           <Feed />
@@ -79,8 +79,8 @@ export function MobileTabBarDemo() {
         items={ITEMS}
         value={tab}
         onValueChange={setTab}
-        className="absolute inset-x-3 bottom-3 z-10 w-auto"
+        className="absolute inset-x-3 bottom-6 z-20 w-auto"
       />
-    </div>
+    </IPhoneFrame>
   );
 }

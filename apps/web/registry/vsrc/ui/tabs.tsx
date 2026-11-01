@@ -12,7 +12,7 @@ const LIST_OPTICS: LiquidGlassOptions = {
   chroma: 3,
   border: 0.18,
   mapBlur: 6,
-  blur: 2,
+  blur: 0.5,
   saturate: 1.3,
   fallbackBlur: 2,
 };
@@ -25,9 +25,19 @@ function TabsList({
   className,
   glass,
   children,
+  ref,
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.List> & { glass?: LiquidGlassOptions | GlassPreset | false }) {
   const listRef = React.useRef<HTMLDivElement | null>(null);
+  // A consumer's ref must not replace ours, or the indicator never measures.
+  const composedRef = React.useCallback(
+    (el: HTMLDivElement | null) => {
+      listRef.current = el;
+      if (typeof ref === "function") ref(el);
+      else if (ref) ref.current = el;
+    },
+    [ref],
+  );
   const [indicator, setIndicator] = React.useState<{ left: number; width: number } | null>(null);
 
   // The active pill is one element that glides between triggers instead of a
@@ -54,7 +64,7 @@ function TabsList({
   return (
     <GlassSurface asChild glass={mergeGlass(LIST_OPTICS, glass)}>
       <TabsPrimitive.List
-        ref={listRef}
+        ref={composedRef}
         data-slot="tabs-list"
         className={cn("relative inline-flex w-fit items-center gap-1 rounded-full p-1", className)}
         {...props}

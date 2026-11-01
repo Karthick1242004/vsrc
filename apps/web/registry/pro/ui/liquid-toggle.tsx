@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import * as SwitchPrimitive from "@radix-ui/react-switch";
 import { mergeGlass, type GlassPreset, type LiquidGlassOptions } from "vsrc/react";
 
 import { GlassSurface } from "@/registry/vsrc/ui/glass-surface";
@@ -11,7 +12,7 @@ const TOGGLE_OPTICS: LiquidGlassOptions = {
   chroma: 2,
   border: 0.22,
   mapBlur: 5,
-  blur: 2,
+  blur: 0.5,
   saturate: 1.3,
   fallbackBlur: 2,
 };
@@ -21,11 +22,8 @@ const TRAVEL = 24;
 const INSET = 3;
 const DURATION = 520;
 
-export interface LiquidToggleProps
-  extends Omit<React.ComponentProps<"button">, "onChange" | "role" | "type" | "value" | "children"> {
-  checked?: boolean;
-  defaultChecked?: boolean;
-  onCheckedChange?: (checked: boolean) => void;
+/** Radix Switch (shadcn's Switch base) with a glass track and a thumb that stretches as it travels. */
+export interface LiquidToggleProps extends Omit<React.ComponentProps<typeof SwitchPrimitive.Root>, "children" | "asChild"> {
   glass?: LiquidGlassOptions | GlassPreset | false;
 }
 
@@ -36,7 +34,6 @@ function LiquidToggle({
   disabled,
   glass,
   className,
-  onClick,
   ref,
   ...props
 }: LiquidToggleProps) {
@@ -81,25 +78,19 @@ function LiquidToggle({
 
   React.useEffect(() => () => animation.current?.cancel(), []);
 
-  const toggle = (event: React.MouseEvent<HTMLButtonElement>) => {
-    onClick?.(event);
-    if (event.defaultPrevented) return;
-    const next = !checked;
+  const toggle = (next: boolean) => {
     if (!controlled) setInner(next);
     onCheckedChange?.(next);
   };
 
   return (
     <GlassSurface asChild glass={mergeGlass(TOGGLE_OPTICS, glass)}>
-      <button
+      <SwitchPrimitive.Root
         ref={ref}
-        type="button"
-        role="switch"
-        aria-checked={checked}
         data-slot="liquid-toggle"
-        data-state={checked ? "checked" : "unchecked"}
+        checked={checked}
+        onCheckedChange={toggle}
         disabled={disabled}
-        onClick={toggle}
         className={cn(
           "group relative inline-flex h-8 w-14 shrink-0 cursor-pointer rounded-full",
           "transition-colors duration-300 outline-none",
@@ -110,10 +101,9 @@ function LiquidToggle({
         )}
         {...props}
       >
-        <span
+        <SwitchPrimitive.Thumb
           ref={thumbRef}
           data-slot="liquid-toggle-thumb"
-          aria-hidden
           className="pointer-events-none absolute top-1/2 -mt-3 block size-6"
           style={{ left: INSET, transform: `translateX(${checked ? TRAVEL : 0}px)` }}
         >
@@ -124,8 +114,8 @@ function LiquidToggle({
               "group-active:scale-x-110 group-active:scale-y-90",
             )}
           />
-        </span>
-      </button>
+        </SwitchPrimitive.Thumb>
+      </SwitchPrimitive.Root>
     </GlassSurface>
   );
 }

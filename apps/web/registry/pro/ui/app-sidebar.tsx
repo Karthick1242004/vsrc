@@ -11,7 +11,7 @@ const SIDEBAR_OPTICS: LiquidGlassOptions = {
   chroma: 3,
   border: 0.08,
   mapBlur: 12,
-  blur: 3,
+  blur: 1,
   saturate: 1.3,
   fallbackBlur: 6,
 };
@@ -36,14 +36,9 @@ export interface AppSidebarProps extends Omit<React.ComponentProps<"aside">, "ch
   header?: { logo: React.ReactNode; title: string };
   /** Signed-in user block pinned to the bottom. */
   user?: { name: string; detail?: string; avatar: React.ReactNode };
-  collapsed?: boolean;
-  defaultCollapsed?: boolean;
-  onCollapsedChange?: (collapsed: boolean) => void;
   value?: string;
   defaultValue?: string;
   onValueChange?: (value: string) => void;
-  /** Toggle with Ctrl/Cmd+B while the page has focus. */
-  shortcut?: boolean;
   glass?: LiquidGlassOptions | GlassPreset | false;
 }
 
@@ -66,37 +61,101 @@ const FOCUS = "outline-none focus-visible:ring-2 focus-visible:ring-ring ring-of
 const LABEL =
   "min-w-0 truncate whitespace-nowrap transition-opacity duration-200 group-data-[collapsed=true]/sb:opacity-0 motion-reduce:transition-none";
 
+const SidebarContext = React.createContext<{
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  toggleSidebar: () => void;
+  state: "expanded" | "collapsed";
+} | null>(null);
+
+/**
+ * shadcn's Sidebar state API: `open` is the expanded state, Ctrl/Cmd+B toggles
+ * it, and `useSidebar()` reads it anywhere below (a SidebarTrigger in your
+ * header, the page layout that makes room for the rail).
+ */
+function SidebarProvider({
+  open: openProp,
+  defaultOpen = true,
+  onOpenChange,
+  keyboardShortcut = true,
+  children,
+}: {
+  open?: boolean;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  /** Ctrl/Cmd+B toggles the sidebar. */
+  keyboardShortcut?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useControllable(openProp, defaultOpen, onOpenChange);
+  const toggleSidebar = React.useCallback(() => setOpen(!open), [open, setOpen]);
+
+  React.useEffect(() => {
+    if (!keyboardShortcut) return;
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "b") {
+        e.preventDefault();
+        toggleSidebar();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [keyboardShortcut, toggleSidebar]);
+
+  const value = React.useMemo(
+    () => ({ open, setOpen, toggleSidebar, state: open ? ("expanded" as const) : ("collapsed" as const) }),
+    [open, setOpen, toggleSidebar],
+  );
+  return <SidebarContext.Provider value={value}>{children}</SidebarContext.Provider>;
+}
+
+function useSidebar() {
+  const ctx = React.useContext(SidebarContext);
+  if (!ctx) throw new Error("useSidebar must be used inside <SidebarProvider>");
+  return ctx;
+}
+
+/** A button anywhere under SidebarProvider that toggles the sidebar, as in shadcn. */
+function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<"button">) {
+  const { open, toggleSidebar } = useSidebar();
+  return (
+    <button
+      type="button"
+      data-slot="sidebar-trigger"
+      aria-label="Toggle sidebar"
+      aria-expanded={open}
+      onClick={(e) => {
+        onClick?.(e);
+        if (!e.defaultPrevented) toggleSidebar();
+      }}
+      className={cn("grid size-9 place-items-center rounded-full hover:bg-foreground/10", FOCUS, className)}
+      {...props}
+    >
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="size-[18px]" aria-hidden>
+        <rect x="3" y="4" width="14" height="12" rx="2.5" />
+        <path d="M8 4v12" />
+      </svg>
+    </button>
+  );
+}
+
 function AppSidebar({
   groups,
   header,
   user,
-  collapsed: collapsedProp,
-  defaultCollapsed = false,
-  onCollapsedChange,
   value: valueProp,
   defaultValue,
   onValueChange,
-  shortcut = false,
   glass,
   className,
   ref,
   ...props
 }: AppSidebarProps) {
-  const [collapsed, setCollapsed] = useControllable(collapsedProp, defaultCollapsed, onCollapsedChange);
+  const { open, setOpen } = useSidebar();
+  const collapsed = !open;
+  const setCollapsed = (next: boolean) => setOpen(!next);
   const [value, setValue] = useControllable(valueProp, defaultValue ?? groups[0]?.items[0]?.value ?? "", onValueChange);
   const navId = React.useId();
-
-  React.useEffect(() => {
-    if (!shortcut) return;
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "b") {
-        e.preventDefault();
-        setCollapsed(!collapsed);
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [shortcut, collapsed, setCollapsed]);
 
   return (
     <GlassSurface asChild glass={mergeGlass(SIDEBAR_OPTICS, glass)}>
@@ -237,4 +296,4 @@ function AppSidebar({
   );
 }
 
-export { AppSidebar };
+export { AppSidebar, SidebarProvider, SidebarTrigger, useSidebar };

@@ -2,6 +2,8 @@
 
 import * as React from "react";
 
+import { IPhoneFrame } from "@/components/demos/iphone-frame";
+import { Photo } from "@/components/demos/photo";
 import { Button } from "@/registry/vsrc/ui/button";
 import { ToastStackProvider, ToastStackViewport, useToastStack } from "@/registry/pro/ui/toast-stack";
 
@@ -26,7 +28,7 @@ function Controls() {
   }, [push]);
 
   return (
-    <div className="absolute inset-x-0 bottom-4 flex flex-wrap justify-center gap-2 px-4">
+    <div className="flex flex-wrap justify-center gap-2">
       <Button
         size="sm"
         variant="primary"
@@ -56,22 +58,23 @@ function Controls() {
   );
 }
 
+/* Stacked notifications are a lock-screen pattern, so the demo is one: glass toasts over a night photograph. */
 export function ToastStackDemo() {
   return (
     <ToastStackProvider>
-      <div className="relative h-[22rem] w-full max-w-md overflow-hidden rounded-3xl border border-border bg-card/60">
-        <div aria-hidden className="flex flex-col gap-3 p-5 pt-28 opacity-70">
-          {["Roadmap review", "Pricing page copy", "Hiring plan Q4"].map((t) => (
-            <div key={t} className="flex items-center gap-3">
-              <span className="size-8 rounded-full bg-foreground/10" />
-              <span className="flex flex-col gap-1">
-                <span className="text-sm font-medium">{t}</span>
-                <span className="h-2 w-40 rounded-full bg-foreground/10" />
-              </span>
-            </div>
-          ))}
-        </div>
-        <ToastStackViewport contained />
+      <div className="flex flex-col items-center gap-5">
+        <IPhoneFrame>
+          <div aria-hidden className="absolute inset-0">
+            <Photo name="aurora" alt="" sizes="300px" />
+          </div>
+          <div aria-hidden className="absolute inset-x-0 top-14 text-center text-white">
+            <p className="text-sm font-medium opacity-80">Monday 2 November</p>
+            <p className="font-display text-7xl leading-none tabular-nums">9:41</p>
+          </div>
+          <div className="absolute inset-x-0 top-48 bottom-10">
+            <ToastStackViewport contained />
+          </div>
+        </IPhoneFrame>
         <Controls />
       </div>
     </ToastStackProvider>

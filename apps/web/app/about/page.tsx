@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Reveal } from "@/components/site/reveal";
+import photoCredits from "@/public/demo/credits.json";
 import { Button } from "@/registry/vsrc/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/registry/vsrc/ui/card";
 
@@ -62,8 +63,8 @@ export default function AboutPage() {
         </Reveal>
         <Reveal delay={0.16}>
           <p className="mt-8 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-            The optics engine and the 23 free components work today. The 35 Pro components are in
-            preview: you can try each one live, but their source is not published yet. This is v0.1.0,
+            The optics engine and the 23 free components work today. The 35 Pro components can be
+            tried live on every page and installed with a Pro key. This is v0.1.0,
             so component APIs may still change before 1.0 and rough edges remain. We&apos;re actively improving
             it — if something breaks or feels off, an issue on GitHub is the fastest way to get it
             fixed.
@@ -127,9 +128,10 @@ export default function AboutPage() {
           </h2>
           <div className="mt-4 grid gap-4 leading-relaxed text-muted-foreground">
             <p>
-              Nothing, essentially. This is a static site with no backend, no database, and no
-              account system. There are no analytics, advertising, or tracking cookies — we add
-              none. The only thing stored is your light/dark theme choice, kept in your browser&apos;s
+              Nothing, essentially. The site has no database and no account system. There are no
+              analytics, advertising, or tracking cookies — we add none. Pro downloads are the one
+              exception: each is logged with the key owner&apos;s name and the requesting IP address
+              so shared keys can be caught. The only thing stored is your light/dark theme choice, kept in your browser&apos;s
               localStorage, which never leaves your device.
             </p>
             <p>
@@ -211,6 +213,29 @@ export default function AboutPage() {
               <Link href="/components">Browse components</Link>
             </Button>
           </div>
+        </Reveal>
+      </section>
+
+      <section id="photographs" className="mt-14 scroll-mt-24 border-t border-border pt-14">
+        <Reveal>
+          <Kicker>{"// photographs"}</Kicker>
+          <h2 className="display-stroke-sm mt-2 font-display text-3xl sm:text-4xl">Photo credits</h2>
+          <p className="mt-3 leading-relaxed text-muted-foreground">
+            The demos use openly licensed photographs from Wikimedia Commons.
+          </p>
+          <ul className="mt-6 grid gap-2 text-sm leading-relaxed text-muted-foreground">
+            {photoCredits.map((c) => (
+              <li key={c.ref}>
+                <a href={c.page} target="_blank" rel="noreferrer" className="text-foreground underline decoration-signal/60 underline-offset-4 hover:decoration-signal">
+                  {c.title}
+                </a>
+                {` by ${c.creator}, `}
+                <a href={c.licenseUrl} target="_blank" rel="noreferrer" className="underline underline-offset-4">
+                  {c.license}
+                </a>
+              </li>
+            ))}
+          </ul>
         </Reveal>
       </section>
     </div>

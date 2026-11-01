@@ -5,6 +5,7 @@ export const doc: DocBody = {
   title: "Data Table",
   word: "table",
   blurb: "A typed table with sorting, filtering, row selection and pagination, inside one glass panel with plain rows.",
+  builtOn: { label: "TanStack Table, the engine behind shadcn Data Table", href: "https://ui.shadcn.com/docs/components/data-table" },
   extendsRadix: { label: "Radix Scroll Area", href: "https://www.radix-ui.com/primitives/docs/components/scroll-area" },
   props: [
     {

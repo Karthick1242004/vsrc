@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
+import { DayPicker, type Matcher } from "react-day-picker";
 import { mergeGlass, type GlassPreset, type LiquidGlassOptions } from "vsrc/react";
 
 import { GlassSurface } from "@/registry/vsrc/ui/glass-surface";
@@ -12,7 +13,7 @@ const TRIGGER_OPTICS: LiquidGlassOptions = {
   chroma: 3,
   border: 0.18,
   mapBlur: 6,
-  blur: 2,
+  blur: 0.5,
   saturate: 1.3,
   fallbackBlur: 2,
 };
@@ -22,7 +23,7 @@ const PANEL_OPTICS: LiquidGlassOptions = {
   chroma: 3,
   border: 0.08,
   mapBlur: 12,
-  blur: 3,
+  blur: 1,
   saturate: 1.3,
   fallbackBlur: 6,
 };
@@ -56,14 +57,6 @@ export type DatePickerProps = DatePickerBase &
 type Picked = Date | DateRange | undefined;
 
 const day0 = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
-const addDays = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
-const addMonths = (d: Date, n: number) => {
-  const t = new Date(d.getFullYear(), d.getMonth() + n, 1);
-  const last = new Date(t.getFullYear(), t.getMonth() + 1, 0).getDate();
-  return new Date(t.getFullYear(), t.getMonth(), Math.min(d.getDate(), last));
-};
-const same = (a?: Date, b?: Date) => !!a && !!b && a.getTime() === b.getTime();
-const key = (d: Date) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
 const isRange = (v: Picked): v is DateRange => !!v && !(v instanceof Date);
 
 const FOCUS = "outline-none focus-visible:ring-2 focus-visible:ring-ring ring-offset-background";
@@ -102,7 +95,8 @@ function DatePicker(props: DatePickerProps) {
         <PopoverPrimitive.Trigger
           ref={ref}
           data-slot="date-picker"
-          aria-label={props["aria-label"]}
+          // The label alone would hide the chosen date from screen readers.
+          aria-label={props["aria-label"] && label ? `${props["aria-label"]}, ${label}` : props["aria-label"]}
           className={cn(
             "relative inline-flex h-10 min-w-56 items-center gap-2.5 rounded-full px-4 text-sm",
             "transition-transform duration-150 active:scale-[0.98] disabled:opacity-50 motion-reduce:transition-none",
@@ -161,177 +155,71 @@ interface CalendarProps {
   onPick: (next: Picked, done: boolean) => void;
 }
 
+const DAY_CLASSES = {
+  root: "relative",
+  months: "flex flex-col",
+  month: "flex flex-col gap-3",
+  month_caption: "flex h-9 items-center justify-center font-display text-lg",
+  nav: "absolute inset-x-0 top-0 z-10 flex h-9 items-center justify-between",
+  button_previous: cn("grid size-9 place-items-center rounded-full transition-colors hover:bg-foreground/10 disabled:opacity-30", FOCUS),
+  button_next: cn("grid size-9 place-items-center rounded-full transition-colors hover:bg-foreground/10 disabled:opacity-30", FOCUS),
+  chevron: "size-4 fill-foreground",
+  month_grid: "w-full border-collapse",
+  weekdays: "flex",
+  weekday: "flex-1 py-1 text-center text-xs font-medium text-muted-foreground",
+  week: "flex w-full",
+  day: "flex-1 py-0.5 text-center text-foreground",
+  day_button: cn(
+    "mx-auto grid size-9 place-items-center rounded-full text-sm tabular-nums transition-[background-color,transform] duration-150 hover:bg-foreground/15 active:scale-90 motion-reduce:transition-none",
+    FOCUS,
+  ),
+  today: "[&>button]:ring-1 [&>button]:ring-foreground/40",
+  outside: "text-muted-foreground",
+  disabled: "opacity-35 [&>button]:cursor-not-allowed [&>button]:line-through [&>button]:hover:bg-transparent",
+  selected: "[&>button]:bg-primary [&>button]:font-semibold [&>button]:text-primary-foreground [&>button]:ring-0",
+  range_start: "rounded-l-full bg-foreground/10",
+  range_end: "rounded-r-full bg-foreground/10",
+  range_middle: "bg-foreground/10 [&>button]:bg-transparent [&>button]:font-normal [&>button]:text-foreground",
+  hidden: "invisible",
+};
+
+/** react-day-picker (the calendar behind shadcn's Calendar) with V-/Src classes; Intl supplies the caption and weekday text. */
 function Calendar({ mode, picked, today, min, max, disabled, locale, weekStartsOn, onPick }: CalendarProps) {
-  // Mounts only while the popover is open (client only), so reading the clock here is hydration-safe.
-  const [focused, setFocused] = React.useState(() => {
-    const anchor = picked instanceof Date ? picked : isRange(picked) ? (picked.from ?? picked.to) : undefined;
-    return day0(anchor ?? today ?? new Date());
-  });
-  const gridRef = React.useRef<HTMLDivElement>(null);
-  const shouldFocus = React.useRef(false);
-  const dir = React.useRef(0);
-  const headingId = React.useId();
-
-  const month = focused.getMonth();
-  const monthFmt = React.useMemo(() => new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" }), [locale]);
-  const dayFmt = React.useMemo(() => new Intl.DateTimeFormat(locale, { weekday: "long", month: "long", day: "numeric", year: "numeric" }), [locale]);
-  const weekdays = React.useMemo(() => {
-    const short = new Intl.DateTimeFormat(locale, { weekday: "short" });
-    const long = new Intl.DateTimeFormat(locale, { weekday: "long" });
-    // 7 Jan 2024 is a Sunday.
-    return Array.from({ length: 7 }, (_, i) => {
-      const d = new Date(2024, 0, 7 + ((i + weekStartsOn) % 7));
-      return { short: short.format(d), long: long.format(d) };
-    });
-  }, [locale, weekStartsOn]);
-
-  const cells = React.useMemo(() => {
-    const first = new Date(focused.getFullYear(), month, 1);
-    const start = addDays(first, -((first.getDay() - weekStartsOn + 7) % 7));
-    return Array.from({ length: 42 }, (_, i) => addDays(start, i));
-  }, [focused, month, weekStartsOn]);
-
-  const off = (d: Date) => (min && d < day0(min)) || (max && d > day0(max)) || !!disabled?.(d);
+  const rootRef = React.useRef<HTMLDivElement>(null);
   const from = isRange(picked) ? picked.from : picked;
-  const to = isRange(picked) ? picked.to : undefined;
-
-  const go = (next: Date, moveFocus: boolean) => {
-    dir.current = next.getTime() === focused.getTime() ? 0 : next > focused ? 1 : -1;
-    shouldFocus.current = moveFocus;
-    setFocused(next);
+  const caption = new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" });
+  const weekday = new Intl.DateTimeFormat(locale, { weekday: "narrow" });
+  const matchers: Matcher[] = [];
+  if (min) matchers.push({ before: day0(min) });
+  if (max) matchers.push({ after: day0(max) });
+  if (disabled) matchers.push(disabled);
+  const common = {
+    showOutsideDays: true,
+    weekStartsOn,
+    disabled: matchers,
+    today: today ?? undefined,
+    defaultMonth: from ?? today ?? undefined,
+    formatters: { formatCaption: (m: Date) => caption.format(m), formatWeekdayName: (d: Date) => weekday.format(d) },
+    classNames: DAY_CLASSES,
   };
-
-  React.useEffect(() => {
-    if (shouldFocus.current) {
-      shouldFocus.current = false;
-      gridRef.current?.querySelector<HTMLElement>(`[data-day="${key(focused)}"]`)?.focus();
-    }
-  }, [focused]);
-
-  // Month change: the grid slides in from the direction of travel.
-  React.useEffect(() => {
-    const el = gridRef.current;
-    if (!el || dir.current === 0 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const dx = dir.current * 14;
-    dir.current = 0;
-    el.animate([{ opacity: 0.2, transform: `translateX(${dx}px)` }, { opacity: 1, transform: "none" }], { duration: 240, easing: "cubic-bezier(0.22,1,0.36,1)" });
-  }, [month]);
-
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    const step: Record<string, Date> = {
-      ArrowLeft: addDays(focused, -1),
-      ArrowRight: addDays(focused, 1),
-      ArrowUp: addDays(focused, -7),
-      ArrowDown: addDays(focused, 7),
-      Home: addDays(focused, -((focused.getDay() - weekStartsOn + 7) % 7)),
-      End: addDays(focused, 6 - ((focused.getDay() - weekStartsOn + 7) % 7)),
-      PageUp: addMonths(focused, e.shiftKey ? -12 : -1),
-      PageDown: addMonths(focused, e.shiftKey ? 12 : 1),
-    };
-    const next = step[e.key];
-    if (!next) return;
-    e.preventDefault();
-    go(next, true);
-  };
-
-  const select = (d: Date) => {
-    if (off(d)) return;
-    if (mode === "single") return onPick(d, true);
-    if (!from || to || d < from) onPick({ from: d }, false);
-    else onPick({ from, to: d }, true);
-  };
-
-  const nav = (label: string, d: string, delta: number) => (
-    <button
-      type="button"
-      aria-label={label}
-      onClick={() => go(addMonths(focused, delta), false)}
-      className={cn("flex size-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-foreground/10 hover:text-foreground", FOCUS)}
-    >
-      <Icon d={d} />
-    </button>
-  );
-
-  const todayOff = !today || off(today);
 
   return (
-    <div data-slot="date-picker-calendar">
-      <div className="mb-3 flex items-center justify-between">
-        <div className="flex">
-          {nav("Previous year", "M9 4 5 8l4 4M13 4 9 8l4 4", -12)}
-          {nav("Previous month", "M10 4 6 8l4 4", -1)}
-        </div>
-        <h2 id={headingId} aria-live="polite" className="text-sm font-semibold">
-          {monthFmt.format(focused)}
-        </h2>
-        <div className="flex">
-          {nav("Next month", "m6 4 4 4-4 4", 1)}
-          {nav("Next year", "m3 4 4 4-4 4M7 4l4 4-4 4", 12)}
-        </div>
-      </div>
-      <div role="grid" aria-labelledby={headingId} onKeyDown={onKeyDown}>
-        <div role="row" className="grid grid-cols-7">
-          {weekdays.map((w) => (
-            <div key={w.long} role="columnheader" aria-label={w.long} className="py-1 text-center text-xs font-medium text-muted-foreground">
-              {w.short.slice(0, 2)}
-            </div>
-          ))}
-        </div>
-        <div ref={gridRef} role="presentation">
-          {Array.from({ length: 6 }, (_, r) => (
-            <div key={r} role="row" className="grid grid-cols-7">
-              {cells.slice(r * 7, r * 7 + 7).map((d) => {
-                const isFrom = same(d, from);
-                const isTo = same(d, to);
-                const selected = isFrom || isTo;
-                const between = !!from && !!to && d > from && d < to;
-                const outside = d.getMonth() !== month;
-                const isOff = !!off(d);
-                const isToday = same(d, today ?? undefined);
-                return (
-                  <div
-                    key={key(d)}
-                    role="gridcell"
-                    aria-selected={selected || between}
-                    className={cn("flex justify-center py-0.5", between && "bg-foreground/10", isFrom && to && "rounded-l-full bg-foreground/10", isTo && from && "rounded-r-full bg-foreground/10")}
-                  >
-                    <button
-                      type="button"
-                      data-day={key(d)}
-                      tabIndex={same(d, focused) ? 0 : -1}
-                      aria-label={dayFmt.format(d)}
-                      aria-disabled={isOff || undefined}
-                      aria-current={isToday ? "date" : undefined}
-                      onFocus={() => !same(d, focused) && setFocused(d)}
-                      onClick={() => select(d)}
-                      className={cn(
-                        "size-9 rounded-full text-sm tabular-nums transition-[background-color,color,transform] duration-150 active:scale-90 motion-reduce:transition-none",
-                        FOCUS,
-                        outside ? "text-muted-foreground" : "text-foreground",
-                        !selected && !isOff && "hover:bg-foreground/15",
-                        isToday && !selected && "ring-1 ring-foreground/40",
-                        selected && "bg-primary font-semibold text-primary-foreground",
-                        isOff && "cursor-not-allowed opacity-35 line-through",
-                      )}
-                    >
-                      {d.getDate()}
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="mt-3 flex items-center justify-between border-t border-foreground/10 pt-3">
+    <div ref={rootRef}>
+      {mode === "range" ? (
+        <DayPicker
+          {...common}
+          mode="range"
+          selected={isRange(picked) && picked.from ? { from: picked.from, to: picked.to } : undefined}
+          onSelect={(r) => onPick(r?.from ? { from: r.from, to: r.to } : undefined, !!r?.from && !!r.to && r.from.getTime() !== r.to.getTime())}
+        />
+      ) : (
+        <DayPicker {...common} mode="single" selected={picked instanceof Date ? picked : undefined} onSelect={(d) => onPick(d, !!d)} />
+      )}
+      <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-3">
         <button
           type="button"
-          disabled={todayOff}
-          onClick={() => {
-            if (!today) return;
-            if (mode === "single") onPick(today, true);
-            else go(today, true);
-          }}
+          disabled={!today || (!!today && matchers.length > 0 && !!disabled?.(today))}
+          onClick={() => today && onPick(mode === "single" ? today : { from: today }, mode === "single")}
           className={cn("rounded-full px-3 py-1 text-sm font-medium transition-colors hover:bg-foreground/10 disabled:pointer-events-none disabled:opacity-40", FOCUS)}
         >
           Today
@@ -339,7 +227,11 @@ function Calendar({ mode, picked, today, min, max, disabled, locale, weekStartsO
         <button
           type="button"
           disabled={!from}
-          onClick={() => onPick(undefined, false)}
+          onClick={() => {
+            onPick(undefined, false);
+            // This button disables itself; keep keyboard focus inside the calendar.
+            rootRef.current?.querySelector<HTMLElement>("button[tabindex='0']")?.focus();
+          }}
           className={cn("rounded-full px-3 py-1 text-sm text-muted-foreground transition-colors hover:bg-foreground/10 hover:text-foreground disabled:pointer-events-none disabled:opacity-40", FOCUS)}
         >
           Clear

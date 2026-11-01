@@ -12,7 +12,7 @@ const ACCORDION_OPTICS: LiquidGlassOptions = {
   chroma: 4,
   border: 0.08,
   mapBlur: 10,
-  blur: 2,
+  blur: 0.5,
   saturate: 1.4,
   fallbackBlur: 3,
 };

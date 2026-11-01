@@ -86,7 +86,12 @@ function GlassLoupe({
       };
       pos.current = p;
       const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      el.style.transition = animate && !calm ? "transform 150ms cubic-bezier(0.2, 0.8, 0.2, 1)" : "none";
+      // Inline transition overrides the class, so the opacity fade-in has to be listed here too.
+      el.style.transition = calm
+        ? "none"
+        : animate
+          ? "transform 150ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 300ms"
+          : "opacity 300ms";
       el.style.transform = `translate3d(${p.x - half}px, ${p.y - half}px, 0)`;
     },
     [getHost, size],

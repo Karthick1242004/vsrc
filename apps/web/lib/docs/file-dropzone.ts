@@ -27,6 +27,6 @@ export const doc: DocBody = {
     "Each progress bar is a role=\"progressbar\" with a file-specific name and value; each remove button is named \"Remove <file>\" and returns focus to the zone.",
     "Drag-over scale and lift are removed under prefers-reduced-motion; the dashed border and label still change.",
   ],
-  optics: "ZONE_OPTICS: scale -72, chroma 3, border 0.1, mapBlur 12, blur 3, saturate 1.3, fallbackBlur 6, tuned for a mid-size panel. The drag-over scale uses transform only. File rows sit below the zone as plain cards, so no glass is nested.",
+  optics: "ZONE_OPTICS: scale -72, chroma 3, border 0.1, mapBlur 12, blur 1, saturate 1.3, fallbackBlur 6, tuned for a mid-size panel. The drag-over scale uses transform only. File rows sit below the zone as plain cards, so no glass is nested.",
   e2e: { surface: '[data-slot="file-dropzone"]' },
 };

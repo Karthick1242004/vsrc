@@ -24,6 +24,9 @@ export function SiteHeader() {
           <Link href="/components">Components</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
+          <Link href="/pro">Pro</Link>
+        </Button>
+        <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
           <Link href="/about">About</Link>
         </Button>
         <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">

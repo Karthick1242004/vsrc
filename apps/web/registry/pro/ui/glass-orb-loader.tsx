@@ -11,7 +11,7 @@ const ORB_OPTICS: LiquidGlassOptions = {
   chroma: 5,
   border: 0.2,
   mapBlur: 7,
-  blur: 1,
+  blur: 0.5,
   saturate: 1.4,
   fallbackBlur: 2,
 };

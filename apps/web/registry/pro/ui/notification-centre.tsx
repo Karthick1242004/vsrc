@@ -14,10 +14,14 @@ const PANEL_OPTICS: LiquidGlassOptions = {
   chroma: 3,
   border: 0.07,
   mapBlur: 14,
-  blur: 6,
+  blur: 3,
   saturate: 1.2,
   fallbackBlur: 10,
 };
+
+// These buttons disable themselves; park focus on the panel instead of dropping it to <body>.
+const keepFocus = (e: React.MouseEvent<HTMLElement>) =>
+  e.currentTarget.closest<HTMLElement>('[data-slot="notification-centre-panel"]')?.focus();
 
 export interface NotificationItem {
   id: string;
@@ -127,10 +131,10 @@ function NotificationCentre({ notifications, onRead, onClear, glass, className, 
             <div className="flex items-center justify-between gap-2 px-5 pt-4 pb-2">
               <h2 className="font-display text-xl leading-none">Notifications</h2>
               <div className="flex items-center">
-                <button type="button" className={textButton} disabled={unread.length === 0} onClick={() => onRead?.(unread.map((n) => n.id))}>
+                <button type="button" className={textButton} disabled={unread.length === 0} onClick={(e) => { keepFocus(e); onRead?.(unread.map((n) => n.id)); }}>
                   Mark all read
                 </button>
-                <button type="button" className={textButton} disabled={notifications.length === 0} onClick={() => onClear?.()}>
+                <button type="button" className={textButton} disabled={notifications.length === 0} onClick={(e) => { keepFocus(e); onClear?.(); }}>
                   Clear
                 </button>
               </div>

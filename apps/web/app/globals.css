@@ -22,11 +22,11 @@
 
   /* Glass material layer ("bend the brand to glass"): panels are the one
      place the board's flat-radius law is deliberately broken. */
-  --glass-tint: color-mix(in oklab, #221f1f 40%, transparent);
-  --glass-border: color-mix(in oklab, #fffddb 24%, transparent);
+  --glass-tint: color-mix(in oklab, #221f1f 14%, transparent);
+  --glass-border: color-mix(in oklab, #fffddb 14%, transparent);
   --glass-specular:
-    inset 0 1px 0 0 color-mix(in oklab, #fffddb 22%, transparent),
-    inset 0 0 12px 0 color-mix(in oklab, #fffddb 6%, transparent);
+    inset 0 1px 0 0 color-mix(in oklab, #fffddb 18%, transparent),
+    inset 0 0 12px 0 color-mix(in oklab, #fffddb 4%, transparent);
   --glass-shadow: 0 24px 48px -20px rgb(0 0 0 / 0.55);
   --glass-radius: 24px;
   /* Frosted mode (WebKit — every iOS browser — and Firefox) can't bend light.
@@ -62,8 +62,8 @@
   --signal: #ff3831;
   --ring: #e02723;
 
-  --glass-tint: color-mix(in oklab, #fffbea 35%, transparent);
-  --glass-border: color-mix(in oklab, #181616 18%, transparent);
+  --glass-tint: color-mix(in oklab, #fffbea 18%, transparent);
+  --glass-border: color-mix(in oklab, #181616 12%, transparent);
   --glass-specular:
     inset 0 1px 0 0 color-mix(in oklab, #ffffff 55%, transparent),
     inset 0 0 12px 0 color-mix(in oklab, #ffffff 12%, transparent);
@@ -103,7 +103,6 @@
   --animate-marquee: marquee 48s linear infinite;
   --animate-blob-a: blob-a 26s ease-in-out infinite alternate;
   --animate-blob-b: blob-b 22s ease-in-out infinite alternate;
-  --animate-word-drift: word-drift 8s ease-in-out infinite alternate;
 }
 
 @keyframes marquee {
@@ -112,19 +111,6 @@
   }
   to {
     transform: translateX(-50%);
-  }
-}
-
-/* The still demo word behind each tile drifts slowly so the glass rim has
-   something moving to bend — the whole point of the tiles. The word is
-   centered with the `translate` property, so animating `transform` here
-   composes with the centering instead of fighting it. */
-@keyframes word-drift {
-  from {
-    transform: translateX(-4%);
-  }
-  to {
-    transform: translateX(4%);
   }
 }
 
@@ -148,6 +134,16 @@
 
 html {
   scroll-behavior: smooth;
+  /* Native controls and scrollbars follow the theme; no white gutters on warm black. */
+  color-scheme: dark;
+  scrollbar-color: color-mix(in oklab, #fffddb 22%, transparent) transparent;
+}
+html.light {
+  color-scheme: light;
+  scrollbar-color: color-mix(in oklab, #181616 24%, transparent) transparent;
+}
+* {
+  scrollbar-width: thin;
 }
 
 /* Entrance for portaled glass (tooltip, popover, menu, dialog, sheet). */
@@ -309,28 +305,6 @@ html[data-cursor] {
   mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
 }
 
-/* Refract-mode lit rim: a thin band just inside the edge, brightest where the
-   edge faces the light (top-left), a faint catch on the far side, dark between.
-   Same 1.5px ring mask as the frosted rim. */
-[data-vsrc-glass="refract"]::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: var(--glass-rim-refract, 1.5px);
-  pointer-events: none;
-  background: linear-gradient(
-    135deg,
-    var(--glass-rim-lit) 0%,
-    transparent 34%,
-    transparent 66%,
-    var(--glass-rim-catch) 100%
-  );
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-}
-
 /* Cursor-tracked specular (opt-in via <GlassSurface specular="pointer">). The JS
    writes --spec-x/-y/-o; this soft cream glare follows. Clipped by the surface's
    overflow-hidden; a low opacity keeps content legible under the sheen. */
@@ -361,6 +335,11 @@ body::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+/* Demo scenes stop moving while off screen (set by DemoBackdrop). */
+[data-demo-backdrop][data-paused] * {
+  animation-play-state: paused;
+}
+
 ::selection {
   background: var(--primary);
   color: var(--primary-foreground);
@@ -369,8 +348,7 @@ body::after {
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee,
   .animate-blob-a,
-  .animate-blob-b,
-  .animate-word-drift {
+  .animate-blob-b {
     animation: none;
   }
   /* The JS never arms specular under reduced motion; kill the transition too. */

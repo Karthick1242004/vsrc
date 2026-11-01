@@ -27,11 +27,11 @@ const initials = (name: string) =>
 
 export function DrawerDemo() {
   return (
-    <Drawer>
+    <Drawer snapPoints={[0.5, 0.92]}>
       <DrawerTrigger asChild>
         <Button variant="primary">Share roadmap</Button>
       </DrawerTrigger>
-      <DrawerContent snapPoints={[0.42, 0.9]}>
+      <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>Share “Q3 roadmap”</DrawerTitle>
           <DrawerDescription>Drag the handle up to see who has access, or down to dismiss.</DrawerDescription>

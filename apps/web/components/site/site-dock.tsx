@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { CursorToggle } from "@/components/site/cursor";
+import { GlassTuner } from "@/components/site/glass-tuner";
 import { Monogram } from "@/components/site/monogram";
 import { Dock, DockItem, DockSeparator } from "@/registry/vsrc/ui/dock";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/registry/vsrc/ui/tooltip";
@@ -51,6 +52,9 @@ export function SiteDock() {
           </TooltipTrigger>
           <TooltipContent>GitHub</TooltipContent>
         </Tooltip>
+      </DockItem>
+      <DockItem>
+        <GlassTuner />
       </DockItem>
       <DockSeparator />
       <CursorToggle />

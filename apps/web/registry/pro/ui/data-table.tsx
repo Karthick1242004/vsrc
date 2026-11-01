@@ -2,6 +2,16 @@
 
 import * as React from "react";
 import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
+import {
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+  type ColumnDef,
+  type RowSelectionState,
+  type SortingState,
+} from "@tanstack/react-table";
 import { mergeGlass, type GlassPreset, type LiquidGlassOptions } from "vsrc/react";
 
 import { GlassSurface } from "@/registry/vsrc/ui/glass-surface";
@@ -12,7 +22,7 @@ const TABLE_OPTICS: LiquidGlassOptions = {
   chroma: 3,
   border: 0.07,
   mapBlur: 14,
-  blur: 3,
+  blur: 1,
   saturate: 1.2,
   fallbackBlur: 4,
 };
@@ -49,7 +59,6 @@ export interface DataTableProps<T extends object> extends Omit<React.ComponentPr
 }
 
 type Sort = { key: string; dir: "asc" | "desc" } | null;
-type Entry<T> = { row: T; id: string };
 
 const field = <T extends object>(row: T, key: string) => (row as Record<string, unknown>)[key];
 
@@ -94,61 +103,76 @@ function DataTable<T extends object>({
   const filterId = React.useId();
   const sizeId = React.useId();
   const [query, setQuery] = React.useState("");
-  const [sort, setSort] = React.useState<Sort>(null);
-  const [size, setSize] = React.useState(pageSize);
-  const [page, setPage] = React.useState(0);
-  const [selected, setSelected] = React.useState<ReadonlySet<string>>(new Set());
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize });
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
   const headCheckbox = React.useRef<HTMLInputElement>(null);
 
-  const rows = React.useMemo(() => {
-    const entries: Entry<T>[] = data.map((row, i) => ({ row, id: getRowId?.(row, i) ?? String(i) }));
-    const q = query.trim().toLowerCase();
-    const filtered = q
-      ? entries.filter(({ row }) => columns.some((c) => String(field(row, c.key) ?? "").toLowerCase().includes(q)))
-      : entries;
-    const col = sort && columns.find((c) => c.key === sort.key);
-    if (!sort || !col) return filtered;
-    const sign = sort.dir === "asc" ? 1 : -1;
-    const value = (r: T) => (col.sortValue ? col.sortValue(r) : field(r, col.key));
-    return [...filtered].sort((a, b) => sign * compare(value(a.row), value(b.row)));
-  }, [data, columns, getRowId, query, sort]);
+  // TanStack Table (the engine behind shadcn's DataTable) owns filter, sort, paging
+  // and selection; columns stay this component's simple { key, header, cell } shape.
+  const defs = React.useMemo<ColumnDef<T>[]>(
+    () =>
+      columns.map((c) => ({
+        id: c.key,
+        accessorFn: (row: T) => (c.sortValue ? c.sortValue(row) : field(row, c.key)),
+        enableSorting: !!c.sortable,
+        sortDescFirst: false,
+        sortingFn: (a, b, id) => compare(a.getValue(id), b.getValue(id)),
+      })),
+    [columns],
+  );
 
-  const pageCount = Math.max(1, Math.ceil(rows.length / size));
-  const current = Math.min(page, pageCount - 1);
-  const visible = rows.slice(current * size, current * size + size);
-  const pageSelected = visible.filter((e) => selected.has(e.id)).length;
-  const allSelected = visible.length > 0 && pageSelected === visible.length;
+  const table = useReactTable({
+    data,
+    columns: defs,
+    getRowId: getRowId ? (row, i) => getRowId(row, i) : undefined,
+    state: { sorting, globalFilter: query, pagination, rowSelection },
+    onPaginationChange: setPagination,
+    onRowSelectionChange: (updater) => {
+      const next = typeof updater === "function" ? updater(rowSelection) : updater;
+      setRowSelection(next);
+      onSelectionChange?.(Object.keys(next).filter((id) => next[id]));
+    },
+    enableRowSelection: selectable,
+    getColumnCanGlobalFilter: () => true,
+    globalFilterFn: (row, _id, value: string) => {
+      const q = value.trim().toLowerCase();
+      return columns.some((c) => String(field(row.original, c.key) ?? "").toLowerCase().includes(q));
+    },
+    autoResetPageIndex: false,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+  });
+
+  const total = table.getPrePaginationRowModel().rows.length;
+  const size = pagination.pageSize;
+  const pageCount = Math.max(1, table.getPageCount());
+  const current = Math.min(pagination.pageIndex, pageCount - 1);
+  const visible = table.getRowModel().rows.map((r) => ({ row: r.original, id: r.id }));
+  const selected = new Set(Object.keys(rowSelection).filter((id) => rowSelection[id]));
+  const allSelected = table.getIsAllPageRowsSelected();
+  const sort: Sort = sorting[0] ? { key: sorting[0].id, dir: sorting[0].desc ? "desc" : "asc" } : null;
   const span = columns.length + (selectable ? 1 : 0);
 
   React.useEffect(() => {
-    if (headCheckbox.current) headCheckbox.current.indeterminate = pageSelected > 0 && !allSelected;
+    if (headCheckbox.current) headCheckbox.current.indeterminate = table.getIsSomePageRowsSelected();
   });
 
-  const commit = (next: Set<string>) => {
-    setSelected(next);
-    onSelectionChange?.([...next]);
-  };
-  const toggleRow = (id: string) => {
-    const next = new Set(selected);
-    if (!next.delete(id)) next.add(id);
-    commit(next);
-  };
-  const toggleAll = () => {
-    const next = new Set(selected);
-    for (const e of visible) {
-      if (allSelected) next.delete(e.id);
-      else next.add(e.id);
-    }
-    commit(next);
-  };
+  const setPage = (pageIndex: number) => setPagination((p) => ({ ...p, pageIndex }));
+  const setSize = (n: number) => setPagination({ pageIndex: 0, pageSize: n });
+  const toggleRow = (id: string) => table.getRow(id).toggleSelected();
+  const toggleAll = () => table.toggleAllPageRowsSelected(!allSelected);
+  // Ascending, descending, then back to the data's own order.
   const cycleSort = (key: string) => {
-    setSort((s) => (s?.key !== key ? { key, dir: "asc" } : s.dir === "asc" ? { key, dir: "desc" } : null));
+    setSorting(sort?.key !== key ? [{ id: key, desc: false }] : sort.dir === "asc" ? [{ id: key, desc: true }] : []);
     setPage(0);
   };
 
   const sortedBy = sort && columns.find((c) => c.key === sort.key);
-  const first = rows.length ? current * size + 1 : 0;
-  const last = Math.min(rows.length, current * size + size);
+  const first = total ? current * size + 1 : 0;
+  const last = Math.min(total, current * size + size);
 
   return (
     <GlassSurface
@@ -322,7 +346,7 @@ function DataTable<T extends object>({
         </div>
         <div className="flex items-center gap-3">
           <p aria-live="polite" className="tabular-nums">
-            {loading ? "Loading…" : `${first}–${last} of ${rows.length}`}
+            {loading ? "Loading…" : `${first}–${last} of ${total}`}
             <span className="sr-only">{sortedBy ? `, sorted by ${sortedBy.header} ${sort?.dir === "asc" ? "ascending" : "descending"}` : ""}</span>
           </p>
           <button type="button" aria-label="Previous page" className={pagerButton} disabled={current === 0} onClick={() => setPage(current - 1)}>

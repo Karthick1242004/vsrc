@@ -1,5 +1,9 @@
 MIT License
 
+The Pro components in apps/web/registry/pro/ are NOT covered by this licence.
+They are proprietary and licensed per buyer under the vsrc Pro licence:
+https://glass.vsrc.co.in/pro#licence
+
 Copyright (c) 2026 V-/Src (vsrc)
 
 The refraction engine is a TypeScript port of liquid-glass.js:

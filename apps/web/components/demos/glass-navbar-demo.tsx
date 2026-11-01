@@ -4,6 +4,7 @@ import * as React from "react";
 
 import { Monogram } from "@/components/site/monogram";
 import { GlassNavbar } from "@/registry/pro/ui/glass-navbar";
+import { Photo } from "@/components/demos/photo";
 
 const LINKS = [
   { label: "Product", href: "#glass-navbar", current: true },
@@ -52,6 +53,9 @@ export function GlassNavbarDemo() {
         <div className="px-6 pt-24 pb-10">
           <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">What is new</p>
           <h3 className="font-display mt-2 text-4xl leading-none sm:text-5xl">Scroll to shrink the bar.</h3>
+          <div className="mt-6 h-48 overflow-hidden rounded-2xl sm:h-60">
+            <Photo name="skye" alt="The Isle of Skye coastline" sizes="(min-width: 768px) 720px, 90vw" />
+          </div>
           <ul className="mt-8 flex flex-col gap-3">
             {POSTS.map(([title, body]) => (
               <li key={title} className="rounded-2xl border border-border bg-card/70 p-4">

@@ -13,7 +13,7 @@ const TRIGGER_OPTICS: LiquidGlassOptions = {
   chroma: 3,
   border: 0.18,
   mapBlur: 6,
-  blur: 2,
+  blur: 0.5,
   saturate: 1.3,
   fallbackBlur: 2,
 };

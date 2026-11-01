@@ -27,7 +27,7 @@ export const doc: DocBody = {
     "Radix handles Escape and returning focus to the bell; \"Mark all read\" and \"Clear\" disable themselves when there is nothing to do.",
   ],
   optics:
-    "PANEL_OPTICS: scale −88, chroma 3, border 0.07, mapBlur 14, blur 6, saturate 1.2 — a large panel with a shallow bend. Only the panel is glass; the rows are plain so scrolling text never sits inside a second filter. The badge is a sibling of the bell, not a child, because the glass button clips its own overflow.",
+    "PANEL_OPTICS: scale −88, chroma 3, border 0.07, mapBlur 14, blur 3, saturate 1.2 — a large panel with a shallow bend. Only the panel is glass; the rows are plain so scrolling text never sits inside a second filter. The badge is a sibling of the bell, not a child, because the glass button clips its own overflow.",
   e2e: {
     surface: '[data-slot="notification-centre-panel"]',
     open: { action: "click", target: '[data-demo="notification-centre"] [data-slot="button"]' },

@@ -40,6 +40,8 @@ export interface DocBody {
   blurb: string;
   /** Primitive this wraps; null for from-scratch surfaces. */
   extendsRadix: { label: string; href: string } | null;
+  /** The base library the component is built on when it is not a Radix primitive (input-otp, vaul, …). */
+  builtOn?: { label: string; href: string };
   props: PropsGroup[];
   a11y: string[];
   optics: string;

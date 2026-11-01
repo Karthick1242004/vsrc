@@ -12,7 +12,7 @@ const TRACK_OPTICS: LiquidGlassOptions = {
   chroma: 2,
   border: 0.22,
   mapBlur: 5,
-  blur: 2,
+  blur: 0.5,
   saturate: 1.3,
   fallbackBlur: 2,
 };

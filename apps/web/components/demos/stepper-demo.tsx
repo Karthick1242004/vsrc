@@ -29,8 +29,8 @@ export function StepperDemo() {
   const steps: StepperStep[] = [
     {
       id: "name",
-      title: "Name",
-      description: "What to call it",
+      label: "Name",
+      optional: "What to call it",
       canProceed: name.trim().length >= 3,
       hint: "Enter at least 3 characters",
       content: (
@@ -54,8 +54,8 @@ export function StepperDemo() {
     },
     {
       id: "region",
-      title: "Region",
-      description: "Where data lives",
+      label: "Region",
+      optional: "Where data lives",
       content: (
         <fieldset className="flex flex-col gap-2">
           <legend className="mb-1 text-sm font-medium">Data region</legend>
@@ -70,8 +70,8 @@ export function StepperDemo() {
     },
     {
       id: "team",
-      title: "Team",
-      description: "Invite people",
+      label: "Team",
+      optional: "Invite people",
       content: (
         <div className="flex flex-col gap-2">
           <label htmlFor="ws-invites" className="text-sm font-medium">
@@ -90,8 +90,8 @@ export function StepperDemo() {
     },
     {
       id: "plan",
-      title: "Plan",
-      description: "Pick a tier",
+      label: "Plan",
+      optional: "Pick a tier",
       content: (
         <fieldset className="grid gap-2 sm:grid-cols-2">
           <legend className="sr-only">Plan</legend>
@@ -137,7 +137,7 @@ export function StepperDemo() {
 
   return (
     <div className="w-full max-w-xl">
-      <Stepper steps={steps} value={step} onValueChange={setStep} onComplete={() => setDone(true)} finishLabel="Create workspace" />
+      <Stepper steps={steps} activeStep={step} onActiveStepChange={setStep} onComplete={() => setDone(true)} finishLabel="Create workspace" />
     </div>
   );
 }

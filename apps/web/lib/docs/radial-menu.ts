@@ -29,6 +29,6 @@ export const doc: DocBody = {
     "The closed fan is inert. Under reduced motion items do not travel, they only fade in at their final positions.",
   ],
   optics:
-    "RADIAL_OPTICS: scale −48, chroma 4, border 0.18, mapBlur 6, blur 2, shared by the trigger and each item. Every button is its own sibling glass surface; items animate with translate, scale and opacity only, so their displacement maps never regenerate.",
+    "RADIAL_OPTICS: scale −48, chroma 4, border 0.18, mapBlur 6, blur 0.5, shared by the trigger and each item. Every button is its own sibling glass surface; items animate with translate, scale and opacity only, so their displacement maps never regenerate.",
   e2e: { surface: '[data-slot="radial-menu-trigger"]' },
 };

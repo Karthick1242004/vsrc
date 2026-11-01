@@ -11,7 +11,7 @@ const DOCK_OPTICS: LiquidGlassOptions = {
   chroma: 5,
   border: 0.14,
   mapBlur: 10,
-  blur: 3,
+  blur: 1,
   saturate: 1.5,
   fallbackBlur: 3,
 };

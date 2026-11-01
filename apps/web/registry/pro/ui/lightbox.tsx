@@ -24,7 +24,7 @@ const CONTROL_OPTICS: LiquidGlassOptions = {
   chroma: 3,
   border: 0.2,
   mapBlur: 6,
-  blur: 2,
+  blur: 0.5,
   saturate: 1.3,
   fallbackBlur: 2,
 };
@@ -34,7 +34,7 @@ const BAR_OPTICS: LiquidGlassOptions = {
   chroma: 3,
   border: 0.09,
   mapBlur: 12,
-  blur: 2,
+  blur: 0.5,
   saturate: 1.25,
   fallbackBlur: 3,
 };
@@ -59,7 +59,11 @@ const wrap = (i: number, n: number) => (n ? ((i % n) + n) % n : 0);
 const prefersReducedMotion = () =>
   typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-const LightboxContext = React.createContext<{ select: (index: number) => void } | null>(null);
+// Radix Dialog remembers only the last-mounted Trigger, so focus return is tracked here.
+const LightboxContext = React.createContext<{
+  select: (index: number) => void;
+  lastTrigger: React.RefObject<HTMLElement | null>;
+} | null>(null);
 
 function Glyph({ d }: { d: string }) {
   return (
@@ -100,6 +104,8 @@ function Lightbox({ items, children, open, defaultOpen = false, onOpenChange, in
   const suppressClick = React.useRef(false);
   const stage = React.useRef<HTMLDivElement>(null);
   const strip = React.useRef<HTMLDivElement>(null);
+  const zoomLayer = React.useRef<HTMLDivElement>(null);
+  const lastTrigger = React.useRef<HTMLElement | null>(null);
   const control = mergeGlass(CONTROL_OPTICS, glass);
   const bar = mergeGlass(BAR_OPTICS, glass);
 
@@ -114,7 +120,7 @@ function Lightbox({ items, children, open, defaultOpen = false, onOpenChange, in
     },
     [n, setIndex],
   );
-  const ctx = React.useMemo(() => ({ select }), [select]);
+  const ctx = React.useMemo(() => ({ select, lastTrigger }), [select]);
 
   React.useEffect(() => {
     if (!dir.current || prefersReducedMotion()) return;
@@ -148,6 +154,11 @@ function Lightbox({ items, children, open, defaultOpen = false, onOpenChange, in
               {...(item.caption ? {} : { "aria-describedby": undefined })}
               className="animate-glass-in fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 p-4 outline-none"
               onClick={(e) => e.target === e.currentTarget && setOpen(false)}
+              onCloseAutoFocus={(e) => {
+                if (!lastTrigger.current) return;
+                e.preventDefault();
+                lastTrigger.current.focus();
+              }}
               onKeyDown={(e) => {
                 if (n < 2 || (e.key !== "ArrowLeft" && e.key !== "ArrowRight")) return;
                 e.preventDefault();
@@ -162,9 +173,14 @@ function Lightbox({ items, children, open, defaultOpen = false, onOpenChange, in
                   className={cn("absolute inset-0 select-none", zoomed ? "cursor-zoom-out touch-none" : "cursor-zoom-in touch-pan-y")}
                   onPointerDown={(e) => {
                     swipeStart.current = e.clientX;
+                    // A touch swipe fires no click, so a flag left from the last swipe would eat the next tap.
+                    suppressClick.current = false;
                   }}
                   onPointerMove={(e) => {
-                    if (zoomed && (e.pointerType === "mouse" || e.buttons)) setZoom({ id: item.id, ...pointOf(e) });
+                    // Pan writes the style directly: a state update per move re-renders every glass control.
+                    if (!zoomed || !(e.pointerType === "mouse" || e.buttons) || !zoomLayer.current) return;
+                    const { x, y } = pointOf(e);
+                    zoomLayer.current.style.transformOrigin = `${x}% ${y}%`;
                   }}
                   onPointerUp={(e) => {
                     const start = swipeStart.current;
@@ -185,6 +201,7 @@ function Lightbox({ items, children, open, defaultOpen = false, onOpenChange, in
                   }}
                 >
                   <div
+                    ref={zoomLayer}
                     className="size-full transition-transform duration-300 ease-out motion-reduce:transition-none"
                     style={{
                       transform: zoomed ? `scale(${ZOOM})` : undefined,
@@ -284,6 +301,7 @@ function LightboxTrigger({
       data-slot="lightbox-trigger"
       onClick={(e) => {
         onClick?.(e);
+        if (ctx) ctx.lastTrigger.current = e.currentTarget;
         ctx?.select(index);
       }}
       {...props}

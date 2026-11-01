@@ -29,6 +29,6 @@ export const doc: DocBody = {
     "Under reduced motion the bar still changes size but without a transition, and the panel fades without travel.",
   ],
   optics:
-    "NAV_OPTICS: scale −64, chroma 4, border 0.12, mapBlur 10, blur 3. PANEL_OPTICS: scale −80, border 0.08, mapBlur 14. The bar and the panel are siblings, never nested. The collapse breakpoint is a container query, so it follows the width of the bar's container, not the viewport.",
+    "NAV_OPTICS: scale −64, chroma 4, border 0.12, mapBlur 10, blur 1. PANEL_OPTICS: scale −80, border 0.08, mapBlur 14. The bar and the panel are siblings, never nested. The collapse breakpoint is a container query, so it follows the width of the bar's container, not the viewport.",
   e2e: { surface: '[data-slot="glass-navbar"]' },
 };

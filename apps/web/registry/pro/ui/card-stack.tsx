@@ -11,7 +11,7 @@ const PLATE_OPTICS: LiquidGlassOptions = {
   chroma: 3,
   border: 0.12,
   mapBlur: 8,
-  blur: 2,
+  blur: 0.5,
   saturate: 1.3,
   fallbackBlur: 3,
 };
@@ -249,14 +249,14 @@ function CardStack({ items, onSwipe, onUndo, onReset, glass, className, onKeyDow
       </div>
 
       <div className="flex items-center gap-2">
-        <button type="button" className={cn(pill, "bg-card hover:bg-foreground/10")} disabled={!top || !!leaving} onClick={() => fling("left")}>
+        <button type="button" className={cn(pill, "bg-card hover:bg-foreground/10")} disabled={!top} onClick={() => fling("left")}>
           <Icon d="M10 3L5 8l5 5" />
           Skip
         </button>
-        <button type="button" aria-label="Undo last swipe" className={cn(pill, "w-11 justify-center px-0 hover:bg-foreground/10")} disabled={index === 0 || !!leaving} onClick={undo}>
+        <button type="button" aria-label="Undo last swipe" className={cn(pill, "w-11 justify-center px-0 hover:bg-foreground/10")} disabled={index === 0} onClick={undo}>
           <Icon d="M3 8h7a3 3 0 010 6H7M3 8l3-3M3 8l3 3" />
         </button>
-        <button type="button" className={cn(pill, "border-transparent bg-primary text-primary-foreground")} disabled={!top || !!leaving} onClick={() => fling("right")}>
+        <button type="button" className={cn(pill, "border-transparent bg-primary text-primary-foreground")} disabled={!top} onClick={() => fling("right")}>
           Keep
           <Icon d="M6 3l5 5-5 5" />
         </button>

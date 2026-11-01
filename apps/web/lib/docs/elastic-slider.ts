@@ -5,7 +5,7 @@ export const doc: DocBody = {
   title: "Elastic Slider",
   word: "elastic",
   blurb: "A single-value slider whose track stretches like a rubber band when dragged past either end and springs back on release.",
-  extendsRadix: null,
+  extendsRadix: { label: "Radix Slider", href: "https://www.radix-ui.com/primitives/docs/components/slider" },
   props: [
     {
       component: "ElasticSlider",

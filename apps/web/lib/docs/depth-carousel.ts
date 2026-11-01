@@ -5,6 +5,7 @@ export const doc: DocBody = {
   title: "Depth Carousel",
   word: "depth",
   blurb: "A carousel where the centre card sits forward and its neighbours tilt, shrink and fade behind it.",
+  builtOn: { label: "embla, the engine behind shadcn Carousel", href: "https://ui.shadcn.com/docs/components/carousel" },
   extendsRadix: null,
   props: [
     {

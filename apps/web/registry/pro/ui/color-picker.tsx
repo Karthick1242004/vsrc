@@ -15,7 +15,7 @@ const PANEL_OPTICS: LiquidGlassOptions = {
   chroma: 3,
   border: 0.07,
   mapBlur: 14,
-  blur: 6,
+  blur: 3,
   saturate: 1.2,
   fallbackBlur: 10,
 };
@@ -166,9 +166,10 @@ function ChannelSlider({
       tabIndex={0}
       aria-label={label}
       aria-valuemin={0}
-      aria-valuemax={max}
-      aria-valuenow={Math.round(value)}
-      aria-valuetext={`${Math.round(value)}${unit}`}
+      // A 0..1 channel (opacity) is announced as a percentage.
+      aria-valuemax={max === 1 ? 100 : max}
+      aria-valuenow={Math.round(max === 1 ? value * 100 : value)}
+      aria-valuetext={`${Math.round(max === 1 ? value * 100 : value)}${unit}`}
       data-slot="color-picker-channel"
       className={cn("group relative h-3.5 touch-none cursor-pointer rounded-full", focusRing)}
       style={{ background }}

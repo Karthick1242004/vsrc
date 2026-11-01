@@ -4,7 +4,8 @@ export const doc: DocBody = {
   slug: "date-picker",
   title: "Date Picker",
   word: "date",
-  blurb: "A glass date field with a popover calendar, single or range selection, and full keyboard navigation, built without a date library.",
+  blurb: "A glass date field with a popover calendar, single or range selection, and full keyboard navigation, on react-day-picker.",
+  builtOn: { label: "react-day-picker, the calendar behind shadcn Date Picker", href: "https://ui.shadcn.com/docs/components/date-picker" },
   extendsRadix: { label: "Radix Popover", href: "https://www.radix-ui.com/primitives/docs/components/popover" },
   props: [
     {

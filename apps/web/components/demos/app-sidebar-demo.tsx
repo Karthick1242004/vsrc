@@ -2,7 +2,8 @@
 
 import * as React from "react";
 
-import { AppSidebar, type AppSidebarGroup } from "@/registry/pro/ui/app-sidebar";
+import { Photo } from "@/components/demos/photo";
+import { AppSidebar, SidebarProvider, type AppSidebarGroup } from "@/registry/pro/ui/app-sidebar";
 
 const icon = (d: string) => (
   <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -30,9 +31,9 @@ const GROUPS: AppSidebarGroup[] = [
 ];
 
 const STATS = [
-  { label: "Monthly revenue", value: "$48,210", tone: "from-orange-300 to-rose-400" },
-  { label: "Active seats", value: "1,284", tone: "from-sky-300 to-indigo-400" },
-  { label: "Churn", value: "1.8%", tone: "from-emerald-300 to-teal-400" },
+  { label: "Monthly revenue", value: "$48,210" },
+  { label: "Active seats", value: "1,284" },
+  { label: "Churn", value: "1.8%" },
 ];
 
 export function AppSidebarDemo() {
@@ -41,7 +42,8 @@ export function AppSidebarDemo() {
   const [value, setValue] = React.useState("overview");
 
   // Narrow frames (phones) start on the icon rail so the content keeps room.
-  React.useEffect(() => {
+  // Layout effect: collapse before first paint, not as a visible animation on load.
+  React.useLayoutEffect(() => {
     if (frameRef.current && frameRef.current.offsetWidth < 520) setCollapsed(true);
   }, []);
 
@@ -49,13 +51,14 @@ export function AppSidebarDemo() {
 
   return (
     <div ref={frameRef} data-demo-frame className="relative h-[420px] w-full max-w-3xl overflow-hidden rounded-3xl border border-border bg-background">
-      <div aria-hidden className="absolute -top-16 right-10 size-64 rounded-full bg-gradient-to-br from-amber-300 to-rose-400 opacity-70 blur-2xl" />
-      <div aria-hidden className="absolute -bottom-20 left-1/3 size-72 rounded-full bg-gradient-to-tr from-sky-300 to-violet-400 opacity-60 blur-2xl" />
+      {/* A real photo behind the app, so the glass sidebar has something to bend. */}
+      <div aria-hidden className="absolute inset-0 opacity-70">
+        <Photo name="valparaiso" alt="" sizes="768px" />
+      </div>
+      <div aria-hidden className="absolute inset-0 bg-background/45" />
+      <SidebarProvider open={!collapsed} onOpenChange={(open) => setCollapsed(!open)}>
 
       <AppSidebar
-        shortcut
-        collapsed={collapsed}
-        onCollapsedChange={setCollapsed}
         value={value}
         onValueChange={setValue}
         groups={GROUPS}
@@ -68,26 +71,30 @@ export function AppSidebarDemo() {
         user={{
           name: "Maya Okafor",
           detail: "Admin",
-          avatar: <span className="size-8 rounded-full bg-gradient-to-br from-fuchsia-400 to-orange-300" />,
+          avatar: <span className="grid size-8 place-items-center rounded-full bg-foreground/15 text-xs font-semibold text-foreground">MO</span>,
         }}
         className="absolute inset-y-3 left-3 h-auto"
       />
+      </SidebarProvider>
 
-      <main className="absolute inset-y-0 right-0 left-[96px] overflow-hidden p-6 pl-8 sm:left-[96px]">
+      {/* Main starts past whichever width the sidebar has right now (rail 72 or panel 240, plus its 12px inset). */}
+      <main
+        className="absolute inset-y-0 right-0 overflow-hidden p-6 pl-8 transition-[left] duration-[380ms] ease-out motion-reduce:transition-none"
+        style={{ left: collapsed ? 96 : 264 }}
+      >
         <h3 className="font-display text-3xl text-foreground">{current?.label}</h3>
         <p className="mt-1 text-sm text-foreground/80">Updated 4 minutes ago</p>
         <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
           {STATS.map((s) => (
-            <div key={s.label} className="rounded-2xl border border-border bg-card/70 p-3">
-              <div className={`mb-3 h-1.5 w-10 rounded-full bg-gradient-to-r ${s.tone}`} />
+            <div key={s.label} className="rounded-2xl bg-card/80 p-3">
               <p className="text-xs text-muted-foreground">{s.label}</p>
               <p className="text-lg font-semibold tabular-nums text-foreground">{s.value}</p>
             </div>
           ))}
         </div>
-        <div className="mt-3 hidden h-28 items-end gap-2 rounded-2xl border border-border bg-card/70 p-4 sm:flex">
+        <div className="mt-3 hidden h-28 items-end gap-2 rounded-2xl bg-card/80 p-4 sm:flex">
           {[40, 64, 52, 80, 70, 96, 84, 100].map((h, i) => (
-            <span key={i} style={{ height: `${h}%` }} className="flex-1 rounded-md bg-gradient-to-t from-sky-400 to-violet-300" />
+            <span key={i} style={{ height: `${h}%` }} className="flex-1 rounded-md bg-foreground/70 last:bg-primary" />
           ))}
         </div>
       </main>

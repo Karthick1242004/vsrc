@@ -17,8 +17,8 @@ const sheetVariants = cva(
   {
     variants: {
       side: {
-        right: "inset-y-3 right-3 w-full max-w-sm",
-        left: "inset-y-3 left-3 w-full max-w-sm",
+        right: "inset-y-3 right-3 w-[calc(100%-1.5rem)] max-w-sm",
+        left: "inset-y-3 left-3 w-[calc(100%-1.5rem)] max-w-sm",
         bottom: "inset-x-3 bottom-3 max-h-[60vh]",
         top: "inset-x-3 top-3 max-h-[60vh]",
       },

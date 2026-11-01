@@ -5,6 +5,7 @@ export const doc: DocBody = {
   title: "Toast Stack",
   word: "toast",
   blurb: "iOS-style stacked toasts: the newest sits on top, older ones tuck behind, and hovering or focusing the stack fans it open.",
+  builtOn: { label: "sonner, the toast library shadcn uses", href: "https://ui.shadcn.com/docs/components/sonner" },
   extendsRadix: null,
   props: [
     {
@@ -35,7 +36,7 @@ export const doc: DocBody = {
     "Under prefers-reduced-motion the stack still reorders, but without travel, scale or fade transitions.",
   ],
   optics:
-    "TOAST_OPTICS: scale −56, chroma 3, border 0.14, mapBlur 8, blur 4, saturate 1.3. Each toast is its own glass pane, a sibling of the others (never nested), capped by `limit`. Toasts move by transform, translate and clip-path only, so their displacement maps are not rebuilt as the stack reflows.",
+    "TOAST_OPTICS: scale −56, chroma 3, border 0.14, mapBlur 8, blur 2, saturate 1.3. Each toast is its own glass pane, a sibling of the others (never nested), capped by `limit`. Toasts move by transform, translate and clip-path only, so their displacement maps are not rebuilt as the stack reflows.",
   e2e: {
     surface: '[data-slot="toast-stack-item"]',
     open: { action: "click", target: '[data-demo="toast-stack"] [data-slot="button"]' },

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import useEmblaCarousel from "embla-carousel-react";
 import { mergeGlass, type GlassPreset, type LiquidGlassOptions } from "vsrc/react";
 
 import { GlassSurface } from "@/registry/vsrc/ui/glass-surface";
@@ -11,7 +12,7 @@ const CARD_OPTICS: LiquidGlassOptions = {
   chroma: 3,
   border: 0.1,
   mapBlur: 10,
-  blur: 2,
+  blur: 0.5,
   saturate: 1.25,
   fallbackBlur: 3,
 };
@@ -67,29 +68,53 @@ function DepthCarousel({
   const n = items.length;
   const [inner, setInner] = React.useState(defaultValue);
   const index = clamp(value ?? inner, 0, Math.max(0, n - 1));
-  const go = (next: number) => {
-    const t = clamp(next, 0, n - 1);
-    if (!n || t === index) return;
-    if (value === undefined) setInner(t);
-    onValueChange?.(t);
-  };
-
-  const [drag, setDrag] = React.useState<number | null>(null);
-  const gesture = React.useRef<{ x0: number; last: number; t: number; v: number; moved: boolean } | null>(null);
-  // Rubber-band past the first and last card.
-  const pos = clamp(index - (drag ?? 0) / STEP, -0.35, n - 1 + 0.35);
   const optics = mergeGlass(CARD_OPTICS, glass);
+  // embla (the engine behind shadcn's Carousel) owns drag, flick, snapping and
+  // looping-free bounds; this file adds the coverflow depth on top of its scroll.
+  const [viewportRef, api] = useEmblaCarousel({ align: "center", startIndex: index, containScroll: false });
+  const slides = React.useRef<Array<HTMLDivElement | null>>([]);
+  const cards = React.useRef<Array<HTMLDivElement | null>>([]);
+  const onChange = React.useRef(onValueChange);
+  onChange.current = onValueChange;
+  const controlled = value !== undefined;
 
-  const finish = () => {
-    const g = gesture.current;
-    gesture.current = null;
-    if (!g) return;
-    const dx = (drag ?? 0);
-    let target = Math.round(clamp(pos + (g.v * 200) / STEP, 0, n - 1));
-    if (target === index && Math.abs(dx) > 24) target = clamp(index + (dx < 0 ? 1 : -1), 0, n - 1);
-    setDrag(null);
-    go(target);
-  };
+  // Depth, tilt and fade follow each card's live distance from centre, written
+  // straight to the DOM on every scroll frame: no React state while dragging.
+  React.useEffect(() => {
+    if (!api) return;
+    const tween = () => {
+      const snaps = api.scrollSnapList();
+      const span = (snaps[snaps.length - 1] ?? 0) - (snaps[0] ?? 0) || 1;
+      const progress = api.scrollProgress();
+      snaps.forEach((snap, i) => {
+        const o = ((snap - progress) / span) * (n - 1);
+        const a = Math.abs(o);
+        const s = Math.min(a, 2);
+        const card = cards.current[i];
+        const slide = slides.current[i];
+        if (!card || !slide) return;
+        card.style.transform = `translateZ(${-s * DEPTH}px) rotateY(${-clamp(o, -1, 1) * ANGLE}deg) scale(${1 - s * 0.06})`;
+        card.style.opacity = String(Math.max(0, 1 - a * 0.38));
+        slide.style.zIndex = String(50 - Math.round(a * 10));
+      });
+    };
+    const select = () => {
+      const i = api.selectedScrollSnap();
+      if (!controlled) setInner(i);
+      onChange.current?.(i);
+    };
+    tween();
+    api.on("scroll", tween).on("reInit", tween).on("select", select);
+    return () => {
+      api.off("scroll", tween).off("reInit", tween).off("select", select);
+    };
+  }, [api, n, controlled]);
+
+  React.useEffect(() => {
+    if (api && api.selectedScrollSnap() !== index) api.scrollTo(index);
+  }, [api, index]);
+
+  const go = (i: number) => api?.scrollTo(clamp(i, 0, n - 1));
 
   return (
     <div
@@ -111,66 +136,50 @@ function DepthCarousel({
       {...props}
     >
       <div
+        ref={viewportRef}
         data-slot="depth-carousel-stage"
         aria-live="polite"
-        className={cn("relative h-80 w-full touch-pan-y overflow-hidden select-none [perspective:1000px]", drag !== null ? "cursor-grabbing" : "cursor-grab")}
-        onPointerDown={(e) => {
-          if (e.button !== 0) return;
-          gesture.current = { x0: e.clientX, last: e.clientX, t: e.timeStamp, v: 0, moved: false };
-        }}
-        onPointerMove={(e) => {
-          const g = gesture.current;
-          if (!g) return;
-          const dx = e.clientX - g.x0;
-          // Capture only once it is a drag, so plain clicks still reach the card.
-          if (!g.moved && Math.abs(dx) > 5) {
-            g.moved = true;
-            e.currentTarget.setPointerCapture(e.pointerId);
-          }
-          const dt = Math.max(1, e.timeStamp - g.t);
-          g.v = g.v * 0.6 + (((e.clientX - g.last) / dt) * -1) * 0.4;
-          g.last = e.clientX;
-          g.t = e.timeStamp;
-          if (g.moved) setDrag(dx);
-        }}
-        onPointerUp={finish}
-        onPointerCancel={finish}
+        className="relative h-80 w-full cursor-grab touch-pan-y overflow-hidden select-none [perspective:1000px] active:cursor-grabbing"
       >
-        {items.map((item, i) => {
-          const o = i - pos;
-          const a = Math.abs(o);
-          if (a > 2.7) return null;
-          const s = Math.min(a, 2);
-          const active = i === index;
-          return (
-            <GlassSurface
-              key={item.id}
-              data-slot="depth-carousel-card"
-              role="group"
-              aria-roledescription="slide"
-              aria-label={`${i + 1} of ${n}`}
-              aria-hidden={!active}
-              glass={optics}
-              onClick={() => go(i)}
-              className={cn(
-                "absolute top-2 left-1/2 flex h-[19rem] w-56 flex-col gap-2 rounded-3xl p-2.5 will-change-transform",
-                drag === null && "transition-[transform,opacity] duration-500 ease-[cubic-bezier(0.22,0.9,0.3,1)] motion-reduce:transition-none",
-                !active && "cursor-pointer",
-              )}
-              style={{
-                transform: `translate3d(calc(-50% + ${o * STEP}px), 0, ${-s * DEPTH}px) rotateY(${-clamp(o, -1, 1) * ANGLE}deg) scale(${1 - s * 0.06})`,
-                opacity: Math.max(0, 1 - a * 0.38),
-                zIndex: 50 - Math.round(a * 10),
-              }}
-            >
-              <div className="min-h-0 flex-1 overflow-hidden rounded-2xl">{item.art}</div>
-              <div className="px-1.5 pb-1">
-                <p className="truncate font-display text-lg leading-tight">{item.title}</p>
-                {item.caption && <p className="truncate text-xs text-muted-foreground">{item.caption}</p>}
+        <div className="flex h-full [transform-style:preserve-3d]">
+          {items.map((item, i) => {
+            const active = i === index;
+            return (
+              // Slides are one STEP wide so neighbours overlap; the card inside is wider.
+              <div
+                key={item.id}
+                ref={(el) => {
+                  slides.current[i] = el;
+                }}
+                className="relative flex h-full shrink-0 justify-center"
+                style={{ flexBasis: STEP }}
+              >
+                <GlassSurface
+                  ref={(el: HTMLDivElement | null) => {
+                    cards.current[i] = el;
+                  }}
+                  data-slot="depth-carousel-card"
+                  role="group"
+                  aria-roledescription="slide"
+                  aria-label={`${i + 1} of ${n}`}
+                  aria-hidden={!active}
+                  glass={optics}
+                  onClick={() => go(i)}
+                  className={cn(
+                    "absolute top-2 flex h-[19rem] w-56 flex-col gap-2 rounded-3xl p-2.5 will-change-transform",
+                    !active && "cursor-pointer",
+                  )}
+                >
+                  <div className="min-h-0 flex-1 overflow-hidden rounded-2xl">{item.art}</div>
+                  <div className="px-1.5 pb-1">
+                    <p className="truncate font-display text-lg leading-tight">{item.title}</p>
+                    {item.caption && <p className="truncate text-xs text-muted-foreground">{item.caption}</p>}
+                  </div>
+                </GlassSurface>
               </div>
-            </GlassSurface>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       <div className="flex items-center gap-3">

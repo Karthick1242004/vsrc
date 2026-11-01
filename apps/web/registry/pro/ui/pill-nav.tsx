@@ -11,7 +11,7 @@ const LENS_OPTICS: LiquidGlassOptions = {
   chroma: 4,
   border: 0.2,
   mapBlur: 6,
-  blur: 1,
+  blur: 0.5,
   saturate: 1.3,
   fallbackBlur: 2,
 };
@@ -110,7 +110,8 @@ function PillNav({
         if (!event.currentTarget.contains(event.relatedTarget)) setHover(null);
       }}
       className={cn(
-        "relative inline-flex w-fit max-w-full rounded-full border border-border bg-card/50 p-1 text-foreground",
+        // Scrolls sideways when the links outgrow a narrow screen; the lens lives in the same scroll box.
+        "relative inline-flex w-fit max-w-full overflow-x-auto overscroll-x-contain rounded-full border border-border bg-card/50 p-1 text-foreground [scrollbar-width:none]",
         className,
       )}
       {...props}

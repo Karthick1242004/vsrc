@@ -7,6 +7,7 @@ const PAGES = [
   "/",
   "/components",
   "/about",
+  "/pro",
   ...COMPONENT_DOCS.map((doc) => `/components/${doc.slug}`),
 ];
 
