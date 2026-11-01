@@ -71,7 +71,10 @@ function DepthCarousel({
   const optics = mergeGlass(CARD_OPTICS, glass);
   // embla (the engine behind shadcn's Carousel) owns drag, flick, snapping and
   // looping-free bounds; this file adds the coverflow depth on top of its scroll.
-  const [viewportRef, api] = useEmblaCarousel({ align: "center", startIndex: index, containScroll: false });
+  // Options must stay stable: a changed startIndex makes embla re-initialise and
+  // jump straight to it, cutting off its own scroll animation on every switch.
+  const [startIndex] = React.useState(index);
+  const [viewportRef, api] = useEmblaCarousel({ align: "center", startIndex, containScroll: false, duration: 32 });
   const slides = React.useRef<Array<HTMLDivElement | null>>([]);
   const cards = React.useRef<Array<HTMLDivElement | null>>([]);
   const onChange = React.useRef(onValueChange);
