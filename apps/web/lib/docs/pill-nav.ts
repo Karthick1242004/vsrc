@@ -26,6 +26,6 @@ export const doc: DocBody = {
     "Touch taps do not trigger hover travel; under reduced motion the lens jumps without gliding.",
   ],
   optics:
-    "LENS_OPTICS: scale −48, chroma 4, border 0.2, mapBlur 6, blur 1. Only the lens is glass; the track behind it is a plain translucent pill, since glass inside glass is not allowed. The lens sits above the labels so it visibly bends them as it passes.",
+    "LENS_OPTICS: scale −40, chroma 3, border 0.12, mapBlur 4, blur 0.5. The lens is about 40px tall, so the rim band stays near a third of its height and the label reads clearly through the middle. Only the lens is glass; the track behind it is a plain translucent pill, since glass inside glass is not allowed. The lens sits above the labels so it visibly bends them as it passes.",
   e2e: { surface: '[data-slot="pill-nav-lens"]' },
 };

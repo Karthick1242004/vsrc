@@ -6,11 +6,13 @@ import { mergeGlass, type GlassPreset, type LiquidGlassOptions } from "vsrc/reac
 import { GlassSurface } from "@/registry/vsrc/ui/glass-surface";
 import { cn } from "@/lib/utils";
 
+// The rim band is border × height + 2 × mapBlur per side; on a ~40px lens this keeps
+// it near a third of the height so the label stays clear in the middle.
 const LENS_OPTICS: LiquidGlassOptions = {
-  scale: -48,
-  chroma: 4,
-  border: 0.2,
-  mapBlur: 6,
+  scale: -40,
+  chroma: 3,
+  border: 0.12,
+  mapBlur: 4,
   blur: 0.5,
   saturate: 1.3,
   fallbackBlur: 2,
@@ -111,7 +113,7 @@ function PillNav({
       }}
       className={cn(
         // Scrolls sideways when the links outgrow a narrow screen; the lens lives in the same scroll box.
-        "relative inline-flex w-fit max-w-full overflow-x-auto overscroll-x-contain rounded-full border border-border bg-card/50 p-1 text-foreground [scrollbar-width:none]",
+        "relative inline-flex w-fit max-w-full overflow-x-auto overscroll-x-contain rounded-full border border-border bg-card/50 p-1.5 text-foreground [scrollbar-width:none]",
         className,
       )}
       {...props}
@@ -123,7 +125,7 @@ function PillNav({
           data-slot="pill-nav-lens"
           style={{ transform: `translateX(${rect.left}px)`, width: rect.width }}
           className={cn(
-            "pointer-events-none absolute inset-y-1 left-0 z-10 rounded-full",
+            "pointer-events-none absolute inset-y-1.5 left-0 z-10 rounded-full",
             ready &&
               "transition-[transform,width] duration-[480ms] ease-[cubic-bezier(0.34,1.3,0.64,1)] motion-reduce:transition-none",
           )}
@@ -140,7 +142,7 @@ function PillNav({
             "data-value": id,
             onClick: () => select(id),
             className: cn(
-              "block rounded-full px-4 py-1.5 text-sm font-medium whitespace-nowrap outline-none transition-colors duration-300",
+              "block rounded-full px-5 py-2.5 text-sm font-medium whitespace-nowrap outline-none transition-colors duration-300",
               "focus-visible:ring-2 focus-visible:ring-ring ring-offset-background",
               id === target ? "text-foreground" : "text-muted-foreground",
             ),
