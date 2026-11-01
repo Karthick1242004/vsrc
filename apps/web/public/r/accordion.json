@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "accordion",
+  "title": "Accordion",
+  "description": "One glass panel holding collapsible rows, Radix keyboard behavior intact.",
+  "dependencies": [
+    "vsrc",
+    "@radix-ui/react-accordion"
+  ],
+  "registryDependencies": [
+    "@vsrc/glass-surface"
+  ],
+  "files": [
+    {
+      "path": "registry/vsrc/ui/accordion.tsx",
+      "content": "\"use client\";\n\nimport * as React from \"react\";\nimport * as AccordionPrimitive from \"@radix-ui/react-accordion\";\nimport { mergeGlass, type GlassPreset, type LiquidGlassOptions } from \"vsrc/react\";\n\nimport { GlassSurface } from \"@/registry/vsrc/ui/glass-surface\";\nimport { cn } from \"@/lib/utils\";\n\nconst ACCORDION_OPTICS: LiquidGlassOptions = {\n  scale: -56,\n  chroma: 4,\n  border: 0.08,\n  mapBlur: 10,\n  blur: 2,\n  saturate: 1.4,\n  fallbackBlur: 3,\n};\n\n/** One glass panel holds every item — a stack of separate glass rows would nest\n *  filters for no gain. Items are separated by a hairline, not by their own pane. */\nfunction Accordion({\n  className,\n  glass,\n  ...props\n}: React.ComponentProps<typeof AccordionPrimitive.Root> & { glass?: LiquidGlassOptions | GlassPreset | false }) {\n  return (\n    <GlassSurface asChild glass={mergeGlass(ACCORDION_OPTICS, glass)}>\n      <AccordionPrimitive.Root data-slot=\"accordion\" className={cn(\"w-full rounded-3xl\", className)} {...props} />\n    </GlassSurface>\n  );\n}\n\nfunction AccordionItem({ className, ...props }: React.ComponentProps<typeof AccordionPrimitive.Item>) {\n  return (\n    <AccordionPrimitive.Item\n      data-slot=\"accordion-item\"\n      className={cn(\"border-b border-border/60 last:border-b-0\", className)}\n      {...props}\n    />\n  );\n}\n\nfunction AccordionTrigger({\n  className,\n  children,\n  ...props\n}: React.ComponentProps<typeof AccordionPrimitive.Trigger>) {\n  return (\n    <AccordionPrimitive.Header className=\"flex\">\n      <AccordionPrimitive.Trigger\n        data-slot=\"accordion-trigger\"\n        className={cn(\n          \"group flex flex-1 items-center justify-between gap-4 px-5 py-4 text-left text-sm font-medium text-foreground\",\n          \"transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring\",\n          \"disabled:pointer-events-none disabled:opacity-50\",\n          className,\n        )}\n        {...props}\n      >\n        {children}\n        <svg\n          viewBox=\"0 0 16 16\"\n          aria-hidden\n          className=\"size-4 shrink-0 text-muted-foreground transition-transform duration-300 group-data-[state=open]:rotate-180 motion-reduce:transition-none\"\n        >\n          <path d=\"M3.5 6l4.5 4.5L12.5 6\" fill=\"none\" stroke=\"currentColor\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n        </svg>\n      </AccordionPrimitive.Trigger>\n    </AccordionPrimitive.Header>\n  );\n}\n\nfunction AccordionContent({\n  className,\n  children,\n  ...props\n}: React.ComponentProps<typeof AccordionPrimitive.Content>) {\n  return (\n    <AccordionPrimitive.Content\n      data-slot=\"accordion-content\"\n      className=\"overflow-hidden text-sm text-muted-foreground data-[state=closed]:animate-[accordion-up_0.22s_ease-out] data-[state=open]:animate-[accordion-down_0.26s_ease-out] motion-reduce:animate-none\"\n      {...props}\n    >\n      <div className={cn(\"px-5 pb-4 leading-relaxed\", className)}>{children}</div>\n    </AccordionPrimitive.Content>\n  );\n}\n\nexport { Accordion, AccordionItem, AccordionTrigger, AccordionContent };\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

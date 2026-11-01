@@ -62,8 +62,9 @@ export default function AboutPage() {
         </Reveal>
         <Reveal delay={0.16}>
           <p className="mt-8 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-            The optics engine and all 19 components work today, but this is v0.1.0: the component
-            APIs may still change before 1.0, and rough edges remain. We&apos;re actively improving
+            The optics engine and the 23 free components work today. The 35 Pro components are in
+            preview: you can try each one live, but their source is not published yet. This is v0.1.0,
+            so component APIs may still change before 1.0 and rough edges remain. We&apos;re actively improving
             it — if something breaks or feels off, an issue on GitHub is the fastest way to get it
             fixed.
           </p>

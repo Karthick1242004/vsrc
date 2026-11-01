@@ -9,48 +9,14 @@
  * prop unions produces noise, not documentation.
  */
 
-export interface PropRow {
-  name: string;
-  type: string;
-  default?: string;
-  description: string;
-}
+import { CATALOG } from "@/lib/component-catalog";
+import { NEW_DOCS } from "@/lib/docs";
+import { GLASS_PROP, type ComponentDoc, type DocBody } from "@/lib/docs/types";
 
-export interface PropsGroup {
-  /** Exported component the rows belong to (e.g. "DialogContent"). */
-  component: string;
-  rows: PropRow[];
-}
+export type { ComponentDoc, DocBody, Group, PropRow, PropsGroup, Tier } from "@/lib/docs/types";
 
-export interface ComponentDoc {
-  slug: string;
-  title: string;
-  /** The drifting display word behind the demo tile. */
-  word: string;
-  blurb: string;
-  /** Primitive this wraps; null for from-scratch surfaces. */
-  extendsRadix: { label: string; href: string } | null;
-  props: PropsGroup[];
-  a11y: string[];
-  optics: string;
-  e2e: {
-    /** Selector expected to carry data-vsrc-glass="refract" in Chromium. */
-    surface?: string;
-    /** Interaction that reveals a portaled surface. */
-    open?: { action: "click" | "hover" | "context-menu"; target: string };
-    /** Deliberately no displacement surface (position-animating material). */
-    none?: boolean;
-  };
-}
-
-/** Shared row: every glass component exposes the same `glass` prop. */
-const GLASS_PROP = (target = "the surface"): PropRow => ({
-  name: "glass",
-  type: `"subtle" | "regular" | "heavy" | LiquidGlassOptions | false`,
-  description: `Optics override for ${target}. A preset name replaces the tuned values, an object merges over them, \`false\` disables refraction entirely.`,
-});
-
-export const COMPONENT_DOCS: ComponentDoc[] = [
+/** The 19 components that shipped first; the rest live in `lib/docs/`. */
+const SHIPPED_DOCS: DocBody[] = [
   {
     slug: "glass-surface",
     title: "Glass Surface",
@@ -544,5 +510,16 @@ export const COMPONENT_DOCS: ComponentDoc[] = [
     e2e: { surface: '[data-slot="dock"]' },
   },
 ];
+
+const BODY_BY_SLUG = new Map<string, DocBody>(
+  [...SHIPPED_DOCS, ...NEW_DOCS].map((d) => [d.slug, d]),
+);
+
+/** Every component, catalog order, with its tier and group attached. */
+export const COMPONENT_DOCS: ComponentDoc[] = CATALOG.map((entry) => {
+  const body = BODY_BY_SLUG.get(entry.slug);
+  if (!body) throw new Error(`component-docs: no doc for catalog slug "${entry.slug}"`);
+  return { ...body, ...entry };
+});
 
 export const DOC_BY_SLUG = new Map(COMPONENT_DOCS.map((d) => [d.slug, d]));

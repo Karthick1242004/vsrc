@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "radio-group",
+  "title": "Radio Group",
+  "description": "Glass radio dots in a Radix group with roving arrow-key focus.",
+  "dependencies": [
+    "vsrc",
+    "@radix-ui/react-radio-group"
+  ],
+  "registryDependencies": [
+    "@vsrc/glass-surface"
+  ],
+  "files": [
+    {
+      "path": "registry/vsrc/ui/radio-group.tsx",
+      "content": "\"use client\";\n\nimport * as React from \"react\";\nimport * as RadioGroupPrimitive from \"@radix-ui/react-radio-group\";\nimport { mergeGlass, type GlassPreset, type LiquidGlassOptions } from \"vsrc/react\";\n\nimport { GlassSurface } from \"@/registry/vsrc/ui/glass-surface\";\nimport { cn } from \"@/lib/utils\";\n\nconst RADIO_OPTICS: LiquidGlassOptions = {\n  scale: -28,\n  chroma: 2,\n  border: 0.3,\n  mapBlur: 4,\n  blur: 1,\n  saturate: 1.3,\n  fallbackBlur: 1,\n};\n\nfunction RadioGroup({ className, ...props }: React.ComponentProps<typeof RadioGroupPrimitive.Root>) {\n  return <RadioGroupPrimitive.Root data-slot=\"radio-group\" className={cn(\"grid gap-3\", className)} {...props} />;\n}\n\nfunction RadioGroupItem({\n  className,\n  glass,\n  ...props\n}: React.ComponentProps<typeof RadioGroupPrimitive.Item> & { glass?: LiquidGlassOptions | GlassPreset | false }) {\n  return (\n    <GlassSurface asChild glass={mergeGlass(RADIO_OPTICS, glass)}>\n      <RadioGroupPrimitive.Item\n        data-slot=\"radio-group-item\"\n        className={cn(\n          \"relative inline-flex size-5 shrink-0 items-center justify-center rounded-full\",\n          \"transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background\",\n          \"disabled:cursor-not-allowed disabled:opacity-50\",\n          \"data-[state=checked]:border-primary/60\",\n          className,\n        )}\n        {...props}\n      >\n        <RadioGroupPrimitive.Indicator\n          data-slot=\"radio-group-indicator\"\n          className=\"block size-2.5 rounded-full bg-primary data-[state=checked]:animate-[checkbox-pop_0.22s_ease-out] motion-reduce:animate-none\"\n        />\n      </RadioGroupPrimitive.Item>\n    </GlassSurface>\n  );\n}\n\nexport { RadioGroup, RadioGroupItem };\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

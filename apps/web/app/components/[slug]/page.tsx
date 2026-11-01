@@ -10,6 +10,7 @@ import { CodeBlock } from "@/components/site/code-block";
 import { CodePanel } from "@/components/site/code-panel";
 import { DemoTile } from "@/components/site/demo-tile";
 import { Reveal } from "@/components/site/reveal";
+import { ProNotice, TierBadge } from "@/components/site/tier-badge";
 import { COMPONENT_DOCS, DOC_BY_SLUG } from "@/lib/component-docs";
 import { highlight } from "@/lib/highlight";
 
@@ -43,12 +44,13 @@ export default async function ComponentPage({
   if (!doc) notFound();
 
   // The code tab renders the exact file consumers install — read from the
-  // registry source at build time so it can never drift from what ships.
-  const source = await fs.readFile(
-    path.join(process.cwd(), "registry", "vsrc", "ui", `${slug}.tsx`),
-    "utf8",
-  );
-  const html = await highlight(source);
+  // registry source at build time so it can never drift from what ships. Pro
+  // source is not published yet, so those pages never read it.
+  const isPro = doc.tier === "pro";
+  const source = isPro
+    ? ""
+    : await fs.readFile(path.join(process.cwd(), "registry", "vsrc", "ui", `${slug}.tsx`), "utf8");
+  const html = isPro ? "" : await highlight(source);
   const Demo = DEMOS[slug];
 
   const index = COMPONENT_DOCS.findIndex((d) => d.slug === slug);
@@ -69,7 +71,10 @@ export default async function ComponentPage({
         <p className="mt-8 font-mono text-xs tracking-[0.25em] text-muted-foreground uppercase">
           {`// ${doc.slug}`}
         </p>
-        <h1 className="display-stroke mt-2 font-display text-5xl sm:text-6xl">{doc.title}</h1>
+        <h1 className="display-stroke mt-2 flex flex-wrap items-center gap-4 font-display text-5xl sm:text-6xl">
+          {doc.title}
+          <TierBadge tier={doc.tier} className="text-xs" />
+        </h1>
         <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">{doc.blurb}</p>
 
         <div className="mt-8 grid gap-4" data-demo={doc.slug}>
@@ -78,7 +83,7 @@ export default async function ComponentPage({
               <Demo />
             </DemoTile>
           ) : null}
-          <CodeBlock kicker="install" code={`npx shadcn add @vsrc/${doc.slug}`} copy />
+          {isPro ? <ProNotice /> : <CodeBlock kicker="install" code={`npx shadcn add @vsrc/${doc.slug}`} copy />}
         </div>
       </Reveal>
 
@@ -168,17 +173,19 @@ export default async function ComponentPage({
         </section>
       </Reveal>
 
-      <Reveal delay={0.16}>
-        <section className="mt-14">
-          <h2 className="display-stroke-sm font-display text-3xl">Source</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            The exact file the CLI copies into your project — you own it after install.
-          </p>
-          <div className="mt-4">
-            <CodePanel kicker={`registry/vsrc/ui/${doc.slug}.tsx`} html={html} raw={source} />
-          </div>
-        </section>
-      </Reveal>
+      {isPro ? null : (
+        <Reveal delay={0.16}>
+          <section className="mt-14">
+            <h2 className="display-stroke-sm font-display text-3xl">Source</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+              The exact file the CLI copies into your project — you own it after install.
+            </p>
+            <div className="mt-4">
+              <CodePanel kicker={`registry/vsrc/ui/${doc.slug}.tsx`} html={html} raw={source} />
+            </div>
+          </section>
+        </Reveal>
+      )}
 
       <nav aria-label="Component pagination" className="mt-16 flex justify-between font-mono text-sm">
         {prev ? (

@@ -12,7 +12,8 @@ export function DemoTile({ word, children }: { word: string; children: React.Rea
           {word}
         </p>
       </div>
-      <div className="relative">{children}</div>
+      {/* Full width so demos can size with w-full / max-w-*; flex keeps narrower ones centred. */}
+      <div className="relative flex w-full items-center justify-center">{children}</div>
     </div>
   );
 }

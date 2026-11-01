@@ -27,6 +27,32 @@
             "background-position": "100% 60%, 0% 40%, 0 0"
           }
         },
+        "@keyframes checkbox-pop": {
+          "from": {
+            "opacity": "0",
+            "scale": "0.4"
+          },
+          "to": {
+            "opacity": "1",
+            "scale": "1"
+          }
+        },
+        "@keyframes accordion-down": {
+          "from": {
+            "height": "0"
+          },
+          "to": {
+            "height": "var(--radix-accordion-content-height)"
+          }
+        },
+        "@keyframes accordion-up": {
+          "from": {
+            "height": "var(--radix-accordion-content-height)"
+          },
+          "to": {
+            "height": "0"
+          }
+        },
         "@media (prefers-reduced-motion: reduce)": {
           "[data-vsrc-glass=\"frosted\"]": {
             "animation": "none"
@@ -317,6 +343,42 @@
       "dependencies": ["vsrc"],
       "registryDependencies": ["@vsrc/glass-surface"],
       "files": [{ "path": "registry/vsrc/ui/dock.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "accordion",
+      "type": "registry:ui",
+      "title": "Accordion",
+      "description": "One glass panel holding collapsible rows, Radix keyboard behavior intact.",
+      "dependencies": ["vsrc", "@radix-ui/react-accordion"],
+      "registryDependencies": ["@vsrc/glass-surface"],
+      "files": [{ "path": "registry/vsrc/ui/accordion.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "textarea",
+      "type": "registry:ui",
+      "title": "Textarea",
+      "description": "A glass multi-line field with the same gentle optics as Input.",
+      "dependencies": ["vsrc"],
+      "registryDependencies": ["@vsrc/glass-surface"],
+      "files": [{ "path": "registry/vsrc/ui/textarea.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "checkbox",
+      "type": "registry:ui",
+      "title": "Checkbox",
+      "description": "Glass box, red when checked, with an indeterminate state. Radix behavior intact.",
+      "dependencies": ["vsrc", "@radix-ui/react-checkbox"],
+      "registryDependencies": ["@vsrc/glass-surface"],
+      "files": [{ "path": "registry/vsrc/ui/checkbox.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "radio-group",
+      "type": "registry:ui",
+      "title": "Radio Group",
+      "description": "Glass radio dots in a Radix group with roving arrow-key focus.",
+      "dependencies": ["vsrc", "@radix-ui/react-radio-group"],
+      "registryDependencies": ["@vsrc/glass-surface"],
+      "files": [{ "path": "registry/vsrc/ui/radio-group.tsx", "type": "registry:ui" }]
     }
   ]
 }
