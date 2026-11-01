@@ -7,6 +7,17 @@ import type { GlassMode, GlassPreset, LiquidGlassOptions } from "./engine";
 export type { GlassMode, GlassPreset, LiquidGlassOptions };
 export { mergeGlass, GLASS_PRESETS };
 
+const GlassConfig = React.createContext<LiquidGlassOptions | null>(null);
+
+/**
+ * App-wide optics for every glass surface below it: one place to make all glass
+ * clearer, bend harder or tint less. Values set here win over each component's
+ * tuned optics (and over a preset name); unset keys keep the component's own.
+ */
+export function GlassProvider({ value, children }: { value: LiquidGlassOptions; children?: React.ReactNode }) {
+  return <GlassConfig.Provider value={value}>{children}</GlassConfig.Provider>;
+}
+
 /**
  * Apply liquid glass to `element` once it is mounted. Returns the active mode
  * ("refract" | "frosted" | "reduced" | "none"), so callers can adapt styling.
@@ -23,9 +34,14 @@ export function useLiquidGlass<T extends HTMLElement>(
   options?: LiquidGlassOptions | GlassPreset | false,
 ): GlassMode {
   const [mode, setMode] = React.useState<GlassMode>("none");
+  const tuned = React.useContext(GlassConfig);
+  const resolved =
+    options === false || !tuned
+      ? options
+      : { ...(typeof options === "string" ? GLASS_PRESETS[options] : options), ...tuned };
   // Key on option values, not object identity — inline objects would
   // otherwise tear down and rebuild the filter every render.
-  const optionsKey = JSON.stringify(options ?? {});
+  const optionsKey = JSON.stringify(resolved ?? {});
 
   React.useEffect(() => {
     if (!element || optionsKey === "false") return;

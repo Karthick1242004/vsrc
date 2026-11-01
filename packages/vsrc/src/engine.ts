@@ -20,7 +20,7 @@ export interface LiquidGlassOptions {
   border?: number;
   /** Rim softness (px): widens the band, so small = hard rim, large = dome. */
   mapBlur?: number;
-  /** Centre magnification of the backdrop (1 = none). */
+  /** Centre magnification of the backdrop (1 = none, the clear default; loupes and lenses raise it). */
   magnify?: number;
   /** Backdrop blur (px) inside the glass; raise for busy backgrounds. */
   blur?: number;
@@ -56,9 +56,10 @@ const DEFAULTS: Required<LiquidGlassOptions> = {
   chroma: 6,
   border: 0.07,
   mapBlur: 12,
-  magnify: 1.05,
-  blur: 3,
-  saturate: 1.5,
+  magnify: 1,
+  // Clear glass: the bend carries the material, not fog.
+  blur: 0.5,
+  saturate: 1.3,
   radius: null,
   // Barely-there frost (glasscn's Safari path is blur(4)): the backdrop must
   // stay vivid through the panel. Heavier blur turns thin content to fog.
@@ -70,9 +71,9 @@ export type GlassPreset = "subtle" | "regular" | "heavy";
 
 /** `regular` is the engine DEFAULTS; `subtle`/`heavy` step the whole bundle together. */
 export const GLASS_PRESETS: Record<GlassPreset, LiquidGlassOptions> = {
-  subtle: { scale: -56, chroma: 3, border: 0.14, mapBlur: 8, magnify: 1.03, blur: 2, saturate: 1.35, fallbackBlur: 2 },
-  regular: { scale: -112, chroma: 6, border: 0.07, mapBlur: 12, magnify: 1.05, blur: 3, saturate: 1.5, fallbackBlur: 3 },
-  heavy: { scale: -170, chroma: 10, border: 0.05, mapBlur: 16, magnify: 1.08, blur: 4, saturate: 1.6, fallbackBlur: 5 },
+  subtle: { scale: -56, chroma: 3, border: 0.14, mapBlur: 8, magnify: 1, blur: 0, saturate: 1.2, fallbackBlur: 2 },
+  regular: { scale: -112, chroma: 6, border: 0.07, mapBlur: 12, magnify: 1, blur: 0.5, saturate: 1.3, fallbackBlur: 3 },
+  heavy: { scale: -170, chroma: 10, border: 0.05, mapBlur: 16, magnify: 1, blur: 1.5, saturate: 1.4, fallbackBlur: 5 },
 };
 
 /**
@@ -378,6 +379,11 @@ export function liquidGlass(
 
   let timer: ReturnType<typeof setTimeout> | undefined;
   const ro = new ResizeObserver(() => {
+    // Stretch the current map to the live size every frame of a resize (a cheap
+    // attribute write). Left at the old size, the newly exposed band reads as a
+    // full-strength bend and smears until the debounced rebuild lands.
+    parts.feImage.setAttribute("width", String(el!.offsetWidth));
+    parts.feImage.setAttribute("height", String(el!.offsetHeight));
     clearTimeout(timer);
     timer = setTimeout(refresh, 120);
   });
