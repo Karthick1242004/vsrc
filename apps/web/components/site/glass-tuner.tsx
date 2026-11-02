@@ -6,7 +6,10 @@ import { GlassProvider, type LiquidGlassOptions } from "vsrc/react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/registry/vsrc/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/registry/vsrc/ui/tooltip";
 
-/** Only the knobs a visitor moved are stored; unset ones keep each component's own tuning. */
+/** Site-wide clarity blur until a visitor moves the slider (owner's choice). */
+const DEFAULT_BLUR = 1.25;
+
+/** Only the knobs a visitor moved are stored; unset ones keep each component's own tuning (blur excepted: it defaults to DEFAULT_BLUR). */
 interface Tune {
   blur?: number;
   bend?: number;
@@ -16,7 +19,7 @@ interface Tune {
 }
 
 const KNOBS = [
-  { key: "blur", label: "Clarity blur", min: 0, max: 4, step: 0.25, base: 0.5, unit: "px" },
+  { key: "blur", label: "Clarity blur", min: 0, max: 4, step: 0.25, base: DEFAULT_BLUR, unit: "px" },
   { key: "bend", label: "Bend", min: 0, max: 200, step: 4, base: 112, unit: "" },
   { key: "chroma", label: "Prism", min: 0, max: 12, step: 1, base: 6, unit: "" },
   { key: "tint", label: "Tint", min: 0, max: 40, step: 2, base: 14, unit: "%" },
@@ -27,7 +30,7 @@ const STORE = "vsrc-glass-tune";
 
 function optionsOf(t: Tune): LiquidGlassOptions {
   const o: LiquidGlassOptions = {};
-  if (t.blur !== undefined) o.blur = t.blur;
+  o.blur = t.blur ?? DEFAULT_BLUR;
   if (t.bend !== undefined) o.scale = -t.bend;
   if (t.chroma !== undefined) o.chroma = t.chroma;
   return o;
