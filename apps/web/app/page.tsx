@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { ComponentBento } from "@/components/site/component-bento";
 import { LensDemo } from "@/components/site/lens-demo";
 import { RefractionField } from "@/components/site/refraction-field";
 import { Reveal } from "@/components/site/reveal";
@@ -79,6 +80,21 @@ export default function Home() {
             {"// live — every element above carries data-vsrc-glass with its active mode"}
           </p>
         </Reveal>
+      </section>
+
+      <section aria-labelledby="bento-heading" className="mt-32 sm:mt-40">
+        <Reveal>
+          <h2 id="bento-heading" className="display-stroke-sm max-w-3xl font-display text-[clamp(2.4rem,5vw,4rem)] leading-[0.95]">
+            Every tile is the real component.
+          </h2>
+          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted-foreground">
+            Drag the loupe, flick the carousel, type a code, stretch a slider. Nothing here is a
+            screenshot, and each one opens its own docs.
+          </p>
+        </Reveal>
+        <div className="mt-10">
+          <ComponentBento />
+        </div>
       </section>
     </div>
   );

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 
 import { CommandMenu } from "@/components/site/command-menu";
 import { CursorProvider } from "@/components/site/cursor";
+import { StatusBanner } from "@/components/site/status-banner";
 import { GlassTunerProvider } from "@/components/site/glass-tuner";
 import { SiteLoader } from "@/components/site/loader";
 import { SmoothScroll } from "@/components/site/smooth-scroll";
@@ -128,6 +129,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <GlassTunerProvider>
         <CursorProvider>
           <TooltipProvider delayDuration={200}>
+            <StatusBanner />
             <SiteHeader />
             {children}
             <SiteFooter />

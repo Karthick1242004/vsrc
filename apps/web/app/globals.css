@@ -101,8 +101,19 @@
   --radius-DEFAULT: var(--radius);
 
   --animate-marquee: marquee 48s linear infinite;
+  --animate-progress-run: progress-run 2.6s cubic-bezier(0.65, 0, 0.35, 1) infinite;
   --animate-blob-a: blob-a 26s ease-in-out infinite alternate;
   --animate-blob-b: blob-b 22s ease-in-out infinite alternate;
+}
+
+/* The status banner's indeterminate progress line. */
+@keyframes progress-run {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(400%);
+  }
 }
 
 @keyframes marquee {

@@ -2,6 +2,8 @@
 
 import * as React from "react";
 
+import { cn } from "@/lib/utils";
+
 const VOCAB = ["refract", "bend", "light", "glass"];
 
 /* Straight thin lines are the clearest proof of refraction: the rim visibly kinks them. */
@@ -25,7 +27,8 @@ function Row({ words, className }: { words: string[]; className: string }) {
  * Pointer motion is eased in rAF and written as CSS variables, never React
  * state. Paused off screen; still under reduced motion.
  */
-export function DemoBackdrop({ word }: { word: string }) {
+/** `compact` is for small tiles (the home bento): quieter type and smaller light pools. */
+export function DemoBackdrop({ word, compact = false }: { word: string; compact?: boolean }) {
   const ref = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -80,18 +83,27 @@ export function DemoBackdrop({ word }: { word: string }) {
   return (
     <div ref={ref} aria-hidden data-demo-backdrop className="absolute inset-0 overflow-hidden">
       <div className="absolute inset-0" style={shift(56, 40)}>
-        <div className="absolute -top-1/3 -left-1/4 size-96 rounded-full bg-signal/45 blur-3xl" />
-        <div className="absolute -right-1/4 -bottom-1/3 size-80 rounded-full bg-primary/40 blur-3xl" />
+        <div className={cn("absolute -top-1/3 -left-1/4 rounded-full blur-3xl", compact ? "size-64 bg-signal/30" : "size-96 bg-signal/45")} />
+        <div className={cn("absolute -right-1/4 -bottom-1/3 rounded-full blur-3xl", compact ? "size-56 bg-primary/25" : "size-80 bg-primary/40")} />
       </div>
       <div className="absolute -inset-10" style={{ backgroundImage: LINES, ...shift(-18, -12) }} />
       <div
         className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 flex-col gap-1 leading-[0.95]"
         style={shift(-28, -16)}
       >
-        <Row words={words} className="animate-marquee font-display text-[5.5rem] text-foreground/40 italic [animation-duration:38s]" />
+        <Row
+          words={words}
+          className={cn(
+            "animate-marquee font-display italic [animation-duration:38s]",
+            compact ? "text-[3.5rem] text-foreground/25" : "text-[5.5rem] text-foreground/40",
+          )}
+        />
         <Row
           words={[...words].reverse()}
-          className="animate-marquee font-display text-[4rem] text-signal/45 [animation-direction:reverse] [animation-duration:52s]"
+          className={cn(
+            "animate-marquee font-display [animation-direction:reverse] [animation-duration:52s]",
+            compact ? "text-[2.5rem] text-signal/30" : "text-[4rem] text-signal/45",
+          )}
         />
       </div>
     </div>
